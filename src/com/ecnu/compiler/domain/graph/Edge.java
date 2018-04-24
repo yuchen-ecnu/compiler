@@ -6,15 +6,18 @@ package com.ecnu.compiler.domain.graph;
  * @date 2018/04/24
  */
 public class Edge {
-    private Node startNode;
-    private Node endNode;
+    /**起始状态*/
+    private State startState;
+    /**目标状态*/
+    private State endState;
+    /**接受字符*/
     private char weight;
 
     public Edge() { }
 
-    public Edge(Node startNode, Node endNode, char weight) {
-        this.startNode = startNode;
-        this.endNode = endNode;
+    public Edge(State startState, State endState, char weight) {
+        this.startState = startState;
+        this.endState = endState;
         this.weight = weight;
     }
 
@@ -28,30 +31,30 @@ public class Edge {
         }
         Edge edge = (Edge) o;
 
-        return startNode.equals(edge.startNode) && endNode.equals(edge.endNode);
+        return startState.equals(edge.startState) && endState.equals(edge.endState);
     }
 
     @Override
     public int hashCode() {
-        int result = startNode.hashCode();
-        result = 31 * result + endNode.hashCode();
+        int result = startState.hashCode();
+        result = 31 * result + endState.hashCode();
         return result;
     }
 
-    public Node getStartNode() {
-        return startNode;
+    public State getStartState() {
+        return startState;
     }
 
-    public void setStartNode(Node startNode) {
-        this.startNode = startNode;
+    public void setStartState(State startState) {
+        this.startState = startState;
     }
 
-    public Node getEndNode() {
-        return endNode;
+    public State getEndState() {
+        return endState;
     }
 
-    public void setEndNode(Node endNode) {
-        this.endNode = endNode;
+    public void setEndState(State endState) {
+        this.endState = endState;
     }
 
     public char getWeight() {

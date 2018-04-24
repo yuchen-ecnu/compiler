@@ -1,5 +1,7 @@
 package com.ecnu.compiler.domain.graph;
 
+import com.ecnu.compiler.constant.Constants;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,17 +10,18 @@ import java.util.List;
  * @author Michael Chen
  * @date 2018/04/24
  */
-public class Node {
-    private int id;
+public class State {
+    /**状态ID*/
+    public int id;
+    /**标识特殊状态*/
+    public boolean isAccepted;
+    /**可迁移路径集合*/
     private List<Edge> edgeList;
 
-    public Node(int id) {
+    public State(int id,boolean isAccepted) {
         this.id = id;
+        this.isAccepted = isAccepted;
         this.edgeList = new ArrayList<>();
-    }
-
-    public int getId() {
-        return id;
     }
 
     public boolean addEdge(Edge edge){
@@ -34,9 +37,9 @@ public class Node {
         if (this == o) { return true; }
         if (o == null || getClass() != o.getClass()) { return false; }
 
-        Node node = (Node) o;
+        State state = (State) o;
 
-        return this.id == node.id;
+        return this.id == state.id;
     }
 
     @Override
