@@ -1,4 +1,4 @@
-package com.ecnu.compiler.domain;
+package com.ecnu.compiler.component.lexer.domain;
 
 /**
  * 封装正则表达式，实体类

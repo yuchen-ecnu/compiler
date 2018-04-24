@@ -1,7 +1,7 @@
-package com.ecnu.compiler.domain.base;
+package com.ecnu.compiler.component.lexer.domain.base;
 
-import com.ecnu.compiler.domain.graph.Edge;
-import com.ecnu.compiler.domain.graph.State;
+import com.ecnu.compiler.component.lexer.domain.graph.Edge;
+import com.ecnu.compiler.component.lexer.domain.graph.State;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class Graph {
      */
     public State get(int id){
         for (State state : stateList) {
-            if(state.getId()==id){
+            if(state.id==id){
                 return state;
             }
         }

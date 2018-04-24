@@ -1,6 +1,4 @@
-package com.ecnu.compiler.domain.graph;
-
-import com.ecnu.compiler.constant.Constants;
+package com.ecnu.compiler.component.lexer.domain.graph;
 
 import java.util.ArrayList;
 import java.util.List;

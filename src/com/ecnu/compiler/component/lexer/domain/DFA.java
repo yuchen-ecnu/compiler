@@ -1,7 +1,7 @@
-package com.ecnu.compiler.domain;
+package com.ecnu.compiler.component.lexer.domain;
 
-import com.ecnu.compiler.domain.base.Graph;
-import com.ecnu.compiler.domain.graph.State;
+import com.ecnu.compiler.component.lexer.domain.base.Graph;
+import com.ecnu.compiler.component.lexer.domain.graph.State;
 
 /**
  * 确定性有限状态自动机

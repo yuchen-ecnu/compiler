@@ -1,4 +1,4 @@
-package com.ecnu.compiler.domain.graph;
+package com.ecnu.compiler.component.lexer.domain.graph;
 
 /**
  * 有向图的边

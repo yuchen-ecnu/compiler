@@ -1,8 +1,8 @@
 package com.ecnu.compiler.component.lexer;
 
-import com.ecnu.compiler.domain.DFA;
-import com.ecnu.compiler.domain.NFA;
-import com.ecnu.compiler.domain.RE;
+import com.ecnu.compiler.component.lexer.domain.DFA;
+import com.ecnu.compiler.component.lexer.domain.NFA;
+import com.ecnu.compiler.component.lexer.domain.RE;
 
 public class Utils {
 
