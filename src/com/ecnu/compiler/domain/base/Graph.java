@@ -3,13 +3,19 @@ package com.ecnu.compiler.domain.base;
 import com.ecnu.compiler.domain.graph.Edge;
 import com.ecnu.compiler.domain.graph.Node;
 
+import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 图 基类
+ * @author Michael Chen
+ * @date 2018/04/24
+ */
 public class Graph {
     private List<Node> nodeList;
 
     public Graph() {
-        this.nodeList = nodeList;
+        this.nodeList = new ArrayList<>();
     }
 
     /**

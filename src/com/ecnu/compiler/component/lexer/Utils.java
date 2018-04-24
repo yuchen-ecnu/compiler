@@ -1,4 +1,4 @@
-package com.ecnu.compiler.lexer;
+package com.ecnu.compiler.component.lexer;
 
 import com.ecnu.compiler.domain.DFA;
 import com.ecnu.compiler.domain.NFA;
@@ -13,7 +13,7 @@ public class Utils {
      * @return NFA
      * @author Hu JiaBin
      */
-    public NFA RE2NFA(RE expression){
+    public static NFA RE2NFA(RE expression){
 
         return null;
     }
@@ -24,7 +24,7 @@ public class Utils {
      * @return DFA
      * @author Meng Xin
      */
-    public DFA RE2DFA(RE expression){
+    public static DFA RE2DFA(RE expression){
 
         return null;
     }
@@ -35,7 +35,7 @@ public class Utils {
      * @return DFA
      * @author Lucto
      */
-    public DFA NFA2DFA(NFA nfa){
+    public static DFA NFA2DFA(NFA nfa){
 
         return null;
     }
@@ -47,7 +47,7 @@ public class Utils {
      * @return DFA
      * @author Chen Jianing
      */
-    public DFA DFA2MinDFA(DFA dfa){
+    public static DFA DFA2MinDFA(DFA dfa){
 
         return null;
     }

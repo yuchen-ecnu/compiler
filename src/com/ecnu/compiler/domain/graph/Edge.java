@@ -1,8 +1,9 @@
 package com.ecnu.compiler.domain.graph;
 
 /**
- * 图的边
+ * 有向图的边
  * @author Michael Chen
+ * @date 2018/04/24
  */
 public class Edge {
     private Node startNode;

@@ -1,4 +1,4 @@
-package com.ecnu.compiler.lexer;
+package com.ecnu.compiler.component.lexer;
 
 /**
  * 词法分析器
@@ -7,4 +7,7 @@ package com.ecnu.compiler.lexer;
  */
 public class Lexer {
 
+    public Lexer() {
+
+    }
 }

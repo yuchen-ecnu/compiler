@@ -6,6 +6,7 @@ import java.util.List;
 /**
  * 图的节点
  * @author Michael Chen
+ * @date 2018/04/24
  */
 public class Node {
     private int id;

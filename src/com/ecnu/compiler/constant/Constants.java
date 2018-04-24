@@ -11,9 +11,16 @@ public class Constants {
 
     /**
      * RE表达式集合
-     *
      * @author ZhaoChen
      */
-//    public static final String EXAMPLE = "example";
-
+    //标识符
+    public static final String IDENTIFIER = "example";
+    //常量
+    public static final String CONSTANT = "example";
+    //保留字
+    public static final String RESERVED = "example";
+    //注释
+    public static final String COMMENT = "example";
+    //运算符
+    public static final String OPERATOR = "example";
 }
