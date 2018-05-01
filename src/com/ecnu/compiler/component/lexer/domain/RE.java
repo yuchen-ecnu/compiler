@@ -9,4 +9,8 @@ public class RE {
     public RE(String expression) {
         this.expression = expression;
     }
+
+    public String getExpression() {
+        return expression;
+    }
 }
