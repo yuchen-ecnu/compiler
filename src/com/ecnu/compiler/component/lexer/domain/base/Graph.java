@@ -1,7 +1,9 @@
 package com.ecnu.compiler.component.lexer.domain.base;
 
+import com.ecnu.compiler.component.lexer.domain.DFA;
 import com.ecnu.compiler.component.lexer.domain.graph.Edge;
 import com.ecnu.compiler.component.lexer.domain.graph.State;
+import com.ecnu.compiler.component.lexer.domain.re2dfaUtils.DfaState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.List;
  * @date 2018/04/24
  */
 public class Graph {
+
     private List<State> stateList;
 
     public Graph() {
@@ -39,5 +42,9 @@ public class Graph {
         if(stateList.contains(state)||!stateList.contains(parent)){ return false; }
         parent.addEdge(new Edge(parent,state,input));
         return true;
+    }
+
+    public List<State> getStateList() {
+        return stateList;
     }
 }
