@@ -15,11 +15,11 @@ public class Constants {
      */
     //标识符
     public static final String JAVA_IDENTIFIER = "^[A-Za-z_]+[A-Za-z_0-9]*$";
-    //常量
+    //常量,常数
     public static final String CONSTANT = "example";
     //保留字
     public static final String RESERVED = "example";
-    //注释
+    //注释（多行注释、反斜杠注释）
     public static final String JAVA_COMMENT = "^(//.*?\\n)|(/\\*(.|\\n)*?\\*/)$";
     //运算符
     public static final String JAVA_OPERATOR = "^[\\+\\-\\*/%]$";
