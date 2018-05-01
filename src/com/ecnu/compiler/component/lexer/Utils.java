@@ -3,6 +3,7 @@ package com.ecnu.compiler.component.lexer;
 import com.ecnu.compiler.component.lexer.domain.DFA;
 import com.ecnu.compiler.component.lexer.domain.NFA;
 import com.ecnu.compiler.component.lexer.domain.RE;
+import com.ecnu.compiler.component.lexer.domain.re2dfaUtils.RegexToDfa;
 
 public class Utils {
 
@@ -25,8 +26,8 @@ public class Utils {
      * @author Meng Xin
      */
     public static DFA RE2DFA(RE expression){
-
-        return null;
+        RegexToDfa.initialize(expression);
+        return RegexToDfa.getDFA();
     }
 
     /**
