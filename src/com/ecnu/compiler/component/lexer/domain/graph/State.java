@@ -30,12 +30,17 @@ public class State {
         }
     }
 
-    public boolean removeEdge(Edge edge){
-        if(!edgeList.contains(edge)){ return false; }
-        else {
+    public boolean removeEdge(Edge edge) {
+        if (!edgeList.contains(edge)) {
+            return false;
+        } else {
             edgeList.remove(edge);
             return true;
         }
+    }
+
+    public int getId() {
+        return id;
     }
 
     @Override
@@ -53,3 +58,4 @@ public class State {
         return 31 * id;
     }
 }
+

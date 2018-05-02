@@ -1,4 +1,4 @@
-package com.ecnu.compiler.component.parser;
+package com.ecnu.compiler.component.parser.base;
 
 /**
  * 语法分析器

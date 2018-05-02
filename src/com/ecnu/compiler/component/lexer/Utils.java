@@ -4,6 +4,7 @@ import com.ecnu.compiler.component.lexer.domain.DFA;
 import com.ecnu.compiler.component.lexer.domain.NFA;
 import com.ecnu.compiler.component.lexer.domain.RE;
 import com.ecnu.compiler.component.lexer.domain.graph.State;
+import com.ecnu.compiler.component.lexer.domain.re2dfaUtils.RegexToDfa;
 
 public class Utils {
 
@@ -26,7 +27,9 @@ public class Utils {
               i++;
             }
         }
-        return buildNFA(exprList, transferMark, 0, exprList.length - 1);
+        NFA result = buildNFA(exprList, transferMark, 0, exprList.length - 1);
+        result.resetId();
+        return result;
     }
 
     private static NFA buildNFA(char[] exprList, boolean[] transferMark, int startIndex, int endIndex){
@@ -161,8 +164,8 @@ public class Utils {
      * @author Meng Xin
      */
     public static DFA RE2DFA(RE expression){
-
-        return null;
+        RegexToDfa.initialize(expression);
+        return RegexToDfa.getDFA();
     }
 
     /**
