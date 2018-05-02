@@ -30,6 +30,14 @@ public class State {
         }
     }
 
+    public boolean removeEdge(Edge edge){
+        if(!edgeList.contains(edge)){ return false; }
+        else {
+            edgeList.remove(edge);
+            return true;
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) { return true; }

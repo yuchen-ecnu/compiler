@@ -6,6 +6,7 @@ public class UtilsTest {
 
     @Test
     public void RE2NFA() throws Exception {
+
     }
 
     @Test
