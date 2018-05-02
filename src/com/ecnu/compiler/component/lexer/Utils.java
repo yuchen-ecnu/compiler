@@ -36,8 +36,8 @@ public class Utils {
         NFA rightNFA = new NFA();
         if (startIndex > endIndex)
             return rightNFA; // 这里应该返回Null还是空NFA
-        for (int i = endIndex; i > startIndex; ) {
-            if (!transferMark[i] &&
+        for (int i = endIndex; i >= startIndex; ) {
+            if (i > startIndex && !transferMark[i] &&
                     (exprList[i] == '*' || exprList[i] == '|'
                             || exprList[i] == '\\' || exprList[i] == ')')){
                 switch (exprList[i]) {
@@ -65,7 +65,7 @@ public class Utils {
                         return rightNFA;
                     case '\\':
                         //未被标记的\是起转义作用，直接忽略
-                        i -= 1;
+                        i--;
                         break;
                     case ')':
                         //找到左括号
@@ -81,6 +81,7 @@ public class Utils {
             } else {
                 //普通连接字符
                 buildLink(exprList[i], rightNFA);
+                i--;
             }
         }
         return rightNFA;

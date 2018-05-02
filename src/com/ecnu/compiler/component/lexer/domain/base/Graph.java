@@ -85,8 +85,4 @@ public class Graph {
         }
 
     }
-
-    public List<State> getStateList() {
-        return stateList;
-    }
 }

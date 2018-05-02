@@ -43,14 +43,19 @@ public class State {
         return id;
     }
 
+    public List<Edge> getEdgeList() {
+        return edgeList;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) { return true; }
+        /*if (this == o) { return true; }
         if (o == null || getClass() != o.getClass()) { return false; }
 
         State state = (State) o;
 
-        return this.id == state.id;
+        return this.id == state.id;*/
+        return this == o;
     }
 
     @Override

@@ -18,8 +18,8 @@ public class NFA extends Graph {
     public NFA() {
         State defaultState = new State(0, true);
         addNode(defaultState);
-        setStartState(defaultState);
-        setEndState(defaultState);
+        startState = defaultState;
+        endState = defaultState;
     }
 
     /**
@@ -32,8 +32,8 @@ public class NFA extends Graph {
         //保证连接两图的边存在
         List<State> stateList = getStateList();
         if (NFAToMerge != null && start != null && end != null
-                && stateList.contains(start)
-                && NFAToMerge.getStateList().contains(end)){
+                && ((stateList.contains(start) && NFAToMerge.getStateList().contains(end))
+                                || (stateList.contains(end) && NFAToMerge.getStateList().contains(start)))){
             //合并所有节点
             stateList.addAll(NFAToMerge.getStateList());
             //添加连接边
