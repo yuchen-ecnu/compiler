@@ -30,6 +30,15 @@ public class State {
         }
     }
 
+    public boolean removeEdge(Edge edge) {
+        if (!edgeList.contains(edge)) {
+            return false;
+        } else {
+            edgeList.remove(edge);
+            return true;
+        }
+    }
+
     public int getId() {
         return id;
     }
@@ -44,12 +53,13 @@ public class State {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) { return true; }
+        /*if (this == o) { return true; }
         if (o == null || getClass() != o.getClass()) { return false; }
 
         State state = (State) o;
 
-        return this.id == state.id;
+        return this.id == state.id;*/
+        return this == o;
     }
 
     @Override
@@ -57,3 +67,4 @@ public class State {
         return 31 * id;
     }
 }
+
