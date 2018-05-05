@@ -27,7 +27,9 @@ public class Utils {
      */
     public static DFA RE2DFA(RE expression){
         RegexToDfa.initialize(expression);
-        return RegexToDfa.getDFA();
+        DFA dfa = RegexToDfa.getDFA();
+        dfa.print();
+        return dfa;
     }
 
     /**

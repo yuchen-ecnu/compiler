@@ -13,7 +13,7 @@ public class UtilsTest {
 
     @Test
     public void RE2DFA() throws Exception {
-        RE expression = new RE("(a|b)*abb");
+        RE expression = new RE("(a|b)*abb#");
         DFA dfa = Utils.RE2DFA(expression);
     }
 

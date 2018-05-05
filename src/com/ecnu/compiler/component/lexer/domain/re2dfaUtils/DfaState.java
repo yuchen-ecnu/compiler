@@ -84,6 +84,6 @@ public class DfaState extends State {
                 ", move=" + showMoves() +
                 "isMarked=" + isMarked +
                 ", isAccepted=" + isAccepted +
-                '}';
+                "}\n";
     }
 }
