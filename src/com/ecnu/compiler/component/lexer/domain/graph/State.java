@@ -47,6 +47,10 @@ public class State {
         return edgeList;
     }
 
+    public void setEdgeList(List<Edge> edgeList) {
+        this.edgeList = edgeList;
+    }
+
     @Override
     public boolean equals(Object o) {
         /*if (this == o) { return true; }

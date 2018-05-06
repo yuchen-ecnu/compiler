@@ -2,6 +2,7 @@ package com.ecnu.compiler.component.lexer.domain.re2dfaUtils;
 
 import com.ecnu.compiler.component.lexer.domain.DFA;
 import com.ecnu.compiler.component.lexer.domain.RE;
+import com.ecnu.compiler.component.lexer.domain.graph.Edge;
 
 import java.util.*;
 
@@ -174,7 +175,73 @@ public class RegexToDfa {
     public static DFA getDFA() {
         DFA dfa = new DFA();
         dfa.setStateList(DStates);
+        clean(dfa);
+        setEdgeList(dfa);
+        setStartAndEnd(dfa);
         return dfa;
+    }
+
+    public static void setEdgeList(DFA dfa) {
+        for(DfaState s : dfa.getDfaStateList()) {
+            HashMap<String, DfaState> move = s.getAllMoves();
+            Iterator it = move.entrySet().iterator();
+            List<Edge> edgeList = new ArrayList<>();
+            while(it.hasNext()) {
+                HashMap.Entry entry = (HashMap.Entry) it.next();
+                String keyString = (String) entry.getKey();
+                char[] charArray = keyString.toCharArray();
+                char key = charArray[0];
+                DfaState val = (DfaState) entry.getValue();
+                Edge edge = new Edge(s, val, key);
+                edgeList.add(edge);
+            }
+            s.setEdgeList(edgeList);
+        }
+    }
+
+    public static void clean(DFA dfa) {
+        List<DfaState> stateList = dfa.getDfaStateList();
+        Set<DfaState> removeSet = new HashSet<>();
+        Set<Integer> removeIntSet = new HashSet<>();
+        for(DfaState s : stateList) {
+            if(s.getName().size() == 0) {
+                removeSet.add(s);
+                removeIntSet.add(s.getId());
+            }
+        }
+        stateList.removeAll(removeSet);
+        dfa.setStateList(stateList);
+        for(DfaState s : stateList) {
+            HashMap<String, DfaState> move = s.getAllMoves();
+            Iterator it = move.entrySet().iterator();
+            while(it.hasNext()) {
+                HashMap.Entry entry = (HashMap.Entry) it.next();
+                String keyString = (String) entry.getKey();
+                char[] charArray = keyString.toCharArray();
+                char key = charArray[0];
+                if (key == '#') {
+                    it.remove();
+                    continue;
+                }
+                int val = ((DfaState) entry.getValue()).getId();
+                if (removeIntSet.contains(val)) {
+                    it.remove();
+                }
+            }
+        }
+    }
+
+    public static void setStartAndEnd(DFA dfa) {
+        List<DfaState> endStateList = new ArrayList<>();
+        for(DfaState s : dfa.getDfaStateList()) {
+            if(s.getId() == 0) {
+                dfa.setStartState(s);
+            }
+            if(s.getAccepted()) {
+                endStateList.add(s);
+            }
+        }
+        dfa.setEndStateList(endStateList);
     }
 
 }

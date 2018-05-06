@@ -1,5 +1,7 @@
 package com.ecnu.compiler.component.lexer.domain.graph;
 
+import com.ecnu.compiler.component.lexer.domain.re2dfaUtils.DfaState;
+
 /**
  * 有向图的边
  * @author Michael Chen
@@ -63,5 +65,13 @@ public class Edge {
 
     public void setWeight(char weight) {
         this.weight = weight;
+    }
+
+    public String toStringForDfa() {
+        return "Edge{" +
+                "startState=" + ((DfaState)startState).getName() +
+                ", endState=" + ((DfaState)endState).getName() +
+                ", weight='" + weight +
+                "'}\n";
     }
 }
