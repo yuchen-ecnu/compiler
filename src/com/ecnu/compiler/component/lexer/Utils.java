@@ -77,6 +77,8 @@ public class Utils {
                         //将当前目标改到左括号左边
                         i = leftBracketIndex - 1;
                         break;
+                    default:
+                        break;
                 }
             } else {
                 //普通连接字符
