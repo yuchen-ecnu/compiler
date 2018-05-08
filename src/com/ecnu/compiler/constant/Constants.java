@@ -1,5 +1,4 @@
 package com.ecnu.compiler.constant;
-
 /**
  * 常量类
  * @author Michael Chen
@@ -10,16 +9,39 @@ public class Constants {
     public static final String EMPTY_TOKEN = "";
 
     // RE表达式集合
-    /**标识符*/
+    //标识符
     public static final String JAVA_IDENTIFIER = "^[A-Za-z_]+[A-Za-z_0-9]*$";
-    /**常量,常数*/
-    public static final String JAVA_CONSTANT = "example";
-    /**保留字*/
-    public static final String JAVA_RESERVED = "example";
-    /**注释（多行注释、反斜杠注释）*/
+    //数字常量
+    public static final String JAVA_CONSTANT_NUM = "^[+-]?([0-9]*\\.?[0-9]+|[0-9]+\\.?[0-9]*)([eE][+-]?[0-9]+)?$";
+    //字符串常量
+    public static final String JAVA_CONSTANT_STRING = "^\".*?\"$";
+    //字符常量
+    public static final String JAVA_CONSTANT_CHAR = "^\'.\'$";
+    //布尔常量
+    public static final String JAVA_CONSTANT_BOOL = "^(true)|(false)$";
+    //关键字
+    public static final String JAVA_KEY_WORD = "^(public)|(protected)|(private)|(abstract)|(class)|(interface)|(implements)|"
+            + "(extends)|(new)|(static)|(final)|(const)|(native)|(synchronized)|(transient)"
+            + "|(volatile)|(strictfp)|(import)|(package)|(super)|(this)|(void)|(assert)$";
+    //条件句关键字
+    public static final String JAVA_KEY_WORD_CONTROL =  "^(if)|(else)|(instanceof)|(switch)|(case)|(break)|(default)|(for)|(do)"
+            + "|(while)|(continue)|(return)|(goto)$";
+    //异常关键字
+    public static final String JAVA_KEY_WORD_EXCEPTION = "^(try)|(catch)|(finally)|(throw)|(throws)$";
+    //基本数据类型关键字
+    public static final String JAVA_KEY_WORD_TYPE = "^(int)|(short)|(float)|(double)|(byte)"
+            + "|(char)|(boolean)|(long)$";
+    //保留字
+    public static final String JAVA_RESERVED = "^(null)|(cast)|(future)|(generic)|(inner)|(operator)|(outer)|(rest)"
+            + "|(var)|(goto)|(byValue)$";
+    //注释
     public static final String JAVA_COMMENT = "^(//.*?\\n)|(/\\*(.|\\n)*?\\*/)$";
-    /**运算符*/
-    public static final String JAVA_OPERATOR = "^[\\+\\-\\*/%]$";
+    //运算符
+    public static final String JAVA_OPERATOR = "^[\\+\\-\\*/%=]$";
+    //关系运算符
+    public static final String JAVA_RELATIONSHIP_OPERATOR = "^(!=)|(==)|(<)|(<=)|(>)|(>=)$";
+    //逻辑运算符
+    public static final String JAVA_LOGIC_OPERATOR = "^(!)|(\\|\\|)|(&&)$";
 
     /** 无关字符（注释、换行、回车、制表符） */
     public static final String IRRELEVANT_TOKEN = "";
