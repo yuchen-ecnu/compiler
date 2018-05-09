@@ -1,5 +1,3 @@
-package com.ecnu.test;
-
 import com.ecnu.compiler.component.lexer.Utils;
 import com.ecnu.compiler.component.lexer.domain.DFA;
 import com.ecnu.compiler.component.lexer.domain.NFA;
@@ -37,6 +35,20 @@ public class UtilsTest {
 
     @Test
     public void NFA2DFA() throws Exception {
+        RE expression = new RE("(a|b)*d");
+        NFA nfa = Utils.RE2NFA(expression);
+        DFA dfa = Utils.NFA2DFA(nfa);
+        StringBuilder stringBuilder = new StringBuilder();
+        int count = 0;
+        for (State state : dfa.getStates()){
+            for (Edge edge : state.getEdgeList()){
+                stringBuilder.append(edge.getStartState().getId()).append(" -").append(edge.getWeight()).append("> ")
+                        .append(edge.getEndState().getId()).append('\n');
+                count++;
+            }
+        }
+        stringBuilder.append("total edges: ").append(count);
+        System.out.println(stringBuilder.toString());
     }
 
     @Test

@@ -15,6 +15,10 @@ public class DFA extends Graph {
 
     private List<DfaState> stateList;
 
+    private List<State> states;
+
+    private State startDfaState;
+
     private State curState;
 
     private DfaState startState;
@@ -25,6 +29,22 @@ public class DFA extends Graph {
 
     public DFA(List<DfaState> dfaStateList) {
         this.setStateList(dfaStateList);
+    }
+
+    public List<State> getStates() {
+        return states;
+    }
+
+    public void setStates(List<State> states) {
+        this.states = states;
+    }
+
+    public State getStartDfaState() {
+        return startDfaState;
+    }
+
+    public void setStartDfaState(State startDfaState) {
+        this.startDfaState = startDfaState;
     }
 
     public List<DfaState> getDfaStateList() {
@@ -68,5 +88,24 @@ public class DFA extends Graph {
         System.out.println(edges);
         System.out.println("Start State:\n" + startState.getName());
         System.out.println(endStates);
+    }
+
+    public int getMaxId(){
+        int maxId=0;
+        for(State s : this.states){
+            if(s.getId()>maxId){
+                maxId=s.getId();
+            }
+        }
+        return maxId;
+    }
+
+    public State getStateById(int id) {
+        for (State state : states) {
+            if (state.id == id) {
+                return state;
+            }
+        }
+        return null;
     }
 }
