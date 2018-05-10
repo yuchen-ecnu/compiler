@@ -9,6 +9,7 @@ public class Constants {
     public static final String EMPTY_TOKEN = "";
 
     // RE表达式集合
+    /*JAVA*/
     //标识符
     public static final String JAVA_IDENTIFIER = "^[A-Za-z_]+[A-Za-z_0-9]*$";
     //数字常量
@@ -42,6 +43,41 @@ public class Constants {
     public static final String JAVA_RELATIONSHIP_OPERATOR = "^(!=)|(==)|(<)|(<=)|(>)|(>=)$";
     //逻辑运算符
     public static final String JAVA_LOGIC_OPERATOR = "^(!)|(\\|\\|)|(&&)$";
+
+    /*C++*/
+    //标识符
+    public static final String CPP_IDENTIFIER = "^[A-Za-z_]+[A-Za-z_0-9]*$";
+    //数字常量
+    public static final String CPP_CONSTANT_NUM = "^[+-]?([0-9]*\\.?[0-9]+|[0-9]+\\.?[0-9]*)([eE][+-]?[0-9]+)?$";
+    //字符串常量
+    public static final String CPP_CONSTANT_STRING = "^\".*?\"$";
+    //字符常量
+    public static final String CPP_CONSTANT_CHAR = "^\'.\'$";
+    //布尔常量
+    public static final String CPP_CONSTANT_BOOL = "^(true)|(false)$";
+    //关键字
+    public static final String CPP_KEY_WORD = "^(public)|(protected)|(private)|(class)|"
+            + "(new)|(static)|(const)|(auto)|(delete)|(enum)|(explicit)|(export)|"
+            + "(extern)|(friend)|(inline)|(namespace)|(operator)|"
+            + "(register)|(struct)|(typedef)|(union)|(using)|(virtual)"
+            + "|(volatile)|(this)|(void)|(assert)$";
+    //条件句关键字
+    public static final String CPP_KEY_WORD_CONTROL =  "^(if)|(else)|(switch)|(case)|(break)|(default)|(for)|(do)"
+            + "|(while)|(continue)|(return)|(goto)$";
+    //异常关键字
+    public static final String CPP_KEY_WORD_EXCEPTION = "^(try)|(catch)|(throw)$";
+    //基本数据类型关键字
+    public static final String CPP_KEY_WORD_TYPE = "^(int)|(short)|(float)|(double)|(unsigned)"
+            + "|(char)|(boolean)|(long)|(long long)|(long double)|(string)|(wchar_t)$";
+    //注释
+    public static final String CPP_COMMENT = "^(//.*?\\n)|(/\\*(.|\\n)*?\\*/)$";
+    //运算符
+    public static final String CPP_OPERATOR = "^[\\+\\-\\*/%=]$";
+    //关系运算符
+    public static final String CPP_RELATIONSHIP_OPERATOR = "^(!=)|(==)|(<)|(<=)|(>)|(>=)$";
+    //逻辑运算符
+    public static final String CPP_LOGIC_OPERATOR = "^(!)|(\\|\\|)|(&&)$";
+
 
     /** 无关字符（注释、换行、回车、制表符） */
     public static final String IRRELEVANT_TOKEN = "";
