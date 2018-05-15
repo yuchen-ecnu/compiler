@@ -115,7 +115,7 @@ public class NFA extends Graph {
                 drawExistDfa(startState,dfa.getStateById(dfaStateSet.get(nextStates.get(weight))),weight);
             }
         }
-        dfa.getStates().get(dfa.getMaxId()).isAccepted=true;
+        dfa.setEndStateList();
         return dfa;
     }
 

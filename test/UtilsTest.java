@@ -47,6 +47,9 @@ public class UtilsTest {
         }
         stringBuilder.append("total edges: ").append(count);
         System.out.println(stringBuilder.toString());
+        for(State state :dfa.getEndStates()){
+            System.out.println("endStates: " + state.getId());
+        }
     }
 
     @Test

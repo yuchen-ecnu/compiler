@@ -5,6 +5,7 @@ import com.ecnu.compiler.component.lexer.domain.graph.Edge;
 import com.ecnu.compiler.component.lexer.domain.graph.State;
 import com.ecnu.compiler.component.lexer.domain.re2dfaUtils.DfaState;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,6 +17,8 @@ public class DFA extends Graph {
     private List<DfaState> stateList;
 
     private List<State> states;
+
+    private List<State> endStates;
 
     private State startDfaState;
 
@@ -109,6 +112,23 @@ public class DFA extends Graph {
         return null;
     }
 
+    public void setEndStateList(){
+        this.endStates = new ArrayList<>();
+        for(State state:states){
+            if(state.getEdgeList().isEmpty()){
+                state.isAccepted = true;
+                endStates.add(state);
+            }
+        }
+    }
+
+    public List<State> getEndStates() {
+        return endStates;
+    }
+
+    public void setEndStates(List<State> endStates) {
+        this.endStates = endStates;
+    }
 
     /**
      * minimize DFA
