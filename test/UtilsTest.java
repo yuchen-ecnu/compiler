@@ -1,4 +1,3 @@
-import com.ecnu.compiler.component.lexer.Utils;
 import com.ecnu.compiler.component.lexer.domain.DFA;
 import com.ecnu.compiler.component.lexer.domain.NFA;
 import com.ecnu.compiler.component.lexer.domain.RE;
@@ -11,7 +10,7 @@ public class UtilsTest {
     @Test
     public void RE2NFA() throws Exception {
         RE expression = new RE("(a|b)*d");
-        NFA nfa = Utils.RE2NFA(expression);
+        NFA nfa = expression.getNFA();
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(nfa.getStartState().getId()).append(" <-> ")
                 .append(nfa.getEndState().getId()).append("  in ").append(nfa.getStateList().size()).append('\n');
@@ -30,14 +29,13 @@ public class UtilsTest {
     @Test
     public void RE2DFA() throws Exception {
         RE expression = new RE("(a|b)*abb#");
-        DFA dfa = Utils.RE2DFA(expression);
+        DFA dfa = expression.getDFADirectly();
     }
 
     @Test
     public void NFA2DFA() throws Exception {
         RE expression = new RE("(a|b)*d");
-        NFA nfa = Utils.RE2NFA(expression);
-        DFA dfa = Utils.NFA2DFA(nfa);
+        DFA dfa = expression.getDFAIndirect();
         StringBuilder stringBuilder = new StringBuilder();
         int count = 0;
         for (State state : dfa.getStates()){

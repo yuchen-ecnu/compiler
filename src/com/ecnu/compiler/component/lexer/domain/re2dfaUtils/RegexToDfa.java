@@ -13,7 +13,7 @@ public class RegexToDfa {
     private static List<DfaState> DStates;
 
     //输入的re会使用到的字符集
-    private static Set<String> input;
+    private static Set<String> input = new HashSet<String>();
 
     //每个字符对应一个编号(重复的字符编号不同)
     //使用String而不是char是为了处理输入中含有转义字符(如'\*')的情况
@@ -23,14 +23,14 @@ public class RegexToDfa {
 //        initialize();
 //    }
 
-    public static void initialize(RE expression) {
+    public static void initialize(String expression) {
 //        Scanner in = new Scanner(System.in);
         //allocating
         DStates = new ArrayList<>();
-        input = new HashSet<String>();
+        input = new HashSet<>();
 
 //        String regex = getRegex(in);
-        String regex = expression.getExpression();
+        String regex = expression;
         getSymbols(regex);
 
         //把RE作为参数传给语法树的构造方法，生成其对应的语法树
@@ -73,9 +73,8 @@ public class RegexToDfa {
 
     private static void getSymbols(String regex) {
         //op是特殊符号的集合(如*号)
-        Set<Character> op = new HashSet<>();
         Character[] ch = {'(', ')', '*', '|', '&', '.', '\\', '[', ']', '+'};
-        op.addAll(Arrays.asList(ch));
+        Set<Character> op = new HashSet<>(Arrays.asList(ch));
 
         input = new HashSet<>();
         symbNum = new HashMap<>();
@@ -181,7 +180,7 @@ public class RegexToDfa {
         return dfa;
     }
 
-    public static void setEdgeList(DFA dfa) {
+    private static void setEdgeList(DFA dfa) {
         for(DfaState s : dfa.getDfaStateList()) {
             HashMap<String, DfaState> move = s.getAllMoves();
             Iterator it = move.entrySet().iterator();
@@ -199,7 +198,7 @@ public class RegexToDfa {
         }
     }
 
-    public static void clean(DFA dfa) {
+    private static void clean(DFA dfa) {
         List<DfaState> stateList = dfa.getDfaStateList();
         Set<DfaState> removeSet = new HashSet<>();
         Set<Integer> removeIntSet = new HashSet<>();
@@ -231,7 +230,7 @@ public class RegexToDfa {
         }
     }
 
-    public static void setStartAndEnd(DFA dfa) {
+    private static void setStartAndEnd(DFA dfa) {
         List<DfaState> endStateList = new ArrayList<>();
         for(DfaState s : dfa.getDfaStateList()) {
             if(s.getId() == 0) {

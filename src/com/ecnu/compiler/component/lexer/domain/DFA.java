@@ -108,4 +108,15 @@ public class DFA extends Graph {
         }
         return null;
     }
+
+
+    /**
+     * minimize DFA
+     * @return min DFA
+     * @author Chen Jianing
+     **/
+    public DFA getMinDFA(){
+
+        return null;
+    }
 }
