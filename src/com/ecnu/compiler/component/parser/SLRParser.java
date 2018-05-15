@@ -6,12 +6,9 @@ import com.ecnu.compiler.component.parser.domain.TD;
 import com.ecnu.compiler.component.storage.SymbolTable;
 
 /**
- * Bottom-Up Parsing, general LR
- *
- * @author Michael Chen
- * @date 2018-05-01 19:58
+ * Bottom-Up Parsing, general SLR
  */
-public class LRParser extends Parser {
+public class SLRParser extends Parser {
     @Override
     public TD<Symbol> getSyntaxTree(SymbolTable symbolTable) {
         return null;

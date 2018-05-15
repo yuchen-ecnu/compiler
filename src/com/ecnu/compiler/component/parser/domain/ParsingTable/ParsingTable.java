@@ -1,4 +1,4 @@
-package com.ecnu.compiler.component.parser.domain;
+package com.ecnu.compiler.component.parser.domain.ParsingTable;
 
 /**
  * 解析表

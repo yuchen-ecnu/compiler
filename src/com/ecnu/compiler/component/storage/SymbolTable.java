@@ -1,6 +1,6 @@
 package com.ecnu.compiler.component.storage;
 
-import com.ecnu.compiler.component.storage.domain.Symbol;
+import com.ecnu.compiler.component.storage.domain.Token;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +12,10 @@ import java.util.List;
  * @date 2018-04-24 19:27
  */
 public class SymbolTable {
-    private List<Symbol> symbols;
+    private List<Token> tokens;
 
     public SymbolTable() {
-        this.symbols = new ArrayList<>();
+        this.tokens = new ArrayList<>();
     }
 
 
