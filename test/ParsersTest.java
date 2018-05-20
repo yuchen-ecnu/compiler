@@ -1,4 +1,5 @@
 import com.ecnu.compiler.component.parser.domain.CFG;
+import com.ecnu.compiler.component.parser.domain.FirstFollowSet;
 import com.ecnu.compiler.component.parser.domain.Production;
 import com.ecnu.compiler.component.parser.domain.Symbol;
 import org.junit.Test;
@@ -12,15 +13,18 @@ public class ParsersTest {
 
     @Test
     public void LLParser() throws Exception {
-        String[] cfgList = {"E->E+T|T", "T->T*F|F", "F->(E)|id"};
+        String[] cfgList = {"E->T E'", "E'->+ T E' |epsilon", "T->F T'", "T'->* F T'|epsilon", "F->( T E' )|id"};
         Symbol s1 = new Symbol("E");
-        Symbol s2 = new Symbol("+");
-        Symbol s3 = new Symbol("T");
-        Symbol s4 = new Symbol("*");
-        Symbol s5 = new Symbol("F");
-        Symbol s6 = new Symbol("(");
-        Symbol s7 = new Symbol(")");
-        Symbol s8 = new Symbol("id");
+        Symbol s2 = new Symbol("T");
+        Symbol s3 = new Symbol("E'");
+        Symbol s4 = new Symbol("+");
+        Symbol s5 = new Symbol("epsilon");
+        Symbol s6 = new Symbol("T'");
+        Symbol s7 = new Symbol("*");
+        Symbol s8 = new Symbol("F");
+        Symbol s9 = new Symbol("(");
+        Symbol s10 = new Symbol(")");
+        Symbol s11 = new Symbol("id");
         Set<Symbol> symbolSet = new HashSet<>();
         symbolSet.add(s1);
         symbolSet.add(s2);
@@ -30,6 +34,9 @@ public class ParsersTest {
         symbolSet.add(s6);
         symbolSet.add(s7);
         symbolSet.add(s8);
+        symbolSet.add(s9);
+        symbolSet.add(s10);
+        symbolSet.add(s11);
         CFG cfg = new CFG(cfgList, symbolSet);
         for(Map.Entry<Symbol, List<Integer>> entry : cfg.getNonTerminalMap().entrySet()) {
             System.out.print(entry.getKey().getType() + "----");
@@ -49,6 +56,18 @@ public class ParsersTest {
             System.out.print("Right:");
             for (Symbol s : p.getRight()) {
                 System.out.print(s.getType() + " ");
+            }
+            System.out.println();
+        }
+        FirstFollowSet firstFollowSet = new FirstFollowSet(cfg);
+        Map<Symbol, Set<Symbol>> firstMap = firstFollowSet.getFirstMap();
+        Map<Symbol, Set<Symbol>> followMap = firstFollowSet.getFollowMap();
+        for (Map.Entry<Symbol, Set<Symbol>> entry : firstMap.entrySet()) {
+            System.out.print(entry.getKey().getType() + "----");
+            if (entry.getValue() != null) {
+                for (Symbol s : entry.getValue()) {
+                    System.out.print(s.getType() + " ");
+                }
             }
             System.out.println();
         }

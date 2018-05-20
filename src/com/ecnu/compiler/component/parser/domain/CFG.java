@@ -53,26 +53,38 @@ public class CFG {
             String[] rightArr = result[1].split("\\|");
             for (String rStr : rightArr) {
                 List<Symbol> rightList = new ArrayList<>();
-                for (int i = 1; i <= rStr.length() && !rStr.isEmpty(); i++) {
-                    String s = rStr.substring(0, i);
-                    while (stringSet.contains(s) && !rStr.isEmpty()) {
-                        for (Symbol sym : mSymbolSet) {
-                            if (sym.getType().equals(s)) {
-                                rightList.add(sym);
-                                rStr = rStr.substring(i);
-                                if (!mNonTerminalMap.containsKey(sym)) {
-                                    mTerminalSet.add(sym);
-                                }
-                                break;
+                String[] rightStrList = rStr.trim().split(" ");
+                for (String s : rightStrList) {
+                    for (Symbol sym : mSymbolSet) {
+                        if (sym.getType().equals(s)) {
+                            rightList.add(sym);
+                            if (!mNonTerminalMap.containsKey(sym)) {
+                                mTerminalSet.add(sym);
                             }
-                        }
-                        if (i <= rStr.length()) {
-                            s = rStr.substring(0, i);
-                        } else {
                             break;
                         }
                     }
                 }
+//                for (int i = 1; i <= rStr.length() && !rStr.isEmpty(); i++) {
+//                    String s = rStr.substring(0, i);
+//                    while (stringSet.contains(s) && !rStr.isEmpty()) {
+//                        for (Symbol sym : mSymbolSet) {
+//                            if (sym.getType().equals(s)) {
+//                                rightList.add(sym);
+//                                rStr = rStr.substring(i);
+//                                if (!mNonTerminalMap.containsKey(sym)) {
+//                                    mTerminalSet.add(sym);
+//                                }
+//                                break;
+//                            }
+//                        }
+//                        if (i <= rStr.length()) {
+//                            s = rStr.substring(0, i);
+//                        } else {
+//                            break;
+//                        }
+//                    }
+//                }
                 Production prod = new Production(leftSym, rightList, prodId++);
                 mProductions.add(prod);
             }

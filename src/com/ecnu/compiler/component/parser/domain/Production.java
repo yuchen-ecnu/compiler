@@ -13,6 +13,10 @@ public class Production {
     //产生式右边
     private List<Symbol> right;
 
+    public Production() {
+
+    }
+
     public Production(Symbol left, List<Symbol> right, int id) {
         this.left = left;
         this.right = right;

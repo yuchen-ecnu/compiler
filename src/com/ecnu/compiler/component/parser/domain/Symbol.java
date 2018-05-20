@@ -4,7 +4,7 @@ public class Symbol {
     //终结符号
     public static final Symbol TERMINAL_SYMBOL = new Symbol("$");
     //空符号
-    public static final Symbol EMPTY_SYMBOL = new Symbol("");
+    public static final Symbol EMPTY_SYMBOL = new Symbol("epsilon");
     //符号类型
     private String type;
     //是否终结符
