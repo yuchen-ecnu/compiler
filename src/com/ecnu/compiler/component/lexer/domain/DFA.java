@@ -134,6 +134,16 @@ public class DFA extends Graph {
     }
 
     /**
+     * match RE
+     * @param re 希望匹配的目标表达式
+     * @return 如果匹配成功，则返回匹配路径的列表；如果匹配失败，则返回NULL
+     */
+    public List<Integer> match(RE re){
+        //todo 判断本DFA是否匹配RE
+        return null;
+    }
+
+    /**
      * minimize DFA
      *
      * @param dfa DFA
