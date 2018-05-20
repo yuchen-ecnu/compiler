@@ -11,20 +11,12 @@ public class Symbol {
     private boolean isTerminal;
 
     public Symbol(String type) {
-        this.type = type;
-        this.isTerminal = true;
+        this(type, false);
     }
 
     public Symbol(String type, boolean isTerminal) {
         this.type = type;
         this.isTerminal = isTerminal;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-        this.type = type;
     }
 
     public String getType() {
