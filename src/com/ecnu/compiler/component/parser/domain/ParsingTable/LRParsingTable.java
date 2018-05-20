@@ -13,7 +13,7 @@ public class LRParsingTable extends ParsingTable {
     public static final char ACCEPT = 'a';
     public static final char GOTO = 'g';
     //表项
-    private class TableItem{
+    public class TableItem{
         char operate;
         int value;
     }
@@ -24,7 +24,11 @@ public class LRParsingTable extends ParsingTable {
 
     //构造时需要传入纵坐标对应的符号集合
     public LRParsingTable(List<Symbol> symbols){
-        //todo 构造符号映射
+        int i = 0;
+        for (Symbol symbol : symbols){
+            colMap.put(symbol, i);
+            i++;
+        }
     }
 
     //添加状态（横坐标）
