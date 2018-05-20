@@ -9,8 +9,10 @@ import com.ecnu.compiler.component.storage.SymbolTable;
  * Bottom-Up Parsing, general LALR
  */
 public class LALRParser extends Parser {
+
     @Override
     public TD<Symbol> getSyntaxTree(SymbolTable symbolTable) {
         return null;
     }
+
 }
