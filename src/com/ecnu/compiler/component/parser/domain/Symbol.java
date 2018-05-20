@@ -6,6 +6,16 @@ public class Symbol {
     //是否终结符
     private boolean isTerminal;
 
+    public Symbol(String type) {
+        this.type = type;
+        this.isTerminal = true;
+    }
+
+    public Symbol(String type, boolean isTerminal) {
+        this.type = type;
+        this.isTerminal = isTerminal;
+    }
+
     public String getType() {
         return type;
     }
