@@ -1,6 +1,10 @@
 package com.ecnu.compiler.component.parser.domain;
 
 public class Symbol {
+    //终结符号
+    public static final Symbol TERMINAL_SYMBOL = new Symbol("$");
+    //空符号
+    public static final Symbol EMPTY_SYMBOL = new Symbol("");
     //符号类型
     private String type;
     //是否终结符
@@ -20,8 +24,11 @@ public class Symbol {
         return type;
     }
 
-    public void setType(String type) {
         this.type = type;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public boolean isTerminal() {
@@ -30,5 +37,15 @@ public class Symbol {
 
     public void setTerminal(boolean terminal) {
         isTerminal = terminal;
+    }
+
+    @Override
+    public int hashCode() {
+        return type.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return type.equals(obj);
     }
 }

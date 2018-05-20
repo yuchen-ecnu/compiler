@@ -6,12 +6,12 @@ import java.util.List;
  * 产生式
  */
 public class Production {
+    //编号
+    private int id = -1;
     //产生式左边
     private Symbol left;
     //产生式右边
     private List<Symbol> right;
-    //编号
-    private int id;
 
     public Production(Symbol left, List<Symbol> right, int id) {
         this.left = left;
@@ -41,5 +41,20 @@ public class Production {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Override
+    public int hashCode() {
+        return right.hashCode() + 31 * left.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) { return true; }
+
+        if (hashCode() != obj.hashCode() || !(obj instanceof Production)){ return false; }
+
+        Production p = (Production) obj;
+        return right.equals(p.right) && left.equals(p.left);
     }
 }
