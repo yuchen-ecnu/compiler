@@ -38,6 +38,12 @@ public class Symbol {
 
     @Override
     public boolean equals(Object obj) {
-        return type.equals(obj);
+        if (!(obj instanceof Symbol)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        return this.type.equals(((Symbol) obj).type) && this.isTerminal == ((Symbol) obj).isTerminal;
     }
 }

@@ -13,7 +13,7 @@ public class ParsersTest {
 
     @Test
     public void LLParser() throws Exception {
-        String[] cfgList = {"E->T E'", "E'->+ T E' |epsilon", "T->F T'", "T'->* F T'|epsilon", "F->( T E' )|id"};
+        String[] cfgList = {"E->T E'", "E'->+ T E' |epsilon", "T->F T'", "T'->* F T'|epsilon", "F->( E )|id"};
         Symbol s1 = new Symbol("E");
         Symbol s2 = new Symbol("T");
         Symbol s3 = new Symbol("E'");
@@ -38,6 +38,8 @@ public class ParsersTest {
         symbolSet.add(s10);
         symbolSet.add(s11);
         CFG cfg = new CFG(cfgList, symbolSet);
+        System.out.println("Start Symbol:" + cfg.getStartSymbol().getType());
+        System.out.println("------------");
         for(Map.Entry<Symbol, List<Integer>> entry : cfg.getNonTerminalMap().entrySet()) {
             System.out.print(entry.getKey().getType() + "----");
             for (Integer i : entry.getValue()) {
@@ -59,10 +61,23 @@ public class ParsersTest {
             }
             System.out.println();
         }
+        System.out.println("-------------");
+        System.out.println("First:");
         FirstFollowSet firstFollowSet = new FirstFollowSet(cfg);
         Map<Symbol, Set<Symbol>> firstMap = firstFollowSet.getFirstMap();
         Map<Symbol, Set<Symbol>> followMap = firstFollowSet.getFollowMap();
         for (Map.Entry<Symbol, Set<Symbol>> entry : firstMap.entrySet()) {
+            System.out.print(entry.getKey().getType() + "----");
+            if (entry.getValue() != null) {
+                for (Symbol s : entry.getValue()) {
+                    System.out.print(s.getType() + " ");
+                }
+            }
+            System.out.println();
+        }
+        System.out.println("------------");
+        System.out.println("Follow:");
+        for (Map.Entry<Symbol, Set<Symbol>> entry : followMap.entrySet()) {
             System.out.print(entry.getKey().getType() + "----");
             if (entry.getValue() != null) {
                 for (Symbol s : entry.getValue()) {

@@ -9,14 +9,13 @@ public class FirstFollowSet {
     private Map<Symbol, Set<Symbol>> followMap = new HashMap<>();
 
     public FirstFollowSet(CFG cfg) {
-        //todo 根据cfg构造FirstFollowSet，这里要考虑结束符号$
         Symbol endSym = Symbol.TERMINAL_SYMBOL;
         cfg.getTerminalSet().add(endSym);
         calculateFirst(cfg);
-
+        calculateFollow(cfg);
     }
 
-    public void calculateFirst(CFG cfg) {
+    private void calculateFirst(CFG cfg) {
         Map<Symbol, List<Integer>> nonTerminalMap = cfg.getNonTerminalMap();
         Set<Symbol> terminalSet = cfg.getTerminalSet();
         List<Production> productionList = cfg.getAllProductions();
@@ -72,6 +71,71 @@ public class FirstFollowSet {
                 firstMap.put(nonTermSym, symbolSet);
             }
         }
+    }
+
+    private void calculateFollow(CFG cfg) {
+        Symbol termSym = Symbol.TERMINAL_SYMBOL;
+        //若B是开始符号，把$加入FOLLOW(B)中
+        Symbol startSym = cfg.getStartSymbol();
+        Set<Symbol> startSymbolSet = new HashSet<>();
+        startSymbolSet.add(termSym);
+        followMap.put(startSym, startSymbolSet);
+        //遍历产生式
+        boolean changed = true;
+        while(changed) {
+            changed = false;
+            for (Production prod : cfg.getAllProductions()) {
+                Symbol left = prod.getLeft();
+                List<Symbol> rightList = prod.getRight();
+                for (Symbol sym : cfg.getNonTerminalSet()) {
+                    Set<Symbol> symbolSet = getFollow(sym);
+                    if (symbolSet == null) {
+                        symbolSet = new HashSet<>();
+                    }
+                    int size = symbolSet.size();
+                    List<Symbol> alphaList = new ArrayList<>();
+                    List<Symbol> betaList = new ArrayList<>();
+                    boolean found = false; //是否已经遍历到了B
+                    for (Symbol s : rightList) {
+                        if (!found) {
+                            if (s != sym) {
+                                alphaList.add(s);
+                            } else {
+                                found = true;
+                            }
+                        } else {
+                            if (s != sym) {
+                                betaList.add(s);
+                            }
+                        }
+                    }
+                    //处理产生式A->αB
+                    if (!found) {
+                        continue;
+                    }
+                    if (betaList.isEmpty()) {
+                        symbolSet.addAll(getFollow(left));
+                        if (size != symbolSet.size()) {
+                            changed = true;
+                        }
+                    }
+                    //处理产生式A->αBβ
+                    else {
+                        symbolSet.addAll(getFirst(betaList));
+                        if (getFirst(betaList).contains(Symbol.EMPTY_SYMBOL)) {
+                            symbolSet.remove(Symbol.EMPTY_SYMBOL);
+                            symbolSet.addAll(getFollow(left));
+                        }
+                        if (size != symbolSet.size()) {
+                            changed = true;
+                        }
+                    }
+                    followMap.put(sym, symbolSet);
+                }
+            }
+        }
+
+
     }
 
     public Set<Symbol> getFirst(Symbol symbol){

@@ -1,7 +1,6 @@
 package com.ecnu.compiler.component.parser.domain;
 
 import java.util.*;
-import java.util.regex.Matcher;
 
 /**
  * 上下文无关文法
@@ -14,6 +13,8 @@ public class CFG {
     private Set<Symbol> mTerminalSet = new HashSet<>();
     //产生式列表
     private List<Production> mProductions = new ArrayList<>();
+    //开始符号
+    private Symbol mStartSymbol = null;
 
     /**
      * 构造函数，需要传入CFG的列表
@@ -43,6 +44,10 @@ public class CFG {
                 for (Symbol sym : mSymbolSet) {
                     if (sym.getType().equals(leftStr)) {
                         leftSym = sym;
+                        //只有初次执行到这里，才会把当前的左部作为开始符号
+                        if (mStartSymbol == null) {
+                            mStartSymbol = leftSym;
+                        }
                         mTerminalSet.remove(sym);
                         sym.setTerminal(false);
                         mNonTerminalMap.put(sym, integerList);
@@ -90,6 +95,10 @@ public class CFG {
             }
         }
         setListForMap(mNonTerminalMap);
+    }
+
+    public Symbol getStartSymbol() {
+        return mStartSymbol;
     }
 
     public Set<Symbol> getTerminalSet(){
