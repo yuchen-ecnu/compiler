@@ -142,17 +142,13 @@ public class DFA extends Graph {
      **/
 
     public static DFA DFA2MinDFA(DFA dfa) throws IOException {
-        //GetTransitMat(dfa);
         dfa.stateTransitionMat = GetTransitMat(dfa);
         //用于存放最小化的过程中产生的状态划分
         List<List<State>> stateListsPartition = new ArrayList<List<State>>();
+
         //phrase 1: 将化简前的DFA的状态分为非可接受状态和可接受状态两部分
         List<State> nonTerminalStates = new ArrayList<State>();
         List<State> copyOfOriginalState = CloneOfStateList(dfa.states);
-//        System.out.println(copyOfOriginalState);
-//        for(State state:dfa.endStates){
-//            System.out.print(state.getId());
-//        }
         for (State state : copyOfOriginalState) {
             for(State endState : dfa.endStates){
                 if(state.getId()!=endState.getId()) {
@@ -160,102 +156,15 @@ public class DFA extends Graph {
                 }
             }
         }
-//            if (!dfa.endStates.contains(state)) {
-//                nonTerminalStates.add(state);
-//                System.out.print("State"+" = "+state+" ");
-//                System.out.println("endStates"+" = "+dfa.endStates+ " ");
-//            }
-//        }
-        for (State state : copyOfOriginalState) {
-            System.out.print(state.getId() + " ");
-        }
-        System.out.println();
-        for (State state : dfa.endStates) {
-            System.out.print(state.getId() + " ");
-        }
-        System.out.println();
-        for (State state : nonTerminalStates) {
-            System.out.print(state.getId() + " ");
-        }
-
         List<State> terminalStates = CloneOfStateList(dfa.endStates);
         stateListsPartition.add(nonTerminalStates);
         stateListsPartition.add(terminalStates);
 
         // phrase 2: 看nonTerminalStates能否再分,如果可以，则进行划分
-        int index = stateListsPartition.size() - 1;
-        //存储不在属于当前划分的状态
-        List<State> states = new ArrayList<State>();
-        List<State> statesToRemove = new ArrayList<State>();
-        states = dfa.states;
-
-        Set<Character> alphabetSet = new HashSet<>();
-        int count = 0;
-        for (State state : dfa.getStates()) {                //获得所有list及set的值
-            for (Edge edge : state.getEdgeList()) {
-                alphabetSet.add(edge.getWeight());
-                count++;
-            }
-        }
-        int a = alphabetSet.size();
-        for (int i = 0; i < a; i++) {
-            for (State state : nonTerminalStates) {
-                int stateIndex = getIndexOf(states, state);
-                //System.out.println(stateIndex);
-                //获取状态state遇到下标为i的符号时状态跳转情况
-//                TransitMat transitEleRow = stateTransitionMat.get(stateIndex).get(i);
-//                System.out.println(transitEleRow.getStateIndex());
-//                State nextState = states.get(transitEleRow.getStateIndex());
-                TransitMat currState = dfa.stateTransitionMat.get(stateIndex).get(i);
-                if(currState.getStateIndex() == -1){
-                    continue;
-                }
-                State nextState = states.get(currState.getStateIndex());
-                if (!nonTerminalStates.contains(nextState)) {
-                    //经过状态转移达到的状态不包含在状态集合statesToCheck中，
-                    //则nonTerminalStates继续划分为state和去掉state之后的nonTerminalStates
-                    stateListsPartition.add(stateListsPartition.size() - 1, Arrays.asList(state));
-                    statesToRemove.add(state);
-                    if (index > stateListsPartition.size() - 1) {
-                        index = stateListsPartition.size() - 1;
-                    }
-                }
-            }
-        }
-        nonTerminalStates.removeAll(statesToRemove);  //移除不再属于当前划分的状态
-
+        splitStateListIfCould(dfa, stateListsPartition, nonTerminalStates);
 
         // phrase 3: 看terminalStates能否再分，如果可以，则进行划分
-        index = stateListsPartition.size() - 1;
-        statesToRemove.clear();
-
-        for (int i = 0; i < a; i++) {
-            for (State state : terminalStates) {
-                int stateIndex = getIndexOf(states, state);
-                //获取状态state遇到下标为i的符号时状态跳转情况
-
-//                TransitMat transitEleRow =
-//                        stateTransitionMat.get(stateIndex).get(i);
-//                State nextState = states.get(transitEleRow.getStateIndex());
-                TransitMat currState = dfa.stateTransitionMat.get(stateIndex).get(i);
-                if(currState.getStateIndex() == -1){
-                    continue;
-                }
-                State nextState = states.get(currState.getStateIndex());
-                if (!terminalStates.contains(nextState)) {
-                    //经过状态转移达到的状态不包含在状态集合statesToCheck中，
-                    //则nonTerminalStates继续划分为state和去掉state之后的nonTerminalStates
-                    stateListsPartition.add(stateListsPartition.size() - 1, Arrays.asList(state));
-                    statesToRemove.add(state);
-                    if (index > stateListsPartition.size() - 1) {
-                        index = stateListsPartition.size() - 1;
-                    }
-                }
-            }
-        }
-        terminalStates.removeAll(statesToRemove);  //移除不再属于当前划分的状态
-
-        int leftMostEndStateIndex = index;
+        int leftMostEndStateIndex = splitStateListIfCould(dfa,stateListsPartition, terminalStates);
 
         // phrase 4: 根据存储状态列表的列表的每一个元素作为一个状态，构造最小化DFA
         rebuildDFAWithSimplifiedStateList(dfa,stateListsPartition, leftMostEndStateIndex);
@@ -263,17 +172,9 @@ public class DFA extends Graph {
         return dfa;
     }
 
-    private static int getIndexOf(List<State> states, State state) {
-        int i = 0;
-        for (State cmpState : states) {
-            if (cmpState.getId() == state.getId()) {
-                return i;
-            }
-            i++;
-        }
-        return -1;
-    }
-
+    /**
+     * 从DFA中获取状态转移矩阵
+     */
     public static List<List<TransitMat>> GetTransitMat(DFA dfa){
         Set<Character> alphabetSet = new HashSet<>();
         List<Integer> startOfEdgeList = new ArrayList<>();
@@ -289,21 +190,20 @@ public class DFA extends Graph {
                 count++;
             }
         }
-        List<Character> alphaSetList = new ArrayList<Character>();          //不重复的alphabet
+        List<Character> alphaSetList = new ArrayList<Character>();
         alphaSetList.addAll(alphabetSet);
         /*开始构建矩阵*/
         int a = dfa.getStates().size();
         int b = alphabetSet.size();
         System.out.print(a+" "+b+'\n');
         Integer stateTable[][] = new Integer[a][b];
-        for (int i = 0; i < a; i++) {                                         //初始化数组
+        for (int i = 0; i < a; i++) {
             for (int j = 0; j < b; j++) {
                 stateTable[i][j] = -1;
             }
         }
 
-        int i = 0;
-        int j, flag;
+        int i = 0, j, flag;
         for (int temp = 0; temp < count; temp++) {
             j = 0;
             flag = 0;
@@ -320,11 +220,11 @@ public class DFA extends Graph {
         }
         for (i = 0; i < a; i++) {
             for (j = 0; j < b; j++) {
-                System.out.print(stateTable[i][j] + " ");     //output
+                System.out.print(stateTable[i][j] + " ");
             }
             System.out.print('\n');
         }
-        /**********getMatrix()********************************/
+
         List<List<TransitMat>> stateTransitionMat = new ArrayList<List<TransitMat>>();
         for (i = 0; i < dfa.getStates().size(); i++) {
             stateTransitionMat.add(new ArrayList<TransitMat>());
@@ -341,7 +241,7 @@ public class DFA extends Graph {
     public static List<State> CloneOfStateList(List<State> states) {
         List<State> copyOfStateList = new ArrayList<State>();
         for (State state : states) {
-            // 不用FAState copyOfState = new FAState(state.getId()); (浅度复制String对象)
+            // 不用FAState copyOfState = new FAState(state.getId()); 浅度复制String对象
             State copyOfState = new State(new Integer(state.getId()), false);
             copyOfStateList.add(copyOfState);
         }
@@ -349,16 +249,69 @@ public class DFA extends Graph {
     }
 
     /**
+     * 判断一个状态列表能否再分，如果可以，则继续划分该列表为多个列表
+     * @param stateLists 存储划分得到的状态列表的列表
+     * @param statesToCheck 待划分状态列表
+     */
+    private static int splitStateListIfCould(DFA dfa,List<List<State>> stateLists,
+                                             List<State> statesToCheck) {
+
+        int index = stateLists.size() - 1;
+        //存储不在属于当前划分的状态
+        Set<Character> alphabetSet = new HashSet<>();
+        for (State state : dfa.getStates()) {                //获得所有list及set的值
+            for (Edge edge : state.getEdgeList()) {
+                alphabetSet.add(edge.getWeight());
+            }
+        }
+        int a = alphabetSet.size();
+        List<State> statesToRemove = new ArrayList<State>();
+        int stateIndex = 0;
+        for (int i = 0; i < a; i++)
+            for (State state : statesToCheck) {
+                for (int j = 0; j < dfa.states.size(); j++) {
+//                int stateIndex = dfa.states.indexOf(state);
+                    if (state.getId() == dfa.states.get(j).getId()) {
+                        stateIndex = j;
+                    }
+                }
+                //获取状态state遇到下标为i的符号时状态跳转情况
+                TransitMat transitEleRow =
+                        dfa.stateTransitionMat.get(stateIndex).get(i);
+                if (transitEleRow.getStateIndex() == -1) {
+                    continue;
+                }
+                State nextState = dfa.states.get(transitEleRow.getStateIndex());
+                boolean contain = false;
+                for (int k = 0; k < statesToCheck.size(); k++) {
+//                            if(!statesToCheck.contains(nextState)) {
+                    if (statesToCheck.get(k).getId() == nextState.getId()) {
+                        contain = true;
+                    }
+                }
+                if(contain==false){
+                    //经过状态转移达到的状态不包含在状态集合statesToCheck中，
+                    //则nonTerminalStates继续划分为state和去掉state之后的nonTerminalStates
+                    stateLists.add(stateLists.size() - 1, Arrays.asList(state));
+                    statesToRemove.add(state);
+                    if (index > stateLists.size() - 1) {
+                        index = stateLists.size() - 1;
+                    }
+                }
+            }
+
+        statesToCheck.removeAll(statesToRemove);  //移除不再属于当前划分的状态
+        return index;
+    }
+
+    /**
      * 根据存储状态列表的列表的每一个元素作为一个状态，构造最小化DFA
      * @param stateLists 存储状态列表的列表
      */
-
     private static void rebuildDFAWithSimplifiedStateList(DFA dfa,List<List<State>> stateLists,int leftMostEndStateIndex) {
         List<State> copyOfStates = CloneOfStateList(dfa.states);
-//        System.out.println(copyOfStates);
         dfa.states.clear();
         List<List<TransitMat>> copyOfTransitMat = deepCloneOfStateTransitionMat(dfa.stateTransitionMat);
-        System.out.println(copyOfTransitMat.size());
         dfa.stateTransitionMat.clear();
 
         // phrase 1: 重新构造状态列表
@@ -383,39 +336,6 @@ public class DFA extends Graph {
         }
         return copyOfStateTransitionMat;
     }
-
-
-//    /**
-//     * 判断一个状态列表能否再分，如果可以，则继续划分该列表为多个列表
-//     * @param stateLists 存储划分得到的状态列表的列表
-//     * @param statesToCheck 待划分状态列表
-//     */
-//    private int splitStateListIfCould(List<List<State>> stateLists,
-//                                      List<State> statesToCheck) {
-//        int index = stateLists.size() - 1;
-//        //存储不在属于当前划分的状态
-//        List<State> statesToRemove = new ArrayList<State>();
-//        for(int i=0; i<this.alphabet.size(); i++) {
-//            for(State state : statesToCheck) {
-//                int stateIndex = this.states.indexOf(state);
-//                //获取状态state遇到下标为i的符号时状态跳转情况
-//                TransitMat transitEleRow =
-//                        this.stateTransitionMat.get(stateIndex).get(i);
-//                State nextState = this.states.get(transitEleRow.getStateIndex());
-//                if(!statesToCheck.contains(nextState)) {
-//                    //经过状态转移达到的状态不包含在状态集合statesToCheck中，
-//                    //则nonTerminalStates继续划分为state和去掉state之后的nonTerminalStates
-//                    stateLists.add(stateLists.size()-1, Arrays.asList(state));
-//                    statesToRemove.add(state);
-//                    if(index > stateLists.size() - 1) {
-//                        index = stateLists.size() - 1;
-//                    }
-//                }
-//            }
-//        }
-//        statesToCheck.removeAll(statesToRemove);  //移除不再属于当前划分的状态
-//        return index;
-//    }
 
     /**
      * 重新构造状态列表
@@ -455,7 +375,7 @@ public class DFA extends Graph {
     private static void rebuildStateTransitMat(DFA dfa,List<State> originalStateList,
                                                List<List<TransitMat>> originalStateTransitMat,
                                                List<List<State>> stateLists) {
-        for(int i=0; i<stateLists.size(); i++) {
+        for(int i=1; i<stateLists.size(); i++) {
             List<State> stateList = stateLists.get(i);		//当前状态划分
             List<TransitMat> stateTransitEleRow =
                     new ArrayList<TransitMat>();
@@ -478,7 +398,13 @@ public class DFA extends Graph {
             List<List<State>> stateLists, List<State> stateList,
             List<TransitMat> stateTransitEleRow) {
         for(State stateInPartition : stateList) {
-            int stateIndex = originalStateList.indexOf(stateInPartition);
+//            int stateIndex = originalStateList.indexOf(stateInPartition);
+            int stateIndex = 0;
+            for (int i = 0; i < originalStateList.size(); i++) {
+                if (stateInPartition.getId() == originalStateList.get(i).getId()) {
+                    stateIndex = i;
+                }
+            }
             List<TransitMat> transitEleRow =
                     originalStateTransitMat.get(stateIndex);
             for(TransitMat transitEle : transitEleRow) {
@@ -499,18 +425,23 @@ public class DFA extends Graph {
             List<List<TransitMat>> originalStateTransitMat,
             List<List<State>> stateLists, List<State> stateList,
             List<TransitMat> stateTransitEleRow) {
-//        for(int i=0 ; i<stateList.size() ; i++){
-//            System.out.println("**");
-//            stateList.get(i).outputId();
-//            System.out.println("**");
-//        }
-        int originalStateIndex = originalStateList.indexOf(stateList.get(0));
+//        System.out.println("stateList.get(0):"+stateList.get(0).getId());
+        //int originalStateIndex = originalStateList.indexOf(stateList.get(0));
+        int originalStateIndex = 0;
+        for(int i=0;i<originalStateList.size();i++){
+            if(originalStateList.get(i).getId()==stateList.get(0).getId())
+                originalStateIndex = i;
+        }
+
         List<TransitMat> stateTransitMatRow =
                 originalStateTransitMat.get(originalStateIndex);
-        for(TransitMat transitEle : stateTransitMatRow) {
+        for (TransitMat transitEle : stateTransitMatRow) {
             //当前转向的状态
+            if(transitEle.getStateIndex()==-1){
+                continue;
+            }
             State currentState = originalStateList.get(transitEle.getStateIndex());
-            if(!stateList.contains(currentState)) {
+            if (!stateList.contains(currentState)) {
                 //不是在同一个划分中，存在到其它划分则状态的状态转移
                 int currentStateIndex = getStateIndexInNewDFA(stateLists, currentState);
                 stateTransitEleRow.add(
