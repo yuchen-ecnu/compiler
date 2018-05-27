@@ -14,4 +14,20 @@ public class Token {
         this.type = type;
         this.attrs = attrs;
     }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public List<Object> getAttrs() {
+        return attrs;
+    }
+
+    public void setAttrs(List<Object> attrs) {
+        this.attrs = attrs;
+    }
 }

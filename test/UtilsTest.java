@@ -3,6 +3,8 @@ import com.ecnu.compiler.component.lexer.domain.NFA;
 import com.ecnu.compiler.component.lexer.domain.RE;
 import com.ecnu.compiler.component.lexer.domain.graph.Edge;
 import com.ecnu.compiler.component.lexer.domain.graph.State;
+import com.ecnu.compiler.constant.Constants;
+import com.sun.corba.se.impl.orbutil.closure.Constant;
 import org.junit.Test;
 
 public class UtilsTest {
@@ -47,6 +49,7 @@ public class UtilsTest {
         }
         stringBuilder.append("total edges: ").append(count);
         System.out.println(stringBuilder.toString());
+        System.out.println("startState: "+ dfa.getStartDfaState().getId());
         for(State state :dfa.getEndStates()){
             System.out.println("endStates: " + state.getId());
         }
@@ -54,7 +57,5 @@ public class UtilsTest {
 
     @Test
     public void DFA2MinDFA() throws Exception {
-
     }
-
 }
