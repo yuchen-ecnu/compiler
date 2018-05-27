@@ -30,7 +30,7 @@ public class DFA extends Graph {
 
     private String name;
 
-    private List<DfaState> stateList;
+    private List<DfaState> statesList;
 
     private List<State> endStates;
 
@@ -98,7 +98,7 @@ public class DFA extends Graph {
         String states = "States:\n";
         String edges = "Edges:\n";
         String endStates = "End States:\n";
-        for(DfaState s : stateList) {
+        for(DfaState s : statesList) {
             states += s.toString();
             for(Edge e : s.getEdgeList()){
                 edges += e.toStringForDfa();
@@ -132,22 +132,13 @@ public class DFA extends Graph {
         return null;
     }
 
-    public void setEndStateList(){
-        this.endStates = new ArrayList<>();
-        for(State state:stateList){
-            if(state.getEdgeList().isEmpty()){
-                state.isAccepted = true;
-                endStates.add(state);
-            }
-        }
-    }
-
     public List<State> getEndStates() {
         return endStates;
     }
 
-    public void setEndStates(List<State> endStates) {
-        this.endStates = endStates;
+    public void setEndStates(State endState) {
+        this.endStates = new ArrayList<>();
+        this.endStates.add(endState);
     }
 
     /**
@@ -158,7 +149,56 @@ public class DFA extends Graph {
      */
     public List<Integer> match(String lexeme){
         //todo 判断本DFA是否匹配RE
-        return null;
+        if(lexeme == null) {
+            return null;
+        }
+        List<Boolean> success = new ArrayList<>();
+        success.add(false);
+        List<Integer> path = new ArrayList<>();
+        path.clear();
+        char[] chars = lexeme.toCharArray();
+        //开始匹配
+        startMatch(chars,0,path,startDfaState,success);
+        //匹配成功
+        if(success.get(0)){
+            return path;
+        }else{
+            return null;
+        }
+    }
+
+    /**
+     * startMatch
+     * @param chars 希望匹配的单词序列
+     * @param cur 当前匹配到的单词
+     * @author Lucto
+     */
+    private void startMatch(char[] chars,int cur,List<Integer> path,State currentState,List<Boolean> success){
+        //已经遍历完chars
+        if(cur >= chars.length) {
+            //到达dfa的结束状态
+            if(endStates.contains(currentState)) {
+                //表示已成功匹配
+                path.add(currentState.getId());
+                success.remove(0);
+                success.add(true);
+            }
+        }else {
+            List<Edge> edgeList = currentState.getEdgeList();
+            if(!edgeList.isEmpty()) {
+                for (Edge edge : edgeList) {
+                    if (chars[cur] == edge.getWeight()) {
+                        path.add(currentState.getId());
+                        startMatch(chars, cur + 1, path, edge.getEndState(), success);
+                        if (success.get(0)) {
+                            return;
+                        } else {
+                            path.remove(path.size() - 1);
+                        }
+                    }
+                }
+            }
+        }
     }
 
 

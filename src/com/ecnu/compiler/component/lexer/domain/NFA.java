@@ -127,7 +127,11 @@ public class NFA extends Graph {
                 drawExistDfa(startState,dfa.getStateById(dfaStateSet.get(nextStates.get(weight))),weight);
             }
         }
-        dfa.setEndStateList();
+        for(Set<State> stateSet : dfaStateSet.keySet()){
+            if (stateSet.contains(getEndState())){
+                dfa.setEndStates(dfa.get(dfaStateSet.get(stateSet)));
+            }
+        }
         dfa.setName(name);
         return dfa;
     }

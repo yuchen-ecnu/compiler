@@ -58,4 +58,31 @@ public class UtilsTest {
     @Test
     public void DFA2MinDFA() throws Exception {
     }
+
+    @Test
+    public void DFAMatch() throws Exception {
+        RE expression = new RE("test", "(a|b)*a");
+        DFA dfa = expression.getDFAIndirect();
+        StringBuilder stringBuilder = new StringBuilder();
+        int count = 0;
+        for (State state : dfa.getStates()){
+            for (Edge edge : state.getEdgeList()){
+                stringBuilder.append(edge.getStartState().getId()).append(" -").append(edge.getWeight()).append("> ")
+                        .append(edge.getEndState().getId()).append('\n');
+                count++;
+            }
+        }
+        stringBuilder.append("total edges: ").append(count);
+        System.out.println(stringBuilder.toString());
+        System.out.println("startState: "+ dfa.getStartDfaState().getId());
+        for(State state :dfa.getEndStates()){
+            System.out.println("endStates: " + state.getId());
+        }
+        String lexemes = "abababaaba";
+        if(dfa.match(lexemes)!=null && !dfa.match(lexemes).isEmpty()){
+            System.out.println("Accepted!");
+        }else{
+            System.out.println("Error!");
+        }
+    }
 }
