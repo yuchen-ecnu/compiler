@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class Graph {
 
-    private List<State> stateList;
+    protected List<State> stateList;
 
     public Graph() {
         this.stateList = new ArrayList<>();

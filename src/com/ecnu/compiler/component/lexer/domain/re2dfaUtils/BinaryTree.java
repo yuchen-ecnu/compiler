@@ -151,7 +151,7 @@ class BinaryTree {
 
                 default:
                     System.out.println(">>" + charAt);
-                    System.out.println("Unknown Symbol!");
+                    System.out.println("Unknown Token!");
                     System.exit(1);
                     break;
             }
