@@ -17,7 +17,7 @@ public class Constants {
     //字符串常量
     public static final String JAVA_CONSTANT_STRING = "^\".*?\"$";
     //字符常量
-    public static final String JAVA_CONSTANT_CHAR = "^\'.\'$";
+    public static final String JAVA_CONSTANT_CHAR = "^\'[A-Za-z0-9\\*\\|\\(\\)\\\\]\'$";
     //布尔常量
     public static final String JAVA_CONSTANT_BOOL = "^(true)|(false)$";
     //关键字
@@ -52,7 +52,7 @@ public class Constants {
     //字符串常量
     public static final String CPP_CONSTANT_STRING = "^\".*?\"$";
     //字符常量
-    public static final String CPP_CONSTANT_CHAR = "^\'.\'$";
+    public static final String CPP_CONSTANT_CHAR = "^\'[A-Za-z0-9\\*\\|\\(\\)\\\\]\'$";
     //布尔常量
     public static final String CPP_CONSTANT_BOOL = "^(true)|(false)$";
     //关键字
