@@ -30,7 +30,7 @@ public class Compiler {
     public Compiler(Language language, Config config){
         mStatus = StatusCode.STAGE_INIT;
         mErrorList = new ErrorList();
-        createController(language, config, mErrorList);
+        mController = createController(language, config, mErrorList);
         mStatus = StatusCode.RUNNING;
     }
 
@@ -47,13 +47,9 @@ public class Compiler {
      * @return 编译器当前状态码（参见状态说明文档）
      */
     public StatusCode next(){
-        //检查是否出现异常 或 已结束
-        if(mController == null || mStatus != StatusCode.RUNNING){
-            return StatusCode.ERROR;
-        }
         //执行一步，并更新状态
-        this.mStatus = mController.next();
-        return this.mStatus;
+        mStatus = mController.next();
+        return mStatus;
     }
 
     public StatusCode getStatus() {
@@ -61,12 +57,14 @@ public class Compiler {
     }
 
     /**
-     * 创建编译控制器
-     * @param config 配置文件
-     * @return 对应类型的控制器
+     * 创建编译进程控制器
+     * @param language 语言信息
+     * @param config 配置信息
+     * @param errorList 错误列表
+     * @return
      */
     private BaseController createController(Language language, Config config, ErrorList errorList){
-        switch(config.getCompileLanguage()){
+        switch(language.getBaseLanguage()){
             case Constants.LANGUAGE_JAVA:
                 return new JavaController(language,config, errorList);
             case Constants.LANGUAGE_C:
@@ -74,7 +72,7 @@ public class Compiler {
             case Constants.LANGUAGE_CPLUS:
                 return new CplusController(language,config, errorList);
             default:
-                //todo 配置错误
+                //todo 语言不支持
                 return null;
         }
 

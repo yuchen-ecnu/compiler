@@ -7,6 +7,7 @@ import com.ecnu.compiler.component.lexer.domain.RE;
 import com.ecnu.compiler.component.storage.ErrorList;
 import com.ecnu.compiler.component.storage.domain.ErrorMsg;
 import com.ecnu.compiler.constant.Config;
+import com.ecnu.compiler.constant.Constants;
 import com.ecnu.compiler.constant.StatusCode;
 import com.ecnu.compiler.controller.Compiler;
 
@@ -49,8 +50,11 @@ public class CompilerBuilder {
      * @param languageId
      * @return
      */
-    public void prepareLanguage(int languageId, int baseLanguage, List<String> reStrList, List<String> productionStrList){
-        //todo 判断baseLanguage是否是三种基本语言之一
+    public void prepareLanguage(int languageId, String baseLanguage, List<String> reStrList, List<String> productionStrList){
+        if (!baseLanguage.equals(Constants.LANGUAGE_C) &&!baseLanguage.equals(Constants.LANGUAGE_CPLUS)
+                && !baseLanguage.equals(Constants.LANGUAGE_JAVA))
+            //todo 语言不支持
+            return;
 
         //todo 构造时出现问题之后单独做一个EXCEPTION来处理，现在先假设RE没毛病。
         //创建语言信息

@@ -3,13 +3,14 @@ package com.ecnu;
 import com.ecnu.compiler.component.lexer.domain.DFA;
 import com.ecnu.compiler.component.lexer.domain.NFA;
 import com.ecnu.compiler.component.lexer.domain.RE;
+import com.ecnu.compiler.component.storage.ErrorList;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LanguageBuilder {
-
-    static public class DFAHolder{
+    //保存词法分析器构造过程部件的内部类
+    static public class LexerHolder {
         //RE产生的NFA
         private NFA NFAFromRE;
         //前面NFA产生的DFA
@@ -42,20 +43,32 @@ public class LanguageBuilder {
         }
     }
 
+
+    //错误信息列表
+    private ErrorList mErrorList;
+
+    public LanguageBuilder() {
+        mErrorList = new ErrorList();
+    }
+
+    public ErrorList getErrorList() {
+        return mErrorList;
+    }
+
     /**
      * 从RE字符串列表构造词法分析器需要的所有信息
      */
-    static public ArrayList<DFAHolder> buildDFAListFromStr(List<String> reStrList){
-        ArrayList<DFAHolder> holders = new ArrayList<>();
+    public ArrayList<LexerHolder> buildLexerComponentsFromReStr(List<String> reStrList){
+        ArrayList<LexerHolder> holders = new ArrayList<>();
         //todo RE格式的错误处理
         List<RE> reList = RE.buildREListFromStr(reStrList);
         for (RE re : reList){
-            DFAHolder dfaHolder = new DFAHolder();
-            dfaHolder.DFAFromRE = re.getDFADirectly();
-            dfaHolder.NFAFromRE = re.getNFA();
-            dfaHolder.DFAFromNFA = dfaHolder.NFAFromRE.getDFA();
-            dfaHolder.minStateDFAFromRE = DFA.DFA2MinDFA(dfaHolder.DFAFromRE);
-            dfaHolder.minStateDFAFromNFA = DFA.DFA2MinDFA(dfaHolder.DFAFromNFA);
+            LexerHolder lexerHolder = new LexerHolder();
+            lexerHolder.DFAFromRE = re.getDFADirectly();
+            lexerHolder.NFAFromRE = re.getNFA();
+            lexerHolder.DFAFromNFA = lexerHolder.NFAFromRE.getDFA();
+            lexerHolder.minStateDFAFromRE = DFA.DFA2MinDFA(lexerHolder.DFAFromRE);
+            lexerHolder.minStateDFAFromNFA = DFA.DFA2MinDFA(lexerHolder.DFAFromNFA);
         }
         return holders;
     }
