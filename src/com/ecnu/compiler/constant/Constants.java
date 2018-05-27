@@ -36,7 +36,7 @@ public class Constants {
     public static final String JAVA_RESERVED = "^(null)|(cast)|(future)|(generic)|(inner)|(operator)|(outer)|(rest)"
             + "|(var)|(goto)|(byValue)$";
     //注释
-    public static final String JAVA_COMMENT = "^(//.*?\\n)|(/\\*(.|\\n)*?\\*/)$";
+    public static final String JAVA_COMMENT = "^(//.*)|(/\\*(.)*?\\*/)$";
     //运算符
     public static final String JAVA_OPERATOR = "^[\\+\\-\\*/%=]$";
     //关系运算符
@@ -70,7 +70,7 @@ public class Constants {
     public static final String CPP_KEY_WORD_TYPE = "^(int)|(short)|(float)|(double)|(unsigned)"
             + "|(char)|(boolean)|(long)|(long long)|(long double)|(string)|(wchar_t)$";
     //注释
-    public static final String CPP_COMMENT = "^(//.*?\\n)|(/\\*(.|\\n)*?\\*/)$";
+    public static final String CPP_COMMENT = "^(//.*)|(/\\*(.)*?\\*/)$";
     //运算符
     public static final String CPP_OPERATOR = "^[\\+\\-\\*/%=]$";
     //关系运算符
