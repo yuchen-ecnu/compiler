@@ -19,17 +19,18 @@ public class CFG {
     /**
      * 构造函数，需要传入CFG的列表
      */
-    public CFG(String[] cfgList, Set<Symbol> mSymbolSet) {
+    public CFG(String[] productionStrList, Set<Symbol> mSymbolSet) {
         int nonTermId = 1;
         int prodId = 1;
         Set<String> stringSet = new HashSet<>();
         for (Symbol sym : mSymbolSet) {
             stringSet.add(sym.getType());
         }
-        for (String item : cfgList) {
+        for (String item : productionStrList) {
             item = item.trim();
             String[] result = item.split("->");
             if (result.length != 2) {
+                //todo CFG格式错误处理
                 System.err.println("格式错误，请确认输入。");
                 return;
             }
@@ -38,6 +39,7 @@ public class CFG {
             integerList.add(0);
             Symbol leftSym = null;
             if (!stringSet.contains(leftStr)) {
+                //todo CFG格式错误处理
                 System.err.println("无法识别的左部 \"" + leftStr + "\"，请确认输入。");
                 return;
             } else {

@@ -13,6 +13,10 @@ public class Preprocessor {
     private TokenFilter tokenFilter;
 
     public Preprocessor() {
-        this.tokenFilter = new TokenFilter(new RE(Constants.IRRELEVANT_TOKEN));
+        this.tokenFilter = new TokenFilter(Constants.IRRELEVANT_TOKEN);
+    }
+
+    public String preprocess(String text){
+        return "";
     }
 }

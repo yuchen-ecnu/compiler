@@ -14,6 +14,22 @@ import java.util.*;
  */
 public class DFA extends Graph {
 
+    static public ArrayList<DFA> buildDFAListFromREList(List<RE> reList){
+        ArrayList<DFA> dfaList = new ArrayList<>();
+        //使用直接构造
+        for (RE re : reList){
+            dfaList.add(re.getDFADirectly());
+        }
+
+        //最小化状态
+        for (DFA dfa : dfaList){
+            DFA2MinDFA(dfa);
+        }
+        return dfaList;
+    }
+
+    private String name;
+
     private List<DfaState> stateList;
 
     private List<State> states;
@@ -35,6 +51,14 @@ public class DFA extends Graph {
     public DFA(List<DfaState> dfaStateList,List<List<TransitMat>> stateTransitionMat) {
         this.setStateList(dfaStateList);
         this.stateTransitionMat = stateTransitionMat;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<State> getStates() {
@@ -151,7 +175,8 @@ public class DFA extends Graph {
      * @author Chen Jianing
      **/
 
-    public static DFA DFA2MinDFA(DFA dfa) throws IOException {
+    //todo 现在最小化会在输入里面操作，要做成构造一个新的。
+    public static DFA DFA2MinDFA(DFA dfa){
         //GetTransitMat(dfa);
         dfa.stateTransitionMat = GetTransitMat(dfa);
         //用于存放最小化的过程中产生的状态划分
@@ -269,7 +294,6 @@ public class DFA extends Graph {
 
         // phrase 4: 根据存储状态列表的列表的每一个元素作为一个状态，构造最小化DFA
         rebuildDFAWithSimplifiedStateList(dfa,stateListsPartition, leftMostEndStateIndex);
-
         return dfa;
     }
 

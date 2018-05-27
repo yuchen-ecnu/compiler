@@ -3,6 +3,7 @@ package com.ecnu.compiler.component.parser;
 import com.ecnu.compiler.component.parser.base.Parser;
 import com.ecnu.compiler.component.parser.domain.*;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LRParsingTable;
+import com.ecnu.compiler.component.parser.domain.ParsingTable.ParsingTable;
 import com.ecnu.compiler.component.storage.SymbolTable;
 
 import java.util.*;
@@ -20,9 +21,28 @@ public class LRParser extends Parser {
     //FirstFollow集
     private FirstFollowSet mFirstFollowSet;
 
+    public LRParser(CFG CFG, ParsingTable parsingTable) {
+        super(CFG, parsingTable);
+    }
 
+
+    /**
+     * 根据解析表和符号表构造语法树
+     * @param parsingTable
+     * @param symbolTable
+     * @return
+     */
     @Override
-    public TD<Symbol> getSyntaxTree(SymbolTable symbolTable) {
+    public TD<Symbol> getSyntaxTree(CFG cfg, ParsingTable parsingTable, SymbolTable symbolTable) {
+        LRParsingTable lrParsingTable = (LRParsingTable)parsingTable;
+        //状态栈
+        Stack<Integer> stateStack = new Stack<>();
+        stateStack.push(0);
+
+        /*
+        while (true){
+
+        }*/
         return null;
     }
 
@@ -41,12 +61,10 @@ public class LRParser extends Parser {
         Map<LRItemSet, Integer> stateMap = new HashMap<>();
         //添加初始状态
         LRItemSet itemSet= new LRItemSet();
-        Production production = new Production(); //构造初始产生式
-        production.setLeft(new Symbol("startSymbol"));
         List<Symbol> productionRight = new ArrayList<>();
         productionRight.add(cfg.getAllProductions().get(0).getLeft()); //使用第一个产生式的左边作为起始符号
-        production.setRight(productionRight);
-        itemSet.add(new LRItem(new Production(), 0, Symbol.TERMINAL_SYMBOL)); //添加初始项
+        Production production = new Production(new Symbol("startSymbol"), productionRight, -1); //构造初始产生式
+        itemSet.add(new LRItem(production, 0, Symbol.TERMINAL_SYMBOL)); //添加初始项
         //把初始状态添加到状态列表与解析表中
         //由于初始状态只可能出现在第一次，所以就不用添加到映射中去了。
         stateList.add(getClosure(itemSet));
@@ -143,4 +161,5 @@ public class LRParser extends Parser {
         }
         return getClosure(newItemSet);
     }
+
 }

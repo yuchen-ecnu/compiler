@@ -9,7 +9,7 @@ public class UtilsTest {
 
     @Test
     public void RE2NFA() throws Exception {
-        RE expression = new RE("(a|b)*d");
+        RE expression = new RE("test", "(a|b)*d");
         NFA nfa = expression.getNFA();
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(nfa.getStartState().getId()).append(" <-> ")
@@ -28,13 +28,13 @@ public class UtilsTest {
 
     @Test
     public void RE2DFA() throws Exception {
-        RE expression = new RE("(a|b)*abb#");
+        RE expression = new RE("test", "(a|b)*abb#");
         DFA dfa = expression.getDFADirectly();
     }
 
     @Test
     public void NFA2DFA() throws Exception {
-        RE expression = new RE("(a|b)*d");
+        RE expression = new RE("test", "(a|b)*d");
         DFA dfa = expression.getDFAIndirect();
         StringBuilder stringBuilder = new StringBuilder();
         int count = 0;

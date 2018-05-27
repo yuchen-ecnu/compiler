@@ -3,18 +3,65 @@ package com.ecnu.compiler.component.lexer.domain;
 import com.ecnu.compiler.component.lexer.domain.graph.State;
 import com.ecnu.compiler.component.lexer.domain.re2dfaUtils.RegexToDfa;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 封装正则表达式，实体类
+ * 保存一个RE对应的名字和其表达式
  */
 public class RE {
+
+    //从String构造RE的列表
+    static public ArrayList<RE> buildREListFromStr(List<String> reStrList){
+        ArrayList<RE> reList = new ArrayList<>();
+        for (String reStr : reStrList){
+            String[] reNameExp = reStr.split(" ");
+            if (reNameExp.length != 2){
+                //todo RE格式错误处理
+                System.out.println("RE格式错误");
+                return null;
+            }
+            RE re = new RE(reNameExp[0], reNameExp[1]);
+            reList.add(re);
+        }
+        return reList;
+    }
+
+    //RE对应符号名
+    private String name;
+    //RE对应表达式
     private String expression;
 
-    public RE(String expression) {
+    public RE(String name, String expression) {
+        this.name = name;
         this.expression = expression;
     }
 
     public String getExpression() {
         return expression;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public int hashCode(){
+        return name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object object){
+        if (!(object instanceof RE)) {
+            return false;
+        }
+        if (object == this) {
+            return true;
+        }
+        RE re = (RE)object;
+        //name相等则说明必然是同一个RE
+        return name.equals(re.name);
     }
 
     /**
@@ -36,6 +83,7 @@ public class RE {
         }
         NFA result = buildNFA(exprList, transferMark, 0, exprList.length - 1);
         result.resetId();
+        result.setName(name);
         return result;
     }
 
@@ -47,7 +95,8 @@ public class RE {
     public DFA getDFADirectly(){
         RegexToDfa.initialize(expression);
         DFA dfa = RegexToDfa.getDFA();
-        dfa.print();
+        dfa.setName(name);
+        //dfa.print();
         return dfa;
     }
 

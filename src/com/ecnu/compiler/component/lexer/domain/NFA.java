@@ -12,7 +12,11 @@ import java.util.*;
  */
 public class NFA extends Graph {
 
+    //RE对应名字
+    private String name;
+    //开始状态
     private State startState;
+    //终点状态
     private State endState;
 
     public NFA() {
@@ -20,6 +24,14 @@ public class NFA extends Graph {
         addNode(defaultState);
         startState = defaultState;
         endState = defaultState;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -116,6 +128,7 @@ public class NFA extends Graph {
             }
         }
         dfa.setEndStateList();
+        dfa.setName(name);
         return dfa;
     }
 

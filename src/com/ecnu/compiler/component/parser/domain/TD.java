@@ -17,7 +17,7 @@ public class TD<NodeType> {
         //节点内容
         private NodeType content;
         //孩子节点
-        private List<NodeType> children;
+        private List<TNode> children;
 
         public NodeType getContent() {
             return content;
@@ -27,12 +27,16 @@ public class TD<NodeType> {
             this.content = content;
         }
 
-        public List<NodeType> getChildren() {
+        public List<TNode> getChildren() {
             return children;
         }
 
-        public void setChildren(List<NodeType> children) {
+        public void setChildren(List<TNode> children) {
             this.children = children;
+        }
+
+        public void addChild(TNode child){
+            children.add(child);
         }
     }
 }

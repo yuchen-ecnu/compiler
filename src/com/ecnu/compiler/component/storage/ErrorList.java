@@ -26,6 +26,15 @@ public class ErrorList {
     }
 
     /**
+     * 获取最新Error且从列表中删除他
+     */
+    public ErrorMsg handleError(){
+        ErrorMsg errorMsg = errorMsgList.get(errorMsgList.size() - 1);
+        errorMsgList.remove(errorMsgList.size() -1);
+        return errorMsg;
+    }
+
+    /**
      * 添加一个Error信息
      * @param errorMsg
      */

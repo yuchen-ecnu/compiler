@@ -23,6 +23,15 @@ public class TokenFilter {
         this.pattern = Pattern.compile(strategy.getExpression());
     }
 
+
+    /**
+     * 直接使用String创建过滤器
+     * @param strategy
+     */
+    public TokenFilter(String strategy) {
+        this.pattern = Pattern.compile(strategy);
+    }
+
     /**
      * 执行过滤程序    trim()去除首尾空格（行）
      * @param input 输入字符流
