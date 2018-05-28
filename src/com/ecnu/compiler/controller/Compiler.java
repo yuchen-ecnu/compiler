@@ -1,7 +1,9 @@
 package com.ecnu.compiler.controller;
 
 import com.ecnu.compiler.component.CacheManager.Language;
+import com.ecnu.compiler.component.parser.domain.Symbol;
 import com.ecnu.compiler.component.storage.ErrorList;
+import com.ecnu.compiler.component.storage.SymbolTable;
 import com.ecnu.compiler.constant.Config;
 import com.ecnu.compiler.constant.Constants;
 import com.ecnu.compiler.constant.StatusCode;
@@ -57,11 +59,19 @@ public class Compiler {
     }
 
     /**
+     * 获得生成的符号表
+     * @return 符号表，可能为null
+     */
+    public SymbolTable getSymbolTable(){
+        return mController.getSymbolTable();
+    }
+
+    /**
      * 创建编译进程控制器
      * @param language 语言信息
      * @param config 配置信息
      * @param errorList 错误列表
-     * @return
+     * @return 相应的控制器
      */
     private BaseController createController(Language language, Config config, ErrorList errorList){
         switch(language.getBaseLanguage()){
@@ -75,6 +85,6 @@ public class Compiler {
                 //todo 语言不支持
                 return null;
         }
-
     }
+
 }

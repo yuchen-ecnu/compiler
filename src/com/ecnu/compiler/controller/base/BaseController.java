@@ -93,6 +93,14 @@ public abstract class BaseController {
         return mStatus;
     }
 
+    /**
+     * 获得生成的符号表
+     * @return 符号表，可能为null
+     */
+    public SymbolTable getSymbolTable() {
+        return mSymbolTable;
+    }
+
     /** 单步执行 */
     private StatusCode nextStep(){
         switch (mStatus){
