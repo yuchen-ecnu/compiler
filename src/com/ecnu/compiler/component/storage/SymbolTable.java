@@ -21,6 +21,8 @@ public class SymbolTable {
         this.tokens = new ArrayList<>();
     }
 
+    public List<Token> getTokens() { return this.tokens; }
+
     public SymbolTable(Map<String, DFA> dfaMap, List<String> lexemes){
         build(dfaMap, lexemes);
     }
