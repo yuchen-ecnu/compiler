@@ -39,6 +39,10 @@ public class Graph {
         return stateList;
     }
 
+    public void setStateList(List<State> stateList) {
+        this.stateList = stateList;
+    }
+
     /**
      * 添加节点，此节点必须和原先的图连通
      *

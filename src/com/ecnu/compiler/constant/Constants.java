@@ -100,7 +100,9 @@ public class Constants {
 
     //语法分析器执行算法
     public static final int PARSER_LL = 0;
-    public static final int PARSER_LR = 1;
+    public static final int PARSER_SLR = 1;
+    public static final int PARSER_LR = 2;
+    public static final int PARSER_LALR = 3;
 
 
 

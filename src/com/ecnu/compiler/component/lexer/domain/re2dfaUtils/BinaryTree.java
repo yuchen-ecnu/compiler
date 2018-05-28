@@ -48,8 +48,8 @@ class BinaryTree {
         //在re中适当位置加入"&"
         regular = AddConcat(regular);
         //添加了&以后的re，调试用
-        System.out.println("New RE: " + regular);
-        System.out.println();
+        //System.out.println("New RE: " + regular);
+        //System.out.println();
         
         //清空stacks
         stackNode.clear();

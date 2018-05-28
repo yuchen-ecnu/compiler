@@ -1,5 +1,7 @@
 package com.ecnu.compiler.component.parser.base;
 
+import com.ecnu.compiler.component.parser.domain.CFG;
+import com.ecnu.compiler.component.parser.domain.ParsingTable.ParsingTable;
 import com.ecnu.compiler.component.parser.domain.Symbol;
 import com.ecnu.compiler.component.parser.domain.TD;
 import com.ecnu.compiler.component.storage.SymbolTable;
@@ -11,5 +13,19 @@ import com.ecnu.compiler.component.storage.SymbolTable;
  */
 public abstract class Parser {
 
-    abstract public TD<Symbol> getSyntaxTree(SymbolTable symbolTable);
+    //CFG
+    private CFG mCfg;
+    //语法分析表
+    private ParsingTable mParsingTable;
+
+    public Parser(CFG CFG, ParsingTable parsingTable) {
+        mCfg = CFG;
+        mParsingTable = parsingTable;
+    }
+
+    public TD<Symbol> buildSyntaxTree(SymbolTable symbolTable){
+        return getSyntaxTree(mCfg, mParsingTable, symbolTable);
+    }
+
+    abstract protected TD<Symbol> getSyntaxTree(CFG cfg, ParsingTable parsingTable, SymbolTable symbolTable);
 }
