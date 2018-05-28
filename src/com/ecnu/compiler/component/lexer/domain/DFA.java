@@ -5,7 +5,6 @@ import com.ecnu.compiler.component.lexer.domain.graph.Edge;
 import com.ecnu.compiler.component.lexer.domain.graph.State;
 import com.ecnu.compiler.component.lexer.domain.re2dfaUtils.DfaState;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -18,7 +17,7 @@ public class DFA extends Graph {
         ArrayList<DFA> dfaList = new ArrayList<>();
         //使用直接构造
         for (RE re : reList){
-            dfaList.add(re.getDFADirectly());
+            dfaList.add(re.getDFAIndirect());
         }
 
         //最小化状态
@@ -28,65 +27,52 @@ public class DFA extends Graph {
         return dfaList;
     }
 
-    private String name;
+    private String mName;
 
-    private List<DfaState> statesList;
+    private List<State> mEndStateList;
 
-    private List<State> endStates;
+    private State mStartState;
 
-    private State startDfaState;
-
-    private DfaState startState;
-
-    private List<DfaState> endStateList;
-
-    public List<List<TransitMat>> stateTransitionMat;
+    public List<List<TransitMat>> mStateTransitionMat;
 
     public DFA() { }
 
     public DFA(List<DfaState> dfaStateList,List<List<TransitMat>> stateTransitionMat) {
-        this.setStateList(dfaStateList);
-        this.stateTransitionMat = stateTransitionMat;
+        this.setDfaStateList(dfaStateList);
+        this.mStateTransitionMat = stateTransitionMat;
     }
 
     public String getName() {
-        return name;
+        return mName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.mName = name;
     }
 
-    public List<State> getStates() {
-        return stateList;
+    public State getStartState() {
+        return mStartState;
     }
 
-    public void setStates(List<State> states) {
-        this.stateList = states;
-    }
-
-    public State getStartDfaState() {
-        return startDfaState;
-    }
-
-    public void setStartDfaState(State startDfaState) {
-        this.startDfaState = startDfaState;
+    public void setStartState(State startState) {
+        this.mStartState = startState;
     }
 
     public List<DfaState> getDfaStateList() {
-        return statesList;
+        List<DfaState> list = new ArrayList<>();
+        for (State state : super.getStateList()){
+            list.add((DfaState)state);
+        }
+        return list;
     }
 
-    public void setStateList(List<DfaState> dfaStateList) {
-        this.statesList = dfaStateList;
+    public void setDfaStateList(List<DfaState> dfaStateList) {
+        List<State> list = new ArrayList<>(dfaStateList);
+        super.setStateList(list);
     }
 
-    public void setStartState(DfaState startState) {
-        this.startState = startState;
-    }
-
-    public void setEndStateList(List<DfaState> endStateList) {
-        this.endStateList = endStateList;
+    public void addOnlyOneEndStateList(List<DfaState> endStateList) {
+        mEndStateList = new ArrayList<>(endStateList);
     }
 
     public State take(char input){
@@ -98,18 +84,18 @@ public class DFA extends Graph {
         String states = "States:\n";
         String edges = "Edges:\n";
         String endStates = "End States:\n";
-        for(DfaState s : statesList) {
+        for(State s : getStateList()) {
             states += s.toString();
             for(Edge e : s.getEdgeList()){
                 edges += e.toStringForDfa();
             }
         }
-        for(DfaState s : endStateList) {
-            endStates = endStates + s.getName() + "\n";
+        for(State s : mEndStateList) {
+            endStates = endStates + s.getId() + "\n";
         }
         System.out.println(states);
         System.out.println(edges);
-        System.out.println("Start State:\n" + startState.getName());
+        //System.out.println("Start State:\n" + mStartState.getName());
         System.out.println(endStates);
     }
 
@@ -132,13 +118,15 @@ public class DFA extends Graph {
         return null;
     }
 
-    public List<State> getEndStates() {
-        return endStates;
+    public List<State> getEndStateList() {
+        return mEndStateList;
     }
 
-    public void setEndStates(State endState) {
-        this.endStates = new ArrayList<>();
-        this.endStates.add(endState);
+    public void addOnlyOneEndStateList(State endState) {
+        //getEndStateList().get(0).isAccepted = false;
+        this.mEndStateList = new ArrayList<>();
+        endState.isAccepted = true;
+        this.mEndStateList.add(endState);
     }
 
     /**
@@ -149,6 +137,37 @@ public class DFA extends Graph {
      */
     public List<Integer> match(String lexeme){
         //todo 判断本DFA是否匹配RE
+        //author: huge
+        //结果路径
+        List<Integer> resultPath = new ArrayList<>();
+        //从开始状态开始
+        State curentState = getStartState();
+        //当前识别的字符index
+        int i = 0;
+        tag: while (i < lexeme.length() && !curentState.isAccepted){
+            List<Edge> outEdge = curentState.getEdgeList();
+            for (Edge edge : outEdge){
+                if (edge.getWeight() == lexeme.charAt(i)){
+                    resultPath.add(curentState.getId());
+                    curentState = edge.getEndState();
+                    i++;
+                    continue tag;
+                }
+            }
+            //运行到此则说明匹配失败
+            return null;
+        }
+        //保证DFA到达结束状态且字符全部被识别
+        if (i < lexeme.length() || !curentState.isAccepted){
+            return null;
+        }
+        return resultPath;
+
+
+
+
+        //author：Lucto
+        /*
         if(lexeme == null) {
             return null;
         }
@@ -158,13 +177,13 @@ public class DFA extends Graph {
         path.clear();
         char[] chars = lexeme.toCharArray();
         //开始匹配
-        startMatch(chars,0,path,startDfaState,success);
+        startMatch(chars,0,path, mStartState,success);
         //匹配成功
         if(success.get(0)){
             return path;
         }else{
             return null;
-        }
+        }*/
     }
 
     /**
@@ -177,7 +196,7 @@ public class DFA extends Graph {
         //已经遍历完chars
         if(cur >= chars.length) {
             //到达dfa的结束状态
-            if(endStates.contains(currentState)) {
+            if(mEndStateList.contains(currentState)) {
                 //表示已成功匹配
                 path.add(currentState.getId());
                 success.remove(0);
@@ -212,35 +231,38 @@ public class DFA extends Graph {
 
     //todo 现在最小化会在输入里面操作，要做成构造一个新的。
     public static DFA DFA2MinDFA(DFA dfa){
+        //todo 最小化未完成，先返回原DFA
+        return dfa;
+        /*
         //GetTransitMat(dfa);
-        dfa.stateTransitionMat = GetTransitMat(dfa);
+        dfa.mStateTransitionMat = GetTransitMat(dfa);
         //用于存放最小化的过程中产生的状态划分
         List<List<State>> stateListsPartition = new ArrayList<List<State>>();
         //phrase 1: 将化简前的DFA的状态分为非可接受状态和可接受状态两部分
         List<State> nonTerminalStates = new ArrayList<State>();
         List<State> copyOfOriginalState = CloneOfStateList(dfa.stateList);
 //        System.out.println(copyOfOriginalState);
-//        for(State state:dfa.endStates){
+//        for(State state:dfa.mEndStateList){
 //            System.out.print(state.getId());
 //        }
         for (State state : copyOfOriginalState) {
-            for(State endState : dfa.endStates){
+            for(State endState : dfa.mEndStateList){
                 if(state.getId()!=endState.getId()) {
                     nonTerminalStates.add(state);
                 }
             }
         }
-//            if (!dfa.endStates.contains(state)) {
+//            if (!dfa.mEndStateList.contains(state)) {
 //                nonTerminalStates.add(state);
 //                System.out.print("State"+" = "+state+" ");
-//                System.out.println("endStates"+" = "+dfa.endStates+ " ");
+//                System.out.println("mEndStateList"+" = "+dfa.mEndStateList+ " ");
 //            }
 //        }
         for (State state : copyOfOriginalState) {
             System.out.print(state.getId() + " ");
         }
         System.out.println();
-        for (State state : dfa.endStates) {
+        for (State state : dfa.mEndStateList) {
             System.out.print(state.getId() + " ");
         }
         System.out.println();
@@ -248,7 +270,7 @@ public class DFA extends Graph {
             System.out.print(state.getId() + " ");
         }
 
-        List<State> terminalStates = CloneOfStateList(dfa.endStates);
+        List<State> terminalStates = CloneOfStateList(dfa.mEndStateList);
         stateListsPartition.add(nonTerminalStates);
         stateListsPartition.add(terminalStates);
 
@@ -261,7 +283,7 @@ public class DFA extends Graph {
 
         Set<Character> alphabetSet = new HashSet<>();
         int count = 0;
-        for (State state : dfa.getStates()) {                //获得所有list及set的值
+        for (State state : dfa.getStateList()) {                //获得所有list及set的值
             for (Edge edge : state.getEdgeList()) {
                 alphabetSet.add(edge.getWeight());
                 count++;
@@ -273,10 +295,10 @@ public class DFA extends Graph {
                 int stateIndex = getIndexOf(states, state);
                 //System.out.println(stateIndex);
                 //获取状态state遇到下标为i的符号时状态跳转情况
-//                TransitMat transitEleRow = stateTransitionMat.get(stateIndex).get(i);
+//                TransitMat transitEleRow = mStateTransitionMat.get(stateIndex).get(i);
 //                System.out.println(transitEleRow.getStateIndex());
 //                State nextState = states.get(transitEleRow.getStateIndex());
-                TransitMat currState = dfa.stateTransitionMat.get(stateIndex).get(i);
+                TransitMat currState = dfa.mStateTransitionMat.get(stateIndex).get(i);
                 if(currState.getStateIndex() == -1){
                     continue;
                 }
@@ -305,9 +327,9 @@ public class DFA extends Graph {
                 //获取状态state遇到下标为i的符号时状态跳转情况
 
 //                TransitMat transitEleRow =
-//                        stateTransitionMat.get(stateIndex).get(i);
+//                        mStateTransitionMat.get(stateIndex).get(i);
 //                State nextState = states.get(transitEleRow.getStateIndex());
-                TransitMat currState = dfa.stateTransitionMat.get(stateIndex).get(i);
+                TransitMat currState = dfa.mStateTransitionMat.get(stateIndex).get(i);
                 if(currState.getStateIndex() == -1){
                     continue;
                 }
@@ -329,7 +351,7 @@ public class DFA extends Graph {
 
         // phrase 4: 根据存储状态列表的列表的每一个元素作为一个状态，构造最小化DFA
         rebuildDFAWithSimplifiedStateList(dfa,stateListsPartition, leftMostEndStateIndex);
-        return dfa;
+        return dfa;*/
     }
 
     private static int getIndexOf(List<State> states, State state) {
@@ -349,7 +371,7 @@ public class DFA extends Graph {
         List<Integer> endOfEdgeList = new ArrayList<>();
         List<Character> alphabetList = new ArrayList<>();
         int count = 0;                                       //边的数量
-        for (State state : dfa.getStates()) {                //获得所有list及set的值
+        for (State state : dfa.getStateList()) {                //获得所有list及set的值
             for (Edge edge : state.getEdgeList()) {
                 alphabetSet.add(edge.getWeight());
                 startOfEdgeList.add(edge.getStartState().getId());
@@ -361,7 +383,7 @@ public class DFA extends Graph {
         List<Character> alphaSetList = new ArrayList<Character>();          //不重复的alphabet
         alphaSetList.addAll(alphabetSet);
         /*开始构建矩阵*/
-        int a = dfa.getStates().size();
+        int a = dfa.getStateList().size();
         int b = alphabetSet.size();
         System.out.print(a+" "+b+'\n');
         Integer stateTable[][] = new Integer[a][b];
@@ -396,7 +418,7 @@ public class DFA extends Graph {
         }
         /**********getMatrix()********************************/
         List<List<TransitMat>> stateTransitionMat = new ArrayList<List<TransitMat>>();
-        for (i = 0; i < dfa.getStates().size(); i++) {
+        for (i = 0; i < dfa.getStateList().size(); i++) {
             stateTransitionMat.add(new ArrayList<TransitMat>());
             for (j = 0; j < alphabetSet.size(); j++) {
                 int stateIndex = stateTable[i][j];
@@ -427,9 +449,9 @@ public class DFA extends Graph {
         List<State> copyOfStates = CloneOfStateList(dfa.stateList);
 //        System.out.println(copyOfStates);
         dfa.stateList.clear();
-        List<List<TransitMat>> copyOfTransitMat = deepCloneOfStateTransitionMat(dfa.stateTransitionMat);
+        List<List<TransitMat>> copyOfTransitMat = deepCloneOfStateTransitionMat(dfa.mStateTransitionMat);
         System.out.println(copyOfTransitMat.size());
-        dfa.stateTransitionMat.clear();
+        dfa.mStateTransitionMat.clear();
 
         // phrase 1: 重新构造状态列表
         rebuildStateList(dfa, stateLists, leftMostEndStateIndex);
@@ -470,7 +492,7 @@ public class DFA extends Graph {
 //                int stateIndex = this.states.indexOf(state);
 //                //获取状态state遇到下标为i的符号时状态跳转情况
 //                TransitMat transitEleRow =
-//                        this.stateTransitionMat.get(stateIndex).get(i);
+//                        this.mStateTransitionMat.get(stateIndex).get(i);
 //                State nextState = this.states.get(transitEleRow.getStateIndex());
 //                if(!statesToCheck.contains(nextState)) {
 //                    //经过状态转移达到的状态不包含在状态集合statesToCheck中，
@@ -496,9 +518,9 @@ public class DFA extends Graph {
                                           int leftMostEndStateIndex){
         Random random = new Random();
         //stateLists中的第一个元素中的所有状态构成新的DFA对象的开始状态
-        dfa.startDfaState =
+        dfa.mStartState =
                 new State(random.nextInt(),false);
-        dfa.stateList.add(dfa.startDfaState);
+        dfa.stateList.add(dfa.mStartState);
 
         //添加既不是开始状态节点，也不是可接受状态节点的状态节点
         for (int i = 1; i < leftMostEndStateIndex; i++) {
@@ -511,7 +533,7 @@ public class DFA extends Graph {
         for (int i = leftMostEndStateIndex; i < stateLists.size(); i++) {
             State newState =
                     new State(random.nextInt(),true);
-            dfa.endStates.add(newState);
+            dfa.mEndStateList.add(newState);
             dfa.stateList.add(newState);
         }
     }
@@ -537,7 +559,7 @@ public class DFA extends Graph {
             buildTransitWithStatesInInnerPartition(
                     originalStateList, originalStateTransitMat,
                     stateLists, stateList, stateTransitEleRow);
-            dfa.stateTransitionMat.add(stateTransitEleRow);
+            dfa.mStateTransitionMat.add(stateTransitEleRow);
         }
     }
 

@@ -22,13 +22,8 @@ public class JavaController extends BaseController {
     }
 
     @Override
-    public StatusCode next() {
-        return StatusCode.SUCCESS;
-    }
-
-    @Override
     protected Preprocessor createPreprocessor() {
         //todo 构造JAVA的预处理器
-        return null;
+        return new Preprocessor();
     }
 }

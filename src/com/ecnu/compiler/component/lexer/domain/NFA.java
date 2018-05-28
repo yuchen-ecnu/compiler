@@ -24,6 +24,7 @@ public class NFA extends Graph {
         addNode(defaultState);
         startState = defaultState;
         endState = defaultState;
+        endState.isAccepted = true;
     }
 
     public String getName() {
@@ -110,11 +111,11 @@ public class NFA extends Graph {
         DFA dfa = new DFA();
         State startState = new State(0,false);
         dfaStateSet.put(dfaStartState,startState.getId());
-        dfa.setStartDfaState(startState);
+        dfa.setStartState(startState);
         //将开始状态存入dfa状态列表中
         List<State> dfaState = new ArrayList<>();
         dfaState.add(startState);
-        dfa.setStates(dfaState);
+        dfa.setStateList(dfaState);
         //获取dfa的下一状态
         Map<String,Set<State>> nextStates = getNewDfaStates(dfaStartState);
         Set<String> weights = nextStates.keySet();
@@ -129,7 +130,7 @@ public class NFA extends Graph {
         }
         for(Set<State> stateSet : dfaStateSet.keySet()){
             if (stateSet.contains(getEndState())){
-                dfa.setEndStates(dfa.get(dfaStateSet.get(stateSet)));
+                dfa.addOnlyOneEndStateList(dfa.get(dfaStateSet.get(stateSet)));
             }
         }
         dfa.setName(name);
@@ -212,7 +213,7 @@ public class NFA extends Graph {
         //dfa中当前状态
         State state = new State(id,false);
         dfaStateSet.put(curState,state.getId());
-        dfa.getStates().add(state);
+        dfa.getStateList().add(state);
         //dfa中上一状态到当前状态的边
         Edge edge = new Edge(lastState,state,weight.charAt(0));
         lastState.addEdge(edge);

@@ -23,8 +23,8 @@ public class SyntaxTree {
             followPos[i] = new HashSet<>();
         }
         //打印，调试用
-        bt.printInorder(root);
-        System.out.println();
+        //bt.printInorder(root);
+        //System.out.println();
 
         generateNullable(root);
         generateFirstposLastPos(root);

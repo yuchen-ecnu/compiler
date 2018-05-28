@@ -3,8 +3,6 @@ import com.ecnu.compiler.component.lexer.domain.NFA;
 import com.ecnu.compiler.component.lexer.domain.RE;
 import com.ecnu.compiler.component.lexer.domain.graph.Edge;
 import com.ecnu.compiler.component.lexer.domain.graph.State;
-import com.ecnu.compiler.constant.Constants;
-import com.sun.corba.se.impl.orbutil.closure.Constant;
 import org.junit.Test;
 
 public class UtilsTest {
@@ -40,7 +38,7 @@ public class UtilsTest {
         DFA dfa = expression.getDFAIndirect();
         StringBuilder stringBuilder = new StringBuilder();
         int count = 0;
-        for (State state : dfa.getStates()){
+        for (State state : dfa.getStateList()){
             for (Edge edge : state.getEdgeList()){
                 stringBuilder.append(edge.getStartState().getId()).append(" -").append(edge.getWeight()).append("> ")
                         .append(edge.getEndState().getId()).append('\n');
@@ -49,8 +47,8 @@ public class UtilsTest {
         }
         stringBuilder.append("total edges: ").append(count);
         System.out.println(stringBuilder.toString());
-        System.out.println("startState: "+ dfa.getStartDfaState().getId());
-        for(State state :dfa.getEndStates()){
+        System.out.println("startState: "+ dfa.getStartState().getId());
+        for(State state :dfa.getEndStateList()){
             System.out.println("endStates: " + state.getId());
         }
     }
@@ -65,7 +63,7 @@ public class UtilsTest {
         DFA dfa = expression.getDFAIndirect();
         StringBuilder stringBuilder = new StringBuilder();
         int count = 0;
-        for (State state : dfa.getStates()){
+        for (State state : dfa.getStateList()){
             for (Edge edge : state.getEdgeList()){
                 stringBuilder.append(edge.getStartState().getId()).append(" -").append(edge.getWeight()).append("> ")
                         .append(edge.getEndState().getId()).append('\n');
@@ -74,8 +72,8 @@ public class UtilsTest {
         }
         stringBuilder.append("total edges: ").append(count);
         System.out.println(stringBuilder.toString());
-        System.out.println("startState: "+ dfa.getStartDfaState().getId());
-        for(State state :dfa.getEndStates()){
+        System.out.println("startState: "+ dfa.getStartState().getId());
+        for(State state :dfa.getEndStateList()){
             System.out.println("endStates: " + state.getId());
         }
         String lexemes = "abababaaba";

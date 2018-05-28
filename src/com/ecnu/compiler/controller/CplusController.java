@@ -23,11 +23,6 @@ public class CplusController extends BaseController {
     }
 
     @Override
-    public StatusCode next() {
-        return StatusCode.SUCCESS;
-    }
-
-    @Override
     protected Preprocessor createPreprocessor() {
         //todo 构造C的预处理器
         return new Preprocessor();

@@ -69,6 +69,7 @@ public class LanguageBuilder {
             lexerHolder.DFAFromNFA = lexerHolder.NFAFromRE.getDFA();
             lexerHolder.minStateDFAFromRE = DFA.DFA2MinDFA(lexerHolder.DFAFromRE);
             lexerHolder.minStateDFAFromNFA = DFA.DFA2MinDFA(lexerHolder.DFAFromNFA);
+            holders.add(lexerHolder);
         }
         return holders;
     }

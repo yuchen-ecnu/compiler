@@ -25,12 +25,9 @@ public class SymbolTable {
         tokens.add(token);
     }
 
-    public SymbolTable(Map<String, DFA> dfaMap, List<String> lexemes) {
-        build(dfaMap, lexemes);
-    }
 
     /**
-     * 根据DFA列表和RE表达式列表构造符号表
+     * 根据DFA列表和RE表达式列表构造符号表,方法暂时废用
      * @param dfaMap 用来匹配的DFA列表
      * @param lexemes 希望匹配的所有词素组成的文本，已经经过预处理，每个词素一个空格隔开.
      * @return 是否存在一个DFA能够匹配

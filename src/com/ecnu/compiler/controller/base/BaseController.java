@@ -48,7 +48,7 @@ public abstract class BaseController {
     //当前进行编译的代码内容
     private String mTextToCompiler;
     //预处理之后的内容
-    private String mTextAfterPreprocess;
+    private List<String> mTextListAfterPreprocess;
     //词法分析器得到的符号表
     private SymbolTable mSymbolTable;
     //语法分析后得到的语法树
@@ -100,13 +100,13 @@ public abstract class BaseController {
                 break;
             case STAGE_PREPROCESSOR:
                 if (!"".equals(mTextToCompiler)){
-                    mTextAfterPreprocess = mPreprocessor.preprocess(mTextToCompiler);
+                    mTextListAfterPreprocess = mPreprocessor.preprocess(mTextToCompiler);
                     mStatus = StatusCode.STAGE_LEXER;
                 }
                 break;
             case STAGE_LEXER:
-                if (!"".equals(mTextAfterPreprocess)){
-                    mSymbolTable = mLexer.buildSymbolTable(mTextAfterPreprocess);
+                if (mTextListAfterPreprocess != null){
+                    mSymbolTable = mLexer.buildSymbolTable(mTextListAfterPreprocess);
                     mStatus = StatusCode.STAGE_PARSER;
                 }
                 break;

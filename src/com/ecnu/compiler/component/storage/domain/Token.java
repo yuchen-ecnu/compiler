@@ -8,9 +8,9 @@ import java.util.List;
  */
 public class Token {
     public String type;
-    public List<Object> attrs;
+    public List attrs;
 
-    public Token(String type, List<Object> attrs) {
+    public Token(String type, List attrs) {
         this.type = type;
         this.attrs = attrs;
     }

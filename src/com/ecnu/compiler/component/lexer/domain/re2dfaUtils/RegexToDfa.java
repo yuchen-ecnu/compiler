@@ -1,7 +1,6 @@
 package com.ecnu.compiler.component.lexer.domain.re2dfaUtils;
 
 import com.ecnu.compiler.component.lexer.domain.DFA;
-import com.ecnu.compiler.component.lexer.domain.RE;
 import com.ecnu.compiler.component.lexer.domain.graph.Edge;
 
 import java.util.*;
@@ -154,9 +153,9 @@ public class RegexToDfa {
                 s.addMove(a, tmp);
             }
         }
-        for(DfaState state : DStates) {
+        /*for(DfaState state : DStates) {
             printState(state);
-        }
+        }*/
         return q0;
     }
 
@@ -173,7 +172,7 @@ public class RegexToDfa {
 
     public static DFA getDFA() {
         DFA dfa = new DFA();
-        dfa.setStateList(DStates);
+        dfa.setDfaStateList(DStates);
         clean(dfa);
         setEdgeList(dfa);
         setStartAndEnd(dfa);
@@ -209,7 +208,7 @@ public class RegexToDfa {
             }
         }
         stateList.removeAll(removeSet);
-        dfa.setStateList(stateList);
+        dfa.setDfaStateList(stateList);
         for(DfaState s : stateList) {
             HashMap<String, DfaState> move = s.getAllMoves();
             Iterator it = move.entrySet().iterator();
@@ -240,7 +239,7 @@ public class RegexToDfa {
                 endStateList.add(s);
             }
         }
-        dfa.setEndStateList(endStateList);
+        dfa.addOnlyOneEndStateList(endStateList);
     }
 
 }
