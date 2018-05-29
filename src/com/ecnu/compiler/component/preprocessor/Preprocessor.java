@@ -22,6 +22,6 @@ public class Preprocessor {
 
     public List<String> preprocess(String text){
         //todo 没做任何预处理,简单的用空格符分词
-        return new ArrayList<String>(Arrays.asList(text.split(" ")));
+        return new ArrayList<String>(Arrays.asList(text.split("[ \t\n]")));
     }
 }
