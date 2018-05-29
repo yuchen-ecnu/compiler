@@ -30,6 +30,8 @@ public class UtilsTest {
     public void RE2DFA() throws Exception {
         RE expression = new RE("test", "(a|b)*abb#");
         DFA dfa = expression.getDFADirectly();
+//        DFA dfa = expression.getDFAIndirect();
+        dfa.print();
     }
 
     @Test
@@ -55,6 +57,11 @@ public class UtilsTest {
 
     @Test
     public void DFA2MinDFA() throws Exception {
+        RE expression = new RE("test", "(a|b)*abb");
+        DFA dfa = expression.getDFADirectly();
+//        DFA dfa = expression.getDFAIndirect();
+        DFA newDFA = DFA.DFA2MinDFA(dfa);
+        newDFA.print();
     }
 
     @Test

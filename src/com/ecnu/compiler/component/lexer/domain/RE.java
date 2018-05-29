@@ -93,7 +93,8 @@ public class RE {
      * @author Meng Xin
      */
     public DFA getDFADirectly(){
-        RegexToDfa.initialize(expression);
+        String realExp = expression + "#";
+        RegexToDfa.initialize(realExp);
         DFA dfa = RegexToDfa.getDFA();
         dfa.setName(name);
         //dfa.print();

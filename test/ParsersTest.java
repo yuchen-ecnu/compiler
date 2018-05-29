@@ -1,5 +1,8 @@
+import com.ecnu.compiler.component.parser.LLParser;
 import com.ecnu.compiler.component.parser.domain.CFG;
 import com.ecnu.compiler.component.parser.domain.FirstFollowSet;
+import com.ecnu.compiler.component.parser.domain.ParsingTable.LLParsingTable;
+import com.ecnu.compiler.component.parser.domain.ParsingTable.LLTableItem;
 import com.ecnu.compiler.component.parser.domain.Production;
 import com.ecnu.compiler.component.parser.domain.Symbol;
 import org.junit.Test;
@@ -86,6 +89,22 @@ public class ParsersTest {
             }
             System.out.println();
         }
+        System.out.println("------------");
+        LLParsingTable llParsingTable = new LLParsingTable(cfg);
+        Set<LLTableItem> itemSet = llParsingTable.getItemSet();
+        for (LLTableItem item : itemSet) {
+            System.out.println("Non-term:" + item.getNonTerm().getType());
+            System.out.println("Term:" + item.getTerm().getType());
+            System.out.print("Value:" + item.getValue().getLeft().getType() + " -> ");
+            for (Symbol s : item.getValue().getRight()) {
+                System.out.print(s.getType() + " ");
+            }
+            System.out.println();
+            System.out.println("-----------");
+        }
+        System.out.println("------------");
+        String w = "id + id * id";
+        LLParser.predict(w, cfg);
     }
 
     @Test

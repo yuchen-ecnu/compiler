@@ -69,8 +69,8 @@ public class Edge {
 
     public String toStringForDfa() {
         return "Edge{" +
-                "startState=" + ((DfaState)startState).getName() +
-                ", endState=" + ((DfaState)endState).getName() +
+                "startState=" + (startState).getId() +
+                ", endState=" + (endState).getId() +
                 ", weight='" + weight +
                 "'}\n";
     }

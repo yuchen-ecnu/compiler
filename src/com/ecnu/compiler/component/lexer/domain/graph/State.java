@@ -66,5 +66,13 @@ public class State {
     public int hashCode() {
         return 31 * id;
     }
+
+    @Override
+    public String toString() {
+        return "State{" +
+                "id=" + id +
+                ", isAccepted=" + isAccepted +
+                '}';
+    }
 }
 
