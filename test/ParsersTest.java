@@ -1,10 +1,7 @@
 import com.ecnu.compiler.component.parser.LLParser;
-import com.ecnu.compiler.component.parser.domain.CFG;
-import com.ecnu.compiler.component.parser.domain.FirstFollowSet;
+import com.ecnu.compiler.component.parser.domain.*;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LLParsingTable;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LLTableItem;
-import com.ecnu.compiler.component.parser.domain.Production;
-import com.ecnu.compiler.component.parser.domain.Symbol;
 import org.junit.Test;
 
 import java.util.HashSet;
@@ -104,7 +101,8 @@ public class ParsersTest {
         }
         System.out.println("------------");
         String w = "id + id * id";
-        LLParser.predict(w, cfg);
+        TD<Symbol> syntaxTree = LLParser.predict(w, cfg);
+        LLParser.printTree(syntaxTree);
     }
 
     @Test
@@ -122,4 +120,118 @@ public class ParsersTest {
 
     }
 
+    @Test
+    public void cleanLeftRecursion() throws Exception {
+        String[] cfgList = {"T->T * F", "T->F"};
+        Symbol s1 = new Symbol("T");
+        Symbol s2 = new Symbol("*");
+        Symbol s3 = new Symbol("F");
+        Set<Symbol> symbolSet = new HashSet<>();
+        symbolSet.add(s1);
+        symbolSet.add(s2);
+        symbolSet.add(s3);
+        CFG cfg = new CFG(cfgList, symbolSet);
+        cfg.cleanImmediateLeftRecursion(s1);
+        for(Map.Entry<Symbol, List<Integer>> entry : cfg.getNonTerminalMap().entrySet()) {
+            System.out.print(entry.getKey().getType() + "----");
+            for (Integer i : entry.getValue()) {
+                System.out.print(i + " ");
+            }
+            System.out.println();
+        }
+        System.out.println("------------");
+        for(Symbol s : cfg.getTerminalSet()) {
+            System.out.println(s.getType() + "----" + s.isTerminal());
+        }
+        System.out.println("------------");
+        for (Production p : cfg.getAllProductions()) {
+            System.out.println("Id:" + p.getId());
+            System.out.println("Left:" + p.getLeft().getType());
+            System.out.print("Right:");
+            for (Symbol s : p.getRight()) {
+                System.out.print(s.getType() + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    @Test
+    public void cleanLeftRecusrion() throws Exception {
+        String[] cfgList = {"E->E + T|T", "T->T * F|F", "F->( E )|id"};
+        Symbol s1 = new Symbol("E");
+        Symbol s2 = new Symbol("+");
+        Symbol s3 = new Symbol("T");
+        Symbol s4 = new Symbol("*");
+        Symbol s5 = new Symbol("F");
+        Symbol s6 = new Symbol("id");
+        Set<Symbol> symbolSet = new HashSet<>();
+        symbolSet.add(s1);
+        symbolSet.add(s2);
+        symbolSet.add(s3);
+        symbolSet.add(s4);
+        symbolSet.add(s5);
+        symbolSet.add(s6);
+        CFG cfg = new CFG(cfgList, symbolSet);
+        cfg.cleanLeftRecursion();
+        for(Map.Entry<Symbol, List<Integer>> entry : cfg.getNonTerminalMap().entrySet()) {
+            System.out.print(entry.getKey().getType() + "----");
+            for (Integer i : entry.getValue()) {
+                System.out.print(i + " ");
+            }
+            System.out.println();
+        }
+        System.out.println("------------");
+        for(Symbol s : cfg.getTerminalSet()) {
+            System.out.println(s.getType() + "----" + s.isTerminal());
+        }
+        System.out.println("------------");
+        for (Production p : cfg.getAllProductions()) {
+            System.out.println("Id:" + p.getId());
+            System.out.println("Left:" + p.getLeft().getType());
+            System.out.print("Right:");
+            for (Symbol s : p.getRight()) {
+                System.out.print(s.getType() + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    @Test
+    public void extractLeftCommonFactor() throws Exception {
+        String[] cfgList = {"A->+ a b|+ b B|b", "B->+ a b|+ a|+"};
+        Symbol s1 = new Symbol("A");
+        Symbol s2 = new Symbol("+");
+        Symbol s3 = new Symbol("a");
+        Symbol s4 = new Symbol("b");
+        Symbol s5 = new Symbol("B");
+        Set<Symbol> symbolSet = new HashSet<>();
+        symbolSet.add(s1);
+        symbolSet.add(s2);
+        symbolSet.add(s3);
+        symbolSet.add(s4);
+        symbolSet.add(s5);
+        CFG cfg = new CFG(cfgList, symbolSet);
+        cfg.extractLeftCommonFactor();
+        for(Map.Entry<Symbol, List<Integer>> entry : cfg.getNonTerminalMap().entrySet()) {
+            System.out.print(entry.getKey().getType() + "----");
+            for (Integer i : entry.getValue()) {
+                System.out.print(i + " ");
+            }
+            System.out.println();
+        }
+        System.out.println("------------");
+        for(Symbol s : cfg.getTerminalSet()) {
+            System.out.println(s.getType() + "----" + s.isTerminal());
+        }
+        System.out.println("------------");
+        for (Production p : cfg.getAllProductions()) {
+            System.out.println("Id:" + p.getId());
+            System.out.println("Left:" + p.getLeft().getType());
+            System.out.print("Right:");
+            for (Symbol s : p.getRight()) {
+                System.out.print(s.getType() + " ");
+            }
+            System.out.println();
+        }
+    }
 }

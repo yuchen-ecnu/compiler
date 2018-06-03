@@ -1,5 +1,6 @@
 package com.ecnu.compiler.component.parser.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,6 +19,14 @@ public class TD<NodeType> {
         private NodeType content;
         //孩子节点
         private List<TNode> children;
+
+        private boolean matched;
+
+        public TNode() {
+            this.content = null;
+            this.children = new ArrayList<>();
+            this.matched = false;
+        }
 
         public NodeType getContent() {
             return content;
@@ -38,5 +47,21 @@ public class TD<NodeType> {
         public void addChild(TNode child){
             children.add(child);
         }
+
+        public boolean isMatched() {
+            return matched;
+        }
+
+        public void setMatched(boolean matched) {
+            this.matched = matched;
+        }
+    }
+
+    public TNode<NodeType> getRoot() {
+        return root;
+    }
+
+    public void setRoot(TNode<NodeType> root) {
+        this.root = root;
     }
 }

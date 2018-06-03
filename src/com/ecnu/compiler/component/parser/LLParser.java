@@ -10,6 +10,7 @@ import com.ecnu.compiler.component.parser.domain.Symbol;
 import com.ecnu.compiler.component.parser.domain.TD;
 import com.ecnu.compiler.component.storage.SymbolTable;
 
+import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
@@ -30,8 +31,13 @@ public class LLParser extends Parser {
         return null;
     }
 
-    public static void predict(String w, CFG cfg) {
-//        FirstFollowSet firstFollowSet = new FirstFollowSet(cfg);
+    public static TD<Symbol> predict(String w, CFG cfg) {
+        //语法树
+        TD<Symbol> syntaxTree = new TD<>();
+        TD.TNode<Symbol> root = new TD.TNode<>();
+        root.setContent(cfg.getStartSymbol());
+        syntaxTree.setRoot(root);
+
         LLParsingTable llParsingTable = new LLParsingTable(cfg);
         Set<LLTableItem> itemSet = llParsingTable.getItemSet();
         //已匹配
@@ -58,7 +64,7 @@ public class LLParser extends Parser {
             }
             if (!found) {
                 System.out.println("Error: Symbol not found.");
-                return;
+                return null;
             }
         }
 
@@ -67,12 +73,38 @@ public class LLParser extends Parser {
         while(!stackTop.equals(Symbol.TERMINAL_SYMBOL)) {
             if (stackTop.equals(bufferTop)) {
                 System.out.println("Match:" + stackTop.getType());
+
+                TD.TNode<Symbol> r = syntaxTree.getRoot();
+                List<TD.TNode> children = null;
+                Stack<TD.TNode<Symbol>> matchStack = new Stack<>();
+                matchStack.push(r);
+                while (true) {
+                    if (r.getChildren().isEmpty() && !r.isMatched()) {
+                        break;
+                    } else {
+                        matchStack.pop();
+                        List<TD.TNode> myChildren = r.getChildren();
+                        if (!(myChildren == null || myChildren.isEmpty())) {
+                            for (int i = myChildren.size() - 1; i >= 0; i--) {
+                                matchStack.push(myChildren.get(i));
+                            }
+                        }
+                        r = matchStack.peek();
+                    }
+                }
+
+                if (r.getContent().getType().equals(stackTop.getType())) {
+                    r.setMatched(true);
+                } else {
+                    System.out.println("Tree match error!");
+                }
+
                 matched.push(stackTop);
                 stack.pop();
                 buffer.pop();
             } else if (stackTop.isTerminal()) {
                 System.out.println("Error: Terminal.");
-                return;
+                return null;
             } else {
                 Production prod = null;
                 for (LLTableItem item : itemSet) {
@@ -83,13 +115,46 @@ public class LLParser extends Parser {
                 }
                 if (prod == null) {
                     System.out.println("Error: LLTable item not found.");
-                    return;
+                    return null;
                 } else {
                     System.out.print("Output:" + prod.getLeft().getType() + "->");
                     for (Symbol sym : prod.getRight()) {
                         System.out.print(sym.getType());
                     }
                     System.out.println();
+
+                    TD.TNode<Symbol> r = syntaxTree.getRoot();
+                    List<TD.TNode> children = null;
+                    Stack<TD.TNode<Symbol>> outputStack = new Stack<>();
+                    outputStack.push(r);
+                    while (true) {
+                        if (r.getChildren().isEmpty() && !r.isMatched()) {
+                            break;
+                        } else {
+                            outputStack.pop();
+                            List<TD.TNode> myChildren = r.getChildren();
+                            if (!(myChildren == null || myChildren.isEmpty())) {
+                                for (int i = myChildren.size() - 1; i >= 0; i--) {
+                                    outputStack.push(myChildren.get(i));
+                                }
+                            }
+                            r = outputStack.peek();
+                        }
+                    }
+
+                    if (r.getContent().getType().equals(prod.getLeft().getType())) {
+                        for (Symbol s : prod.getRight()) {
+                            TD.TNode<Symbol> child = new TD.TNode<>();
+                            child.setContent(s);
+                            if (s.equals(Symbol.EMPTY_SYMBOL)) {
+                                child.setMatched(true);
+                            }
+                            r.addChild(child);
+                        }
+                    } else {
+                        System.out.println("Tree output error!");
+                    }
+
                     stack.pop();
                     for (int i = prod.getRight().size() - 1; i >= 0; i--) {
                         if (!prod.getRight().get(i).equals(Symbol.EMPTY_SYMBOL)) {
@@ -101,5 +166,24 @@ public class LLParser extends Parser {
             stackTop = stack.peek();
             bufferTop = buffer.peek();
         }
+        return syntaxTree;
     }
+
+    public static void printTree(TD<Symbol> tree) {
+        Stack<TD.TNode> stack = new Stack<>();
+        System.out.println("Root:" + tree.getRoot().getContent().getType());
+        System.out.println("-----------");
+        stack.push(tree.getRoot());
+        while(!stack.isEmpty()) {
+            TD.TNode<Symbol> curNode = stack.pop();
+            System.out.println("Cur:" + curNode.getContent().getType());
+            if (!curNode.getChildren().isEmpty()) {
+                List<TD.TNode> children = curNode.getChildren();
+                for (int i = children.size() - 1; i >= 0; i--) {
+                    stack.push(children.get(i));
+                }
+            }
+        }
+    }
+
 }

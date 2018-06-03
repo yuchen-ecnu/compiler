@@ -8,7 +8,7 @@ import java.util.*;
  */
 public class CFG {
     //非终结符映射
-    private Map<Symbol, List<Integer>> mNonTerminalMap = new HashMap<>();
+    private Map<Symbol, List<Integer>> mNonTerminalMap = new LinkedHashMap<>();
     //终结符集合
     private Set<Symbol> mTerminalSet = new HashSet<>();
     //产生式列表
@@ -119,6 +119,10 @@ public class CFG {
         return mProductions;
     }
 
+    public void setAllProductions(List<Production> mProductions) {
+        this.mProductions = mProductions;
+    }
+
     /**
      * 获取某个非终结符对应的产生式
      * @param symbol 一个非终结符
@@ -130,7 +134,11 @@ public class CFG {
             return null;
         List<Production> productions = new ArrayList<>();
         for (Integer index : indexList){
-            productions.add(mProductions.get(index));
+            for (Production prod : getAllProductions()) {
+                if (prod.getId() == index) {
+                    productions.add(prod);
+                }
+            }
         }
         return productions;
     }
@@ -147,4 +155,184 @@ public class CFG {
             map.put(sym, intList);
         }
     }
+
+    public void cleanImmediateLeftRecursion(Symbol symbol) {
+        List<Production> productions = getProductions(symbol);
+        List<List<Symbol>> alpha = new ArrayList<>();
+        List<List<Symbol>> beta = new ArrayList<>();
+        for (Production prod : productions) {
+            List<Symbol> right = prod.getRight();
+            if (symbol.equals(right.get(0))) {
+                List<Symbol> list = new ArrayList<>();
+                for (int i = 1; i < right.size(); i++) {
+                    list.add(right.get(i));
+                }
+                alpha.add(list);
+            } else {
+                beta.add(right);
+            }
+        }
+        if (alpha.size() == 0) {
+            return;
+        } else {
+            removeProductionsByLeft(symbol);
+            int id = getMaxId();
+            List<Production> allProductions = getAllProductions();
+            Symbol prime = new Symbol(symbol.getType() + "\'");
+            while (getNonTerminalSet().contains(prime)) {
+                prime = new Symbol(prime.getType() + "\'");
+            }
+            for (List<Symbol> l : beta) {
+                l.add(prime);
+                Production p = new Production(symbol, l, ++id);
+                allProductions.add(p);
+            }
+            List<Integer> nonTermList = new ArrayList<>();
+            for (List<Symbol> l : alpha) {
+                l.add(prime);
+                Production p = new Production(prime, l, ++id);
+                allProductions.add(p);
+                nonTermList.add(id);
+            }
+            List<Symbol> empty = new ArrayList<>();
+            empty.add(Symbol.EMPTY_SYMBOL);
+            Production p = new Production(prime, empty, ++id);
+            allProductions.add(p);
+            setAllProductions(allProductions);
+            getNonTerminalMap().put(prime, nonTermList);
+        }
+        setListForMap(mNonTerminalMap);
+    }
+
+    private void removeProductionsByLeft(Symbol symbol) {
+        List<Production> productions = getProductions(symbol);
+        List<Production> allProductions = getAllProductions();
+        allProductions.removeAll(productions);
+        setAllProductions(allProductions);
+    }
+
+    public int getMaxId() {
+        int max = 0;
+        for (Production prod : mProductions) {
+            if (prod.getId() > max) {
+                max = prod.getId();
+            }
+        }
+        return max;
+    }
+
+    public void cleanLeftRecursion() {
+        Set<Symbol> nonTerminalSet = getNonTerminalSet();
+        Map<Integer, Symbol> map = new HashMap<>();
+        int id = 1;
+        for (Symbol sym : nonTerminalSet) {
+            map.put(id++, sym);
+        }
+        int size = nonTerminalSet.size();
+        for (int i = 1; i <= size; i++) {
+            Symbol Ai = map.get(i);
+            for (int j = 1; j <= i - 1; j++) {
+                Symbol Aj = map.get(j);
+                List<Production> productions = getAllProductions();
+                for (Production prod : getProductions(Ai)) {
+                    List<Symbol> right = prod.getRight();
+                    if (right.get(0).equals(Aj)) {
+                        right.remove(0);
+                        productions.remove(prod);
+                        for (Production p : getProductions(Aj)) {
+                            List<Symbol> r = p.getRight();
+                            r.addAll(right);
+                            Production newProd = new Production(Ai, r, (getMaxId() + 1));
+                            productions.add(newProd);
+                        }
+                    }
+                }
+                setAllProductions(productions);
+            }
+            cleanImmediateLeftRecursion(Ai);
+        }
+        setListForMap(mNonTerminalMap);
+    }
+
+    public void extractLeftCommonFactor() {
+        boolean changed = true;
+        Map<Symbol, List<Integer>> tempMap = new HashMap<>();
+        for (Symbol sym : getNonTerminalSet()) {
+            List<Production> productions = getProductions(sym);
+            List<Symbol> prefix = getPrefix(productions);
+            int size = prefix.size();
+            Symbol prime = null;
+            List<Integer> nonTermList = new ArrayList<>();
+//        System.out.println("LCP:");
+//        for (Symbol s : lcp) {
+//            System.out.println(s.getType());
+//        }
+            if (size > 0) {
+                prime = new Symbol(sym.getType() + "\'");
+                while (getNonTerminalSet().contains(prime)) {
+                    prime = new Symbol(prime.getType() + "\'");
+                }
+                for (Production prod : productions) {
+                    List<Symbol> right = prod.getRight();
+                    List<Symbol> subList = right.subList(0, size);
+                    if (subList.equals(prefix)) {
+                        mProductions.remove(prod);
+                        List<Symbol> newRight = new ArrayList<>();
+                        for (Symbol s : right) {
+                            if (!subList.contains(s)) {
+                                newRight.add(s);
+                            }
+                        }
+                        if (newRight.isEmpty()) {
+                            newRight.add(Symbol.EMPTY_SYMBOL);
+                        }
+                        int id = getMaxId() + 1;
+                        Production newProd = new Production(prime, newRight, id);
+                        mProductions.add(newProd);
+                        nonTermList.add(id);
+                    }
+                }
+                List<Symbol> newRight = new ArrayList<>(prefix);
+                newRight.add(prime);
+                int id = getMaxId() + 1;
+                Production newProd = new Production(sym, newRight, id);
+                mProductions.add(newProd);
+                nonTermList.add(id);
+                tempMap.put(prime, nonTermList);
+            } else {
+                return;
+            }
+        }
+        mNonTerminalMap.putAll(tempMap);
+    }
+
+    private List<Symbol> getPrefix(List<Production> productions) {
+        int min = 65536;
+        List<Symbol> minRight = new ArrayList<>();
+        for (Production prod : productions) {
+            List<Symbol> right = prod.getRight();
+            if (right.size() < min) {
+                min = right.size();
+            }
+        }
+        while (min > 0) {
+            List<Symbol> result;
+            for (Production p : productions) {
+                int match = 0;
+                minRight = p.getRight().subList(0, min);
+                for (Production prod : productions) {
+                    result = prod.getRight().subList(0, min);
+                    if (result.containsAll(minRight) && minRight.containsAll(result)) {
+                        match++;
+                    }
+                }
+                if (match >= 2) {
+                    return minRight;
+                }
+            }
+            min--;
+        }
+        return minRight;
+    }
+
 }
