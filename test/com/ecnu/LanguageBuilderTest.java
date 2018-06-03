@@ -14,8 +14,8 @@ public class LanguageBuilderTest {
         //创建一种随便的语言
         int languageId = 0;
         List<RE> reList = new ArrayList<>();
-        reList.add(new RE("id", "aab"));
-        reList.add(new RE("if", "if"));
+        reList.add(new RE("id", "a*|(b)|(x)"));
+        reList.add(new RE("if", "(!=)|(==)|(<)|(<=)|(>)|(>=)"));
         //测试
         LanguageBuilder languageBuilder = new LanguageBuilder();
         List<LanguageBuilder.LexerHolder> lexerHolders = languageBuilder.buildLexerComponentsFromReStr(reList);
