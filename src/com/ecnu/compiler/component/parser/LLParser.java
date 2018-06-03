@@ -31,12 +31,11 @@ public class LLParser extends Parser {
         return null;
     }
 
-    public static TD<Symbol> predict(String w, CFG cfg) {
+    public static TD predict(String w, CFG cfg) {
         //语法树
-        TD<Symbol> syntaxTree = new TD<>();
-        TD.TNode<Symbol> root = new TD.TNode<>();
-        root.setContent(cfg.getStartSymbol());
-        syntaxTree.setRoot(root);
+        TD.TNode<String> root = new TD.TNode<>();
+        root.setContent(cfg.getStartSymbol().getType());
+        TD syntaxTree = new TD(root);
 
         LLParsingTable llParsingTable = new LLParsingTable(cfg);
         Set<LLTableItem> itemSet = llParsingTable.getItemSet();
@@ -74,16 +73,16 @@ public class LLParser extends Parser {
             if (stackTop.equals(bufferTop)) {
                 System.out.println("Match:" + stackTop.getType());
 
-                TD.TNode<Symbol> r = syntaxTree.getRoot();
+                TD.TNode<String> r = syntaxTree.getRoot();
                 List<TD.TNode> children = null;
-                Stack<TD.TNode<Symbol>> matchStack = new Stack<>();
+                Stack<TD.TNode<String>> matchStack = new Stack<>();
                 matchStack.push(r);
                 while (true) {
                     if (r.getChildren().isEmpty() && !r.isMatched()) {
                         break;
                     } else {
                         matchStack.pop();
-                        List<TD.TNode> myChildren = r.getChildren();
+                        List<TD.TNode<String>> myChildren = r.getChildren();
                         if (!(myChildren == null || myChildren.isEmpty())) {
                             for (int i = myChildren.size() - 1; i >= 0; i--) {
                                 matchStack.push(myChildren.get(i));
@@ -93,7 +92,7 @@ public class LLParser extends Parser {
                     }
                 }
 
-                if (r.getContent().getType().equals(stackTop.getType())) {
+                if (r.getContent().equals(stackTop.getType())) {
                     r.setMatched(true);
                 } else {
                     System.out.println("Tree match error!");
@@ -123,16 +122,16 @@ public class LLParser extends Parser {
                     }
                     System.out.println();
 
-                    TD.TNode<Symbol> r = syntaxTree.getRoot();
+                    TD.TNode<String> r = syntaxTree.getRoot();
                     List<TD.TNode> children = null;
-                    Stack<TD.TNode<Symbol>> outputStack = new Stack<>();
+                    Stack<TD.TNode<String>> outputStack = new Stack<>();
                     outputStack.push(r);
                     while (true) {
                         if (r.getChildren().isEmpty() && !r.isMatched()) {
                             break;
                         } else {
                             outputStack.pop();
-                            List<TD.TNode> myChildren = r.getChildren();
+                            List<TD.TNode<String>> myChildren = r.getChildren();
                             if (!(myChildren == null || myChildren.isEmpty())) {
                                 for (int i = myChildren.size() - 1; i >= 0; i--) {
                                     outputStack.push(myChildren.get(i));
@@ -142,10 +141,10 @@ public class LLParser extends Parser {
                         }
                     }
 
-                    if (r.getContent().getType().equals(prod.getLeft().getType())) {
+                    if (r.getContent().equals(prod.getLeft().getType())) {
                         for (Symbol s : prod.getRight()) {
-                            TD.TNode<Symbol> child = new TD.TNode<>();
-                            child.setContent(s);
+                            TD.TNode<String> child = new TD.TNode<>();
+                            child.setContent(s.getType());
                             if (s.equals(Symbol.EMPTY_SYMBOL)) {
                                 child.setMatched(true);
                             }
@@ -169,16 +168,16 @@ public class LLParser extends Parser {
         return syntaxTree;
     }
 
-    public static void printTree(TD<Symbol> tree) {
+    public static void printTree(TD tree) {
         Stack<TD.TNode> stack = new Stack<>();
-        System.out.println("Root:" + tree.getRoot().getContent().getType());
+        System.out.println("Root:" + tree.getRoot().getContent());
         System.out.println("-----------");
         stack.push(tree.getRoot());
         while(!stack.isEmpty()) {
-            TD.TNode<Symbol> curNode = stack.pop();
-            System.out.println("Cur:" + curNode.getContent().getType());
+            TD.TNode<String> curNode = stack.pop();
+            System.out.println("Cur:" + curNode.getContent());
             if (!curNode.getChildren().isEmpty()) {
-                List<TD.TNode> children = curNode.getChildren();
+                List<TD.TNode<String>> children = curNode.getChildren();
                 for (int i = children.size() - 1; i >= 0; i--) {
                     stack.push(children.get(i));
                 }

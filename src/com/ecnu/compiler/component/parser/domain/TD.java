@@ -72,12 +72,4 @@ public class TD {
             this.matched = matched;
         }
     }
-
-    public TNode<NodeType> getRoot() {
-        return root;
-    }
-
-    public void setRoot(TNode<NodeType> root) {
-        this.root = root;
-    }
 }
