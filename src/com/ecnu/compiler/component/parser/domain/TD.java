@@ -13,6 +13,10 @@ public class TD {
     //保存一个根节点
     private TNode<String> root;
 
+    public TD() {
+
+    }
+
     public TD(TNode<String> root) {
         this.root = root;
     }
@@ -71,13 +75,5 @@ public class TD {
         public void setMatched(boolean matched) {
             this.matched = matched;
         }
-    }
-
-    public TNode<NodeType> getRoot() {
-        return root;
-    }
-
-    public void setRoot(TNode<NodeType> root) {
-        this.root = root;
     }
 }

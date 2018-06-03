@@ -28,7 +28,7 @@ public class UtilsTest {
 
     @Test
     public void RE2DFA() throws Exception {
-        RE expression = new RE("test", "(a|b)*abb#");
+        RE expression = new RE("test", "(!=)|(==)|(<)|(<=)|(>)|(>=)");
         DFA dfa = expression.getDFADirectly();
 //        DFA dfa = expression.getDFAIndirect();
         dfa.print();

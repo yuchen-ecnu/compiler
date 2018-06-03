@@ -101,7 +101,7 @@ public class ParsersTest {
         }
         System.out.println("------------");
         String w = "id + id * id";
-        TD<Symbol> syntaxTree = LLParser.predict(w, cfg);
+        TD syntaxTree = LLParser.predict(w, cfg);
         LLParser.printTree(syntaxTree);
     }
 
