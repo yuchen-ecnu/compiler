@@ -1,10 +1,12 @@
 package com.ecnu.compiler.component.parser.domain;
 
+import com.ecnu.compiler.constant.Constants;
+
 public class Symbol {
     //终结符号
-    public static final Symbol TERMINAL_SYMBOL = new Symbol("$");
+    public static final Symbol TERMINAL_SYMBOL = new Symbol(Constants.TERMINAL_TOKEN);
     //空符号
-    public static final Symbol EMPTY_SYMBOL = new Symbol("epsilon");
+    public static final Symbol EMPTY_SYMBOL = new Symbol(Constants.EMPTY_TOKEN);
     //符号类型
     private String type;
     //是否终结符

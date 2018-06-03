@@ -5,6 +5,8 @@ import com.ecnu.compiler.component.parser.domain.*;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LRParsingTable;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.ParsingTable;
 import com.ecnu.compiler.component.storage.SymbolTable;
+import com.ecnu.compiler.component.storage.domain.Token;
+import com.ecnu.compiler.constant.Constants;
 
 import java.util.*;
 
@@ -15,11 +17,6 @@ import java.util.*;
  * @date 2018-05-01 19:58
  */
 public class LRParser extends Parser {
-    //构建解析表时需要的
-    //CFG
-    private CFG mCfg;
-    //FirstFollow集
-    private FirstFollowSet mFirstFollowSet;
 
     public LRParser(CFG CFG, ParsingTable parsingTable) {
         super(CFG, parsingTable);
@@ -33,133 +30,77 @@ public class LRParser extends Parser {
      * @return
      */
     @Override
-    public TD<Symbol> getSyntaxTree(CFG cfg, ParsingTable parsingTable, SymbolTable symbolTable) {
+    protected TD getSyntaxTree(CFG cfg, ParsingTable parsingTable, SymbolTable symbolTable) {
+        //LR解析表
         LRParsingTable lrParsingTable = (LRParsingTable)parsingTable;
+        //所有的产生式
+        List<Production> productionList = cfg.getAllProductions();
         //状态栈
         Stack<Integer> stateStack = new Stack<>();
         stateStack.push(0);
+        //语法子树栈
+        Stack<TD.TNode<String>> syntaxTreeStack = new Stack<>();
+        //当前分析输入Token列表
+        List<Token> tokenList = symbolTable.getTokens();
+        tokenList.add(new Token(Constants.TERMINAL_TOKEN, null));
 
-        /*
-        while (true){
+        //当前输入符号的index以及其字符串内容
+        int curIndex = 0;
+        String curInputStr = tokenList.get(curIndex).getType();
+        while (curIndex < tokenList.size()) {
+            //获取表项
+            LRParsingTable.TableItem tableItem = lrParsingTable.getItem(stateStack.peek(), curInputStr);
+            if (tableItem == null){
+                //todo 处理查表失败
+                System.out.println("查表失败");
+                return null;
+            }
+            switch (tableItem.getOperate()){
+                case LRParsingTable.SHIFT:
+                    //如果是Shift，则移入相应状态以及添加一个新的树节点
+                    stateStack.push(tableItem.getValue());
+                    syntaxTreeStack.push(new TD.TNode<>(curInputStr));
+                    //更新当前处理的输入符号
+                    curInputStr = tokenList.get(++curIndex).getType();
+                    break;
 
-        }*/
+                case LRParsingTable.REDUCE:
+                    //获取相应产生式
+                    Production production = productionList.get(tableItem.getValue());
+                    //构造新的树节点
+                    TD.TNode<String> parentNode = new TD.TNode<>(production.getLeft().getType());
+                    List<Symbol> right = production.getRight();
+                    for (int i = 0; i < right.size(); i++) {
+                        stateStack.pop();
+                        TD.TNode<String> childNode = syntaxTreeStack.pop();
+                        parentNode.addChild(childNode);
+                    }
+                    //将新节点放入节点栈
+                    syntaxTreeStack.push(parentNode);
+                    //查GOTO表
+                    LRParsingTable.TableItem gotoTableItem = lrParsingTable.getItem(stateStack.peek(), parentNode.getContent());
+                    if (gotoTableItem == null || gotoTableItem.getOperate() != LRParsingTable.GOTO){
+                        //todo 处理查表失败
+                        System.out.println("查表失败");
+                        return null;
+                    }
+                    //把新状态插入状态栈
+                    stateStack.push(gotoTableItem.getValue());
+                    break;
+
+                case LRParsingTable.ACCEPT:
+                    //返回构造完成的树
+                    return new TD(syntaxTreeStack.pop());
+
+                default:
+                    //todo 处理查表失败
+                    System.out.println("查表失败");
+                    return null;
+            }
+        }
+        //如果输入都完了还没到达，那么匹配就失败了，语法有错误。
+        //todo 处理语法错误
+        System.out.println("语法错误");
         return null;
     }
-
-    private LRParsingTable buildParsingTable(CFG cfg){
-        //保存cfg，构建firstFollowSet
-        mCfg = cfg;
-        mFirstFollowSet = new FirstFollowSet(cfg);
-        //创建空的ParsingTable
-        List<Symbol> allSymbol = new ArrayList<>();
-        allSymbol.addAll(cfg.getNonTerminalSet());
-        allSymbol.addAll(cfg.getTerminalSet());
-        LRParsingTable lrParsingTable = new LRParsingTable(allSymbol);
-        //创建ItemSet的列表保存每个状态
-        List<LRItemSet> stateList = new ArrayList<>();
-        //创建Map保存状态和编号的映射
-        Map<LRItemSet, Integer> stateMap = new HashMap<>();
-        //添加初始状态
-        LRItemSet itemSet= new LRItemSet();
-        List<Symbol> productionRight = new ArrayList<>();
-        productionRight.add(cfg.getAllProductions().get(0).getLeft()); //使用第一个产生式的左边作为起始符号
-        Production production = new Production(new Symbol("startSymbol"), productionRight, -1); //构造初始产生式
-        itemSet.add(new LRItem(production, 0, Symbol.TERMINAL_SYMBOL)); //添加初始项
-        //把初始状态添加到状态列表与解析表中
-        //由于初始状态只可能出现在第一次，所以就不用添加到映射中去了。
-        stateList.add(getClosure(itemSet));
-        lrParsingTable.addState();
-
-        //循环构建解析表
-        for (int i = 0; i < stateList.size(); i++) {
-            itemSet = stateList.get(i);
-            for (LRItem item : itemSet){
-                //点的位置
-                int pointPosition = item.getPointPosition();
-                if (pointPosition == item.getProduction().getRight().size()){
-                    //假如点后面没有别的符号了
-                    lrParsingTable.set(i, item.getLookAhead(), LRParsingTable.REDUCE, item.getProduction().getId());
-                } else {
-                    //点后面有符号
-                    //点后的符号
-                    Symbol symbolAfterPoint = item.getProduction().getRight().get(pointPosition);
-                    //判断是否已经计算过该符号
-                    if (lrParsingTable.getItem(i, symbolAfterPoint) == null) {
-                        // 表项为null，则要计算goto，并添加新状态
-                        LRItemSet newItemSet = getGoto(itemSet, symbolAfterPoint);
-                        Integer targetIndex = stateMap.get(newItemSet); //跳转状态编号
-                        if (targetIndex == null) {
-                            //假如该状态还未添加
-                            stateList.add(newItemSet);
-                            targetIndex = stateList.size() - 1;
-                            stateMap.put(newItemSet, targetIndex);
-                        }
-                        //在解析表中添加新状态
-                        lrParsingTable.addState();
-                        //区分是否终结符
-                        boolean isTerminal = cfg.getTerminalSet().contains(symbolAfterPoint);
-                        //添加表项
-                        lrParsingTable.set(i, symbolAfterPoint,
-                                isTerminal ? LRParsingTable.SHIFT : LRParsingTable.GOTO, targetIndex);
-                    }
-                }
-            }
-        }
-
-        //解析表最少2行，而包含s->s'的只有[1,$]项，所以设置其为acc
-        lrParsingTable.set(1, Symbol.TERMINAL_SYMBOL, LRParsingTable.ACCEPT, 0);
-
-        return lrParsingTable;
-    }
-
-    //获得项集闭包，返回的是输入参数的引用
-    private LRItemSet getClosure(LRItemSet itemSet){
-        for (LRItem item : itemSet){
-            //点的位置
-            int pointPosition = item.getPointPosition();
-            //产生式右边
-            List<Symbol> productionRight = item.getProduction().getRight();
-            if (pointPosition <= productionRight.size()) {
-                //点后有符号
-                Symbol symbolAfterPoint = item.getProduction().getRight().get(pointPosition);
-                //符号对应产生式
-                List<Production> productions = mCfg.getProductions(symbolAfterPoint);
-                //计算闭包后向前看符号可能的情况的列表
-                //产生式点两位后的列表
-                List<Symbol> beta = productionRight.subList(pointPosition + 1, productionRight.size());
-                beta = new ArrayList<>(beta);
-                beta.add(item.getLookAhead());
-                //所求列表
-                Set<Symbol> lookAheadList = mFirstFollowSet.getFirst(beta);
-                //如果该符号是非终结符，则对应产生式列表不为空
-                if (productions != null){
-                    for (Production production : productions){
-                        for (Symbol lookAhead : lookAheadList){
-                            itemSet.add(new LRItem(production, 0, lookAhead));
-                        }
-                    }
-                }
-            }
-        }
-        return itemSet;
-    }
-
-    //求状态的跳转状态
-    private LRItemSet getGoto(LRItemSet itemSet, Symbol gotoSymbol){
-        LRItemSet newItemSet = new LRItemSet();
-        for (LRItem item : itemSet){
-            //点的位置
-            int pointPosition = item.getPointPosition();
-            if (pointPosition <= item.getProduction().getRight().size()) {
-                //点后有符号
-                Symbol symbolAfterPoint = item.getProduction().getRight().get(pointPosition);
-                if (symbolAfterPoint.equals(gotoSymbol)) {
-                    //点后符号符合要求,则添加
-                    newItemSet.add(item.gotoNext());
-                }
-            }
-        }
-        return getClosure(newItemSet);
-    }
-
 }

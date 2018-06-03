@@ -11,15 +11,10 @@ import static org.junit.Assert.*;
 public class LRParserTest {
     @Test
     public void buildParsingTable() throws Exception {
-        List<Integer> list = new LinkedList<>();
-        list.add(1);
-        for (Integer i : list){
-            if (list.size() < 5)
-                list.add(list.size()+1);
-        }
-
-        for (Integer i : list){
-            System.out.println(i);
+        String s = "1  2";
+        String[] strings = s.split(" ");
+        for(String ss : strings){
+            System.out.println(ss);
         }
     }
 }

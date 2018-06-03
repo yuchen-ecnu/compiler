@@ -58,10 +58,8 @@ public class LanguageBuilder {
     /**
      * 从RE字符串列表构造词法分析器需要的所有信息
      */
-    public ArrayList<LexerHolder> buildLexerComponentsFromReStr(List<String> reStrList){
+    public ArrayList<LexerHolder> buildLexerComponentsFromReStr(List<RE> reList){
         ArrayList<LexerHolder> holders = new ArrayList<>();
-        //todo RE格式的错误处理
-        List<RE> reList = RE.buildREListFromStr(reStrList);
         for (RE re : reList){
             LexerHolder lexerHolder = new LexerHolder();
             lexerHolder.DFAFromRE = re.getDFADirectly();

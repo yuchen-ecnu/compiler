@@ -27,7 +27,7 @@ public class LLParser extends Parser {
     }
 
     @Override
-    protected TD<Symbol> getSyntaxTree(CFG cfg, ParsingTable parsingTable, SymbolTable symbolTable) {
+    protected TD getSyntaxTree(CFG cfg, ParsingTable parsingTable, SymbolTable symbolTable) {
         return null;
     }
 

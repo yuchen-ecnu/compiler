@@ -4,7 +4,7 @@ import com.ecnu.compiler.component.lexer.domain.RE;
 
 import java.util.regex.Pattern;
 
-import static com.ecnu.compiler.constant.Constants.EMPTY_TOKEN;
+import static com.ecnu.compiler.constant.Constants.EMPTY_STRING;
 
 /**
  * 字符过滤器
@@ -38,6 +38,6 @@ public class TokenFilter {
      * @return 返回过滤后的字符流
      */
     public String execute (String input){
-        return pattern.matcher(input).replaceAll(EMPTY_TOKEN).trim();
+        return pattern.matcher(input).replaceAll(EMPTY_STRING).trim();
     }
 }
