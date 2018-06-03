@@ -12,13 +12,13 @@ import java.util.List;
  */
 public class RE {
 
-    //从String构造RE的列表
+    //从String构造RE的列表,现在直接在组件外部构造
+    /*
     static public ArrayList<RE> buildREListFromStr(List<String> reStrList){
         ArrayList<RE> reList = new ArrayList<>();
         for (String reStr : reStrList){
             String[] reNameExp = reStr.split(" ");
             if (reNameExp.length != 2){
-                //todo RE格式错误处理
                 System.out.println("RE格式错误");
                 return null;
             }
@@ -26,7 +26,7 @@ public class RE {
             reList.add(re);
         }
         return reList;
-    }
+    }*/
 
     //RE对应符号名
     private String name;

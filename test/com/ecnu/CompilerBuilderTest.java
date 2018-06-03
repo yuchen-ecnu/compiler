@@ -1,5 +1,6 @@
 package com.ecnu;
 
+import com.ecnu.compiler.component.lexer.domain.RE;
 import com.ecnu.compiler.constant.Config;
 import com.ecnu.compiler.constant.Constants;
 import com.ecnu.compiler.constant.StatusCode;
@@ -32,9 +33,9 @@ public class CompilerBuilderTest {
     public void runExample() {
         //创建一种随便的语言
         int languageId = 0;
-        List<String> reStrList = new ArrayList<>();
-        reStrList.add("id aab");
-        reStrList.add("if if");
+        List<RE> reList = new ArrayList<>();
+        reList.add(new RE("id", "aab"));
+        reList.add(new RE("if", "if"));
         List<String> productionStrList = new ArrayList<>();
         productionStrList.add("T -> id E id");
         productionStrList.add("E -> id | if T");
@@ -44,7 +45,7 @@ public class CompilerBuilderTest {
         //测试
         CompilerBuilder compilerBuilder = new CompilerBuilder();
         if (!compilerBuilder.checkLanguage(languageId)){
-            compilerBuilder.prepareLanguage(languageId, Constants.LANGUAGE_JAVA, reStrList, productionStrList);
+            compilerBuilder.prepareLanguage(languageId, Constants.LANGUAGE_JAVA, reList, productionStrList);
         }
         Compiler compiler = compilerBuilder.getCompilerInstance(languageId, config);
         //使用compiler
