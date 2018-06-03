@@ -13,6 +13,10 @@ public class TD {
     //保存一个根节点
     private TNode<String> root;
 
+    public TD() {
+
+    }
+
     public TD(TNode<String> root) {
         this.root = root;
     }
