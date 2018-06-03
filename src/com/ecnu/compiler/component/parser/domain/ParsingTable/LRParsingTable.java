@@ -13,20 +13,28 @@ public class LRParsingTable extends ParsingTable {
     public static final char ACCEPT = 'a';
     public static final char GOTO = 'g';
     //表项
-    public class TableItem{
-        char operate;
-        int value;
+    static public class TableItem{
+        private char operate;
+        private int value;
+
+        public char getOperate() {
+            return operate;
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
     //表
     List<TableItem[]> table;
     //表的纵坐标映射
-    Map<Symbol, Integer> colMap;
+    Map<String, Integer> colMap;
 
     //构造时需要传入纵坐标对应的符号集合
     public LRParsingTable(List<Symbol> symbols){
         int i = 0;
         for (Symbol symbol : symbols){
-            colMap.put(symbol, i);
+            colMap.put(symbol.getType(), i);
             i++;
         }
     }
@@ -38,7 +46,7 @@ public class LRParsingTable extends ParsingTable {
 
     //设置表项
     public boolean set(int state, Symbol colSymbol, char operate, int value){
-        Integer col = colMap.get(colSymbol);
+        Integer col = colMap.get(colSymbol.getType());
         if (state < table.size() && col != null && table.get(state)[col] != null){
             TableItem tableItem = new TableItem();
             tableItem.operate = operate;
@@ -51,6 +59,14 @@ public class LRParsingTable extends ParsingTable {
 
     //获取表项
     public TableItem getItem(int state, Symbol colSymbol){
+        Integer col = colMap.get(colSymbol.getType());
+        if (state < table.size() && col != null){
+            return table.get(state)[col];
+        }
+        return null;
+    }
+
+    public TableItem getItem(int state, String colSymbol){
         Integer col = colMap.get(colSymbol);
         if (state < table.size() && col != null){
             return table.get(state)[col];

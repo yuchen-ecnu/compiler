@@ -7,8 +7,8 @@ import java.util.List;
  * @date 2018-05-01 15:03
  */
 public class Token {
-    public String type;
-    public List attrs;
+    private String type;
+    private List attrs;
 
     public Token(String type, List attrs) {
         this.type = type;

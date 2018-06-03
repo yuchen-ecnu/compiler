@@ -23,9 +23,9 @@ public abstract class Parser {
         mParsingTable = parsingTable;
     }
 
-    public TD<Symbol> buildSyntaxTree(SymbolTable symbolTable){
+    public TD buildSyntaxTree(SymbolTable symbolTable){
         return getSyntaxTree(mCfg, mParsingTable, symbolTable);
     }
 
-    abstract protected TD<Symbol> getSyntaxTree(CFG cfg, ParsingTable parsingTable, SymbolTable symbolTable);
+    abstract protected TD getSyntaxTree(CFG cfg, ParsingTable parsingTable, SymbolTable symbolTable);
 }

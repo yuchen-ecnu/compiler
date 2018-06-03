@@ -6,7 +6,11 @@ package com.ecnu.compiler.constant;
 public class Constants {
 
     /** 空字符 */
-    public static final String EMPTY_TOKEN = "";
+    public static final String EMPTY_STRING = "";
+    /** 终结字符 */
+    public static final String TERMINAL_TOKEN = "$";
+    /** 空字符占位符 */
+    public static final String EMPTY_TOKEN = "epsilon";
 
     // RE表达式集合
     /*JAVA*/
