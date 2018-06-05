@@ -66,6 +66,10 @@ public class Compiler {
         return mController.getSymbolTable();
     }
 
+    public ErrorList getErrorList() {
+        return mErrorList;
+    }
+
     /**
      * 创建编译进程控制器
      * @param language 语言信息
