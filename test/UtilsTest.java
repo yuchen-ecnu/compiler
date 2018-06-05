@@ -9,7 +9,7 @@ public class UtilsTest {
 
     @Test
     public void RE2NFA() throws Exception {
-        RE expression = new RE("test", "(a|b)*d");
+        RE expression = new RE("test", "(!=)|(==)|(<)|(<=)|(>)|(>=)");
         NFA nfa = expression.getNFA();
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(nfa.getStartState().getId()).append(" <-> ")
@@ -36,7 +36,7 @@ public class UtilsTest {
 
     @Test
     public void NFA2DFA() throws Exception {
-        RE expression = new RE("test", "(a|b)*d");
+        RE expression = new RE("test", "(!=)|(==)|(<)|(<=)|(>)|(>=)");
         DFA dfa = expression.getDFAIndirect();
         StringBuilder stringBuilder = new StringBuilder();
         int count = 0;

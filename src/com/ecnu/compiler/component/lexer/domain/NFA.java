@@ -128,6 +128,7 @@ public class NFA extends Graph {
                 drawExistDfa(startState,dfa.getStateById(dfaStateSet.get(nextStates.get(weight))),weight);
             }
         }
+        //设置DFA的结束节点
         for(Set<State> stateSet : dfaStateSet.keySet()){
             if (stateSet.contains(getEndState())){
                 dfa.addOnlyOneEndStateList(dfa.get(dfaStateSet.get(stateSet)));

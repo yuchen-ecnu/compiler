@@ -36,7 +36,7 @@ public class DFA extends Graph {
     public List<List<TransitMat>> mStateTransitionMat;
 
     public DFA() {
-
+        this.mEndStateList = new ArrayList<>();
     }
 
     public DFA(List<DfaState> dfaStateList,List<List<TransitMat>> stateTransitionMat) {
@@ -130,7 +130,6 @@ public class DFA extends Graph {
 
     public void addOnlyOneEndStateList(State endState) {
         //getEndStateList().get(0).isAccepted = false;
-        this.mEndStateList = new ArrayList<>();
         endState.isAccepted = true;
         this.mEndStateList.add(endState);
     }
