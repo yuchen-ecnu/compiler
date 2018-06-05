@@ -4,6 +4,7 @@ import com.ecnu.compiler.component.CacheManager.Language;
 import com.ecnu.compiler.component.preprocessor.Preprocessor;
 import com.ecnu.compiler.component.storage.ErrorList;
 import com.ecnu.compiler.constant.Config;
+import com.ecnu.compiler.constant.Constants;
 import com.ecnu.compiler.constant.StatusCode;
 import com.ecnu.compiler.controller.base.BaseController;
 
@@ -17,14 +18,12 @@ import java.io.File;
  */
 public class CplusController extends BaseController {
 
-
     public CplusController(Language language, Config config, ErrorList errorList) {
         super(language, config, errorList);
     }
 
     @Override
     protected Preprocessor createPreprocessor() {
-        //todo 构造C的预处理器
-        return new Preprocessor();
+        return new Preprocessor(Constants.CPP_COMMENT);
     }
 }

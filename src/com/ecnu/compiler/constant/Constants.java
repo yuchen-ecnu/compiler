@@ -7,10 +7,12 @@ public class Constants {
 
     /** 空字符 */
     public static final String EMPTY_STRING = "";
-    /** 终结字符 */
-    public static final String TERMINAL_TOKEN = "$";
     /** 空字符占位符 */
     public static final String EMPTY_TOKEN = "epsilon";
+    /** 终结字符 */
+    public static final String TERMINAL_TOKEN = "$";
+    /** 空格字符 */
+    public static final String SPACE_TOKEN = " ";
 
     // RE表达式集合
     /*JAVA*/
@@ -40,7 +42,7 @@ public class Constants {
     public static final String JAVA_RESERVED = "^(null)|(cast)|(future)|(generic)|(inner)|(operator)|(outer)|(rest)"
             + "|(var)|(goto)|(byValue)$";
     //注释
-    public static final String JAVA_COMMENT = "^(//.*)|(/\\*(.)*?\\*/)$";
+    public static final String JAVA_COMMENT = "(//.*?\n)|(/\\*(.)*?\\*/)";
     //运算符
     public static final String JAVA_OPERATOR = "^[\\+\\-\\*/%=]$";
     //关系运算符
@@ -74,7 +76,7 @@ public class Constants {
     public static final String CPP_KEY_WORD_TYPE = "^(int)|(short)|(float)|(double)|(unsigned)"
             + "|(char)|(boolean)|(long)|(long long)|(long double)|(string)|(wchar_t)$";
     //注释
-    public static final String CPP_COMMENT = "^(//.*)|(/\\*(.)*?\\*/)$";
+    public static final String CPP_COMMENT = "(//.*?\n)|(/\\*(.)*?\\*/)";
     //运算符
     public static final String CPP_OPERATOR = "^[\\+\\-\\*/%=]$";
     //关系运算符

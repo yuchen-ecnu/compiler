@@ -1,6 +1,7 @@
 package com.ecnu;
 
 import com.ecnu.compiler.component.lexer.domain.RE;
+import com.ecnu.compiler.component.storage.domain.Token;
 import com.ecnu.compiler.constant.Config;
 import com.ecnu.compiler.constant.Constants;
 import com.ecnu.compiler.constant.StatusCode;
@@ -34,8 +35,8 @@ public class CompilerBuilderTest {
         //创建一种随便的语言
         int languageId = 0;
         List<RE> reList = new ArrayList<>();
-        reList.add(new RE("id", "aab"));
         reList.add(new RE("if", "if"));
+        reList.add(new RE("id", "a|(a|b)*"));
         List<String> productionStrList = new ArrayList<>();
         productionStrList.add("T -> id E id");
         productionStrList.add("E -> id | if T");
@@ -50,7 +51,7 @@ public class CompilerBuilderTest {
         Compiler compiler = compilerBuilder.getCompilerInstance(languageId, config);
         //使用compiler
         //随便的一段代码
-        String text = "aab aab if aab aab aab";
+        String text = "/*11*/\nif//tt\n baab aabb if //test\n abab\t\t\taaab abbab";
         //初始化编译器
         compiler.prepare(text);
         //利用状态码判断是否达到了对应的步骤
@@ -58,6 +59,12 @@ public class CompilerBuilderTest {
             compiler.next();
             System.out.println("now status is: " + compiler.getStatus().getText());
         }
+
+        if (compiler.getSymbolTable() != null)
+            compiler.getSymbolTable().getTokens().forEach((token) -> System.out.println(token.getType()));
+        else
+            System.out.println("匹配失败");
+
         /* 当然你也可以这样来进行循环
         while (compiler.next() != StatusCode.STAGE_PARSER){
             System.out.println("now status is: " + compiler.getStatus().getText());

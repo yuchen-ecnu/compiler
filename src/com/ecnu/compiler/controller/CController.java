@@ -18,12 +18,10 @@ public class CController extends BaseController{
 
     public CController(Language language, Config config, ErrorList errorList) {
         super(language, config, errorList);
-        this.mPreprocessor = new Preprocessor();
     }
 
     @Override
     protected Preprocessor createPreprocessor() {
-        //todo 构造C++的预处理器
-        return null;
+        return new Preprocessor(Constants.CPP_COMMENT);
     }
 }

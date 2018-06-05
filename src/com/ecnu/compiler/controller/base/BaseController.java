@@ -63,7 +63,8 @@ public abstract class BaseController {
         //创建预处理器，由子类创建
         mPreprocessor = createPreprocessor();
         //创建词法分析器，固定创建Lexer
-        mLexer = createLexer(language.getDFAList());
+        //mLexer = createLexer(language.getDFAList());
+        mLexer = new Lexer(language.getREList(), 0);
         //创建语法分析器，根据config创建
         mParser = createParser(language);
     }

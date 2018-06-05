@@ -4,6 +4,7 @@ import com.ecnu.compiler.component.CacheManager.Language;
 import com.ecnu.compiler.component.preprocessor.Preprocessor;
 import com.ecnu.compiler.component.storage.ErrorList;
 import com.ecnu.compiler.constant.Config;
+import com.ecnu.compiler.constant.Constants;
 import com.ecnu.compiler.constant.StatusCode;
 import com.ecnu.compiler.controller.base.BaseController;
 
@@ -23,7 +24,6 @@ public class JavaController extends BaseController {
 
     @Override
     protected Preprocessor createPreprocessor() {
-        //todo 构造JAVA的预处理器
-        return new Preprocessor();
+        return new Preprocessor(Constants.JAVA_COMMENT);
     }
 }
