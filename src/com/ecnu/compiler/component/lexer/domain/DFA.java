@@ -651,7 +651,7 @@ public class DFA extends Graph {
         List<State> copyOfStateList = new ArrayList<State>();
         for (State state : states) {
             // 不用FAState copyOfState = new FAState(state.getId()); 浅度复制String对象
-            State copyOfState = new State(new Integer(state.getId()), false);
+            State copyOfState = new State(state.getId(), false);
             copyOfStateList.add(copyOfState);
         }
         return copyOfStateList;

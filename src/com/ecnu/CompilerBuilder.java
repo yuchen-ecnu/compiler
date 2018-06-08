@@ -50,15 +50,10 @@ public class CompilerBuilder {
      * @param languageId
      * @return
      */
-    public void prepareLanguage(int languageId, String baseLanguage, List<RE> reList, List<String> productionStrList){
-        if (!baseLanguage.equals(Constants.LANGUAGE_C) &&!baseLanguage.equals(Constants.LANGUAGE_CPLUS)
-                && !baseLanguage.equals(Constants.LANGUAGE_JAVA))
-            //todo 语言不支持
-            return;
-
+    public void prepareLanguage(int languageId, List<RE> reList, List<String> productionStrList){
         //todo 构造时出现问题之后单独做一个EXCEPTION来处理，现在先假设RE没毛病。
         //创建语言信息
-        Language language = new Language(languageId, baseLanguage);
+        Language language = new Language(languageId);
         //保存RE列表
         language.setREList(reList);
         //构造DFA

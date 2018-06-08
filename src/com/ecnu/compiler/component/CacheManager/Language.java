@@ -14,8 +14,6 @@ import java.util.List;
 public class Language {
     //语言编号
     int mId;
-    //语言所属语种
-    String mBaseLanguage;
     //RE列表,优先级高的排在列表前面
     List<RE> mREList;
     //DFA列表,优先级高的排在列表前面
@@ -32,17 +30,12 @@ public class Language {
     //LALR
     LRParsingTable mLALRParsingTable;
 
-    public Language(int id, String baseLanguage) {
+    public Language(int id) {
         mId = id;
-        mBaseLanguage = baseLanguage;
     }
 
     public int getId() {
         return mId;
-    }
-
-    public String getBaseLanguage() {
-        return mBaseLanguage;
     }
 
     public List<RE> getREList() {

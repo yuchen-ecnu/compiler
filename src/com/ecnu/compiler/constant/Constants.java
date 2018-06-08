@@ -15,6 +15,8 @@ public class Constants {
     public static final String SPACE_TOKEN = " ";
 
     // RE表达式集合
+    //注释
+    public static final String ANNOTATION = "(//.*?\n)|(/\\*(.)*?\\*/)";
     /*JAVA*/
     //标识符
     public static final String JAVA_IDENTIFIER = "^[A-Za-z_]+[A-Za-z_0-9]*$";

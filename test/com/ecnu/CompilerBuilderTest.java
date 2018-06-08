@@ -46,7 +46,7 @@ public class CompilerBuilderTest {
         //测试
         CompilerBuilder compilerBuilder = new CompilerBuilder();
         if (!compilerBuilder.checkLanguage(languageId)){
-            compilerBuilder.prepareLanguage(languageId, Constants.LANGUAGE_JAVA, reList, productionStrList);
+            compilerBuilder.prepareLanguage(languageId, reList, productionStrList);
         }
         Compiler compiler = compilerBuilder.getCompilerInstance(languageId, config);
         //使用compiler
@@ -59,6 +59,10 @@ public class CompilerBuilderTest {
             compiler.next();
             System.out.println("now status is: " + compiler.getStatus().getText());
         }
+        Compiler.TimeHolder timeHolder = compiler.getTimeHolder();
+        System.out.println("预处理时间：" + timeHolder.getPreprocessorTime());
+        System.out.println("词法编译器时间：" + timeHolder.getLexerTime());
+        System.out.println("语法编译器时间：" + timeHolder.getParserTime());
 
         if (compiler.getSymbolTable() != null)
             compiler.getSymbolTable().getTokens().forEach((token) -> System.out.println(token.getType()));

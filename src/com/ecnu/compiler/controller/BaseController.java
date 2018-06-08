@@ -1,4 +1,4 @@
-package com.ecnu.compiler.controller.base;
+package com.ecnu.compiler.controller;
 
 import com.ecnu.compiler.component.CacheManager.Language;
 import com.ecnu.compiler.component.lexer.Lexer;
@@ -13,6 +13,7 @@ import com.ecnu.compiler.component.storage.SymbolTable;
 import com.ecnu.compiler.constant.Config;
 import com.ecnu.compiler.constant.Constants;
 import com.ecnu.compiler.constant.StatusCode;
+import com.ecnu.compiler.controller.Compiler;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ import java.util.List;
  * 控制器 基类（控制器行为集合）
  * @author Michael Chen
  */
-public abstract class BaseController {
+public class BaseController {
 
     //存储
     /** 控制器需要的语言信息 */
@@ -28,6 +29,8 @@ public abstract class BaseController {
 
     /** 异常列表 */
     protected ErrorList mErrorList;
+    /** 时间表 */
+    protected Compiler.TimeHolder mTimeHolder;
 
     /** 编译状态码 */
     protected StatusCode mStatus;
@@ -53,15 +56,16 @@ public abstract class BaseController {
     private SymbolTable mSymbolTable;
     //语法分析后得到的语法树
 
-    public BaseController(Language language, Config config, ErrorList errorList) {
+    public BaseController(Language language, Config config, ErrorList errorList, Compiler.TimeHolder timeHolder) {
         //初始化变量
         mStatus = StatusCode.STAGE_INIT;
         mLanguage = language;
         mConfig = config;
         mErrorList = errorList;
+        mTimeHolder = timeHolder;
         //创建编译器各部件
         //创建预处理器，由子类创建
-        mPreprocessor = createPreprocessor();
+        mPreprocessor = new Preprocessor(Constants.ANNOTATION);
         //创建词法分析器，固定创建Lexer
         //mLexer = createLexer(language.getDFAList());
         mLexer = new Lexer(language.getREList(), 0);
@@ -104,6 +108,7 @@ public abstract class BaseController {
 
     /** 单步执行 */
     private StatusCode nextStep(){
+        long startTime = System.currentTimeMillis();
         switch (mStatus){
             case ERROR:
                 break;
@@ -111,12 +116,16 @@ public abstract class BaseController {
                 if (!"".equals(mTextToCompiler)){
                     mTextListAfterPreprocess = mPreprocessor.preprocess(mTextToCompiler);
                     mStatus = StatusCode.STAGE_LEXER;
+                    //计时
+                    mTimeHolder.setPreprocessorTime(System.currentTimeMillis() - startTime);
                 }
                 break;
             case STAGE_LEXER:
                 if (mTextListAfterPreprocess != null){
                     mSymbolTable = mLexer.buildSymbolTable(mTextListAfterPreprocess);
                     mStatus = StatusCode.STAGE_PARSER;
+                    //计时
+                    mTimeHolder.setLexerTime(System.currentTimeMillis() - startTime);
                 }
                 break;
             case STAGE_PARSER:
@@ -132,12 +141,6 @@ public abstract class BaseController {
         }
         return mStatus;
     }
-
-    /**
-     * 创建词法分析器
-     * @return 对应算法的词法分析器
-     */
-    protected abstract Preprocessor createPreprocessor();
 
     /**
      * 创建词法分析器
