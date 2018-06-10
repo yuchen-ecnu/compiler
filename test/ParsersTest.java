@@ -5,16 +5,18 @@ import com.ecnu.compiler.component.parser.domain.ParsingTable.LLTableItem;
 import com.ecnu.compiler.component.parser.domain.PredictTable.PredictTable;
 import org.junit.Test;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ParsersTest {
 
     @Test
     public void LLParser() throws Exception {
-        String[] cfgList = {"E->T E'", "E'->+ T E' |epsilon", "T->F T'", "T'->* F T'|epsilon", "F->( E )|id"};
+        ArrayList<String> cfgList = new ArrayList<>();
+        cfgList.add("E->T E'");
+        cfgList.add("E'->+ T E' |epsilon");
+        cfgList.add("T->F T'");
+        cfgList.add("T'->* F T'|epsilon");
+        cfgList.add("F->( E )|id");
         Symbol s1 = new Symbol("E");
         Symbol s2 = new Symbol("T");
         Symbol s3 = new Symbol("E'");
@@ -129,7 +131,9 @@ public class ParsersTest {
 
     @Test
     public void cleanLeftRecursion() throws Exception {
-        String[] cfgList = {"T->T * F", "T->F"};
+        ArrayList<String> cfgList = new ArrayList<>();
+        cfgList.add("T->T * F");
+        cfgList.add("T->F");
         Symbol s1 = new Symbol("T");
         Symbol s2 = new Symbol("*");
         Symbol s3 = new Symbol("F");
@@ -164,7 +168,10 @@ public class ParsersTest {
 
     @Test
     public void cleanLeftRecusrion() throws Exception {
-        String[] cfgList = {"E->E + T|T", "T->T * F|F", "F->( E )|id"};
+        ArrayList<String> cfgList = new ArrayList<>();
+        cfgList.add("E->E + T|T");
+        cfgList.add("T->T * F|F");
+        cfgList.add("F->( E )|id");
         Symbol s1 = new Symbol("E");
         Symbol s2 = new Symbol("+");
         Symbol s3 = new Symbol("T");
@@ -205,7 +212,9 @@ public class ParsersTest {
 
     @Test
     public void extractLeftCommonFactor() throws Exception {
-        String[] cfgList = {"A->+ a b|+ b B|b", "B->+ a b|+ a|+"};
+        ArrayList<String> cfgList = new ArrayList<>();
+        cfgList.add("A->+ a b|+ b B|b");
+        cfgList.add("B->+ a b|+ a|+");
         Symbol s1 = new Symbol("A");
         Symbol s2 = new Symbol("+");
         Symbol s3 = new Symbol("a");

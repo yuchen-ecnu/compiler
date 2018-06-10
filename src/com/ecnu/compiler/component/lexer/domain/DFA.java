@@ -141,7 +141,6 @@ public class DFA extends Graph {
      * @author Lucto
      */
     public List<Integer> match(String lexeme){
-        //todo 判断本DFA是否匹配RE
         //author: huge
         //结果路径
         List<Integer> resultPath = new ArrayList<>();
@@ -436,9 +435,7 @@ public class DFA extends Graph {
 //    public static DFA DFA2MinDFA(DFA dfa) throws IOException {
 //        dfa.stateTransitionMat = GetTransitMat(dfa);
 //=======*/
-////    //todo 现在最小化会在输入里面操作，要做成构造一个新的。
 ////    public static DFA DFA2MinDFA(DFA dfa){
-////        //todo 最小化未完成，先返回原DFA
 ////        return dfa;
 ////        /*
 //        //GetTransitMat(dfa);

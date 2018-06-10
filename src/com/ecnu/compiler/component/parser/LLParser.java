@@ -32,7 +32,7 @@ public class LLParser extends Parser {
     }
 
     @Override
-    protected TD getSyntaxTree(CFG cfg, ParsingTable parsingTable, SymbolTable symbolTable) {
+    protected TD getSyntaxTree(CFG cfg, ParsingTable parsingTable, SymbolTable symbolTable, PredictTable predictTable) {
         return null;
     }
 

@@ -134,8 +134,6 @@ public class FirstFollowSet {
                 }
             }
         }
-
-
     }
 
     public Set<Symbol> getFirst(Symbol symbol){

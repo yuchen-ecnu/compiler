@@ -20,7 +20,7 @@ public class LRParserBuilder {
         return mFirstFollowSet;
     }
 
-    protected LRParsingTable buildParsingTable(CFG cfg){
+    public LRParsingTable buildParsingTable(CFG cfg){
         //保存cfg，构建firstFollowSet
         mCfg = cfg;
         mFirstFollowSet = new FirstFollowSet(cfg);
@@ -98,7 +98,7 @@ public class LRParserBuilder {
             int pointPosition = item.getPointPosition();
             //产生式右边
             List<Symbol> productionRight = item.getProduction().getRight();
-            if (pointPosition <= productionRight.size()) {
+            if (pointPosition < productionRight.size()) {
                 //点后有符号
                 Symbol symbolAfterPoint = item.getProduction().getRight().get(pointPosition);
                 //符号对应产生式

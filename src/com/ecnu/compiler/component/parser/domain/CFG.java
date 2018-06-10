@@ -19,7 +19,7 @@ public class CFG {
     /**
      * 构造函数，需要传入CFG的列表
      */
-    public CFG(String[] productionStrList, Set<Symbol> mSymbolSet) {
+    public CFG(List<String> productionStrList, Set<Symbol> mSymbolSet) {
         int nonTermId = 1;
         int prodId = 1;
         Set<String> stringSet = new HashSet<>();
