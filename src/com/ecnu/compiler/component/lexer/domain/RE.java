@@ -11,31 +11,20 @@ import java.util.List;
  * 保存一个RE对应的名字和其表达式
  */
 public class RE {
-
-    //从String构造RE的列表,现在直接在组件外部构造
-    /*
-    static public ArrayList<RE> buildREListFromStr(List<String> reStrList){
-        ArrayList<RE> reList = new ArrayList<>();
-        for (String reStr : reStrList){
-            String[] reNameExp = reStr.split(" ");
-            if (reNameExp.length != 2){
-                System.out.println("RE格式错误");
-                return null;
-            }
-            RE re = new RE(reNameExp[0], reNameExp[1]);
-            reList.add(re);
-        }
-        return reList;
-    }*/
-
+    //预定义的类型
+    public static final int SPILT_SYMBOL = 1;
+    public static final int NOMAL_SYMBOL = 2;
     //RE对应符号名
     private String name;
     //RE对应表达式
     private String expression;
+    //RE的类型
+    private int type;
 
-    public RE(String name, String expression) {
+    public RE(String name, String expression, int type) {
         this.name = name;
         this.expression = expression;
+        this.type = type;
     }
 
     public String getExpression() {
@@ -44,6 +33,10 @@ public class RE {
 
     public String getName() {
         return name;
+    }
+
+    public int getType() {
+        return type;
     }
 
     @Override

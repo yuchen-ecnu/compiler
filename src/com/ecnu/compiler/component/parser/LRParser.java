@@ -40,9 +40,10 @@ public class LRParser extends Parser {
         stateStack.push(0);
         //语法子树栈
         Stack<TD.TNode<String>> syntaxTreeStack = new Stack<>();
-        //当前分析输入Token列表
+        //当前分析的输入Token列表
         List<Token> tokenList = symbolTable.getTokens();
-        tokenList.add(new Token(Constants.TERMINAL_TOKEN, null));
+        //添加终结符
+        tokenList.add(new Token(Constants.TERMINAL_TOKEN));
 
         //当前输入符号的index以及其字符串内容
         int curIndex = 0;

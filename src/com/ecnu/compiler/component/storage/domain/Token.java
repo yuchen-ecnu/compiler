@@ -1,33 +1,55 @@
 package com.ecnu.compiler.component.storage.domain;
 
-import java.util.List;
-
 /**
  * @author Michael Chen
  * @date 2018-05-01 15:03
  */
 public class Token {
-    private String type;
-    private List attrs;
+    private String mType;
+    private String mStr;
+    private int mRowNumber;
+    private int mColPosition;
 
-    public Token(String type, List attrs) {
-        this.type = type;
-        this.attrs = attrs;
+    public Token(String type, String stringText) {
+        this.mType = type;
+        mStr = stringText;
     }
 
+    public Token(String type) {
+        mType = type;
+    }
+
+
+
     public String getType() {
-        return type;
+        return mType;
     }
 
     public void setType(String type) {
-        this.type = type;
+        this.mType = type;
     }
 
-    public List<Object> getAttrs() {
-        return attrs;
+    public String getStr() {
+        return mStr;
     }
 
-    public void setAttrs(List<Object> attrs) {
-        this.attrs = attrs;
+    public void setStr(String str) {
+        mStr = str;
+    }
+
+    public int getRowNumber() {
+        return mRowNumber;
+    }
+
+    public void setRowNumber(int rowNumber) {
+        mRowNumber = rowNumber;
+    }
+
+    public int getColPosition() {
+        return mColPosition;
+    }
+
+    public void setColPosition(int colPosition) {
+        mColPosition = colPosition;
     }
 }

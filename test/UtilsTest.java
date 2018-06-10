@@ -9,7 +9,7 @@ public class UtilsTest {
 
     @Test
     public void RE2NFA() throws Exception {
-        RE expression = new RE("test", "(!=)|(==)|(<)|(<=)|(>)|(>=)");
+        RE expression = new RE("test", "(!=)|(==)|(<)|(<=)|(>)|(>=)", RE.NOMAL_SYMBOL);
         NFA nfa = expression.getNFA();
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(nfa.getStartState().getId()).append(" <-> ")
@@ -28,7 +28,7 @@ public class UtilsTest {
 
     @Test
     public void RE2DFA() throws Exception {
-        RE expression = new RE("test", "(!=)|(==)|(<)|(<=)|(>)|(>=)");
+        RE expression = new RE("test", "(!=)|(==)|(<)|(<=)|(>)|(>=)", RE.NOMAL_SYMBOL);
         DFA dfa = expression.getDFADirectly();
 //        DFA dfa = expression.getDFAIndirect();
         dfa.print();
@@ -36,7 +36,7 @@ public class UtilsTest {
 
     @Test
     public void NFA2DFA() throws Exception {
-        RE expression = new RE("test", "(!=)|(==)|(<)|(<=)|(>)|(>=)");
+        RE expression = new RE("test", "(!=)|(==)|(<)|(<=)|(>)|(>=)", RE.NOMAL_SYMBOL);
         DFA dfa = expression.getDFAIndirect();
         StringBuilder stringBuilder = new StringBuilder();
         int count = 0;
@@ -57,7 +57,7 @@ public class UtilsTest {
 
     @Test
     public void DFA2MinDFA() throws Exception {
-        RE expression = new RE("test", "(a|b)*abb");
+        RE expression = new RE("test", "(a|b)*abb", RE.NOMAL_SYMBOL);
         DFA dfa = expression.getDFADirectly();
 //        DFA dfa = expression.getDFAIndirect();
         DFA newDFA = DFA.DFA2MinDFA(dfa);
@@ -66,7 +66,7 @@ public class UtilsTest {
 
     @Test
     public void DFAMatch() throws Exception {
-        RE expression = new RE("test", "(a|b)*a");
+        RE expression = new RE("test", "(a|b)*a", RE.NOMAL_SYMBOL);
         DFA dfa = expression.getDFAIndirect();
         StringBuilder stringBuilder = new StringBuilder();
         int count = 0;

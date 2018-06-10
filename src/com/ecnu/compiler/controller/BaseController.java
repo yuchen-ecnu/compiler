@@ -10,6 +10,7 @@ import com.ecnu.compiler.component.preprocessor.Preprocessor;
 import com.ecnu.compiler.component.semantic.SemanticAnalyzer;
 import com.ecnu.compiler.component.storage.ErrorList;
 import com.ecnu.compiler.component.storage.SymbolTable;
+import com.ecnu.compiler.component.storage.domain.Token;
 import com.ecnu.compiler.constant.Config;
 import com.ecnu.compiler.constant.Constants;
 import com.ecnu.compiler.constant.StatusCode;
@@ -51,7 +52,7 @@ public class BaseController {
     //当前进行编译的代码内容
     private String mTextToCompiler;
     //预处理之后的内容
-    private List<String> mTextListAfterPreprocess;
+    private List<Token> mTextListAfterPreprocess;
     //词法分析器得到的符号表
     private SymbolTable mSymbolTable;
     //语法分析后得到的语法树

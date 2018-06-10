@@ -1,5 +1,6 @@
 package com.ecnu.compiler.component.preprocessor;
 
+import com.ecnu.compiler.component.storage.domain.Token;
 import com.ecnu.compiler.constant.Constants;
 import org.junit.Test;
 
@@ -16,9 +17,9 @@ public class PreprocessorTest {
         System.out.println(text);
 
         Preprocessor preprocessor = new Preprocessor(Constants.JAVA_COMMENT);
-        List<String> results = preprocessor.preprocess(text);
-        for (String result : results){
-            System.out.println(result);
+        List<Token> results = preprocessor.preprocess(text);
+        for (Token result : results){
+            System.out.println(result.getStr() + ' ' + result.getRowNumber() + ' ' + result.getColPosition());
         }
     }
 }

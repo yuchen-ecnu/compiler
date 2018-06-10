@@ -10,6 +10,8 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 
@@ -17,7 +19,12 @@ public class CompilerBuilderTest {
 
     @Test
     public void checkLanguage() {
-
+        String test = "((";
+        Pattern p = Pattern.compile("\\(");
+        Matcher matcher = p.matcher(test);
+        while (matcher.find()){
+            System.out.println(" " + matcher.start() + " " + matcher.end());
+        }
     }
 
     @Test
@@ -35,8 +42,10 @@ public class CompilerBuilderTest {
         //创建一种随便的语言
         int languageId = 0;
         List<RE> reList = new ArrayList<>();
-        reList.add(new RE("if", "if"));
-        reList.add(new RE("id", "a|(a|b)*"));
+        reList.add(new RE("(", "\\(", RE.SPILT_SYMBOL));
+        reList.add(new RE(")", "\\)", RE.SPILT_SYMBOL));
+        reList.add(new RE("if", "if", RE.NOMAL_SYMBOL));
+        reList.add(new RE("id", "a|(a|b)*", RE.NOMAL_SYMBOL));
         List<String> productionStrList = new ArrayList<>();
         productionStrList.add("T -> id E id");
         productionStrList.add("E -> id | if T");
@@ -51,7 +60,7 @@ public class CompilerBuilderTest {
         Compiler compiler = compilerBuilder.getCompilerInstance(languageId, config);
         //使用compiler
         //随便的一段代码
-        String text = "/*11*/\nif//tt\n baab aabb if //test\n abab\t\t\taaab abbab";
+        String text = "aa(bb)";
         //初始化编译器
         compiler.prepare(text);
         //利用状态码判断是否达到了对应的步骤

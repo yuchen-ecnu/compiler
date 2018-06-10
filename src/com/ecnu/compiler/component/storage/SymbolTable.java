@@ -34,7 +34,7 @@ public class SymbolTable {
      * @param lexemes 希望匹配的所有词素组成的文本，已经经过预处理，每个词素一个空格隔开.
      * @return 是否存在一个DFA能够匹配
      */
-    public boolean build(Map<String, DFA> dfaMap, List<String> lexemes){
+    /*public boolean build(Map<String, DFA> dfaMap, List<String> lexemes){
         //todo 尝试使用每个DFA匹配每个词素，匹配成功则向符号表中添加一个Token,现在的Token的属性只有一个，就是每个单词
         int count =0;
         for (String lexeme:lexemes){
@@ -48,7 +48,7 @@ public class SymbolTable {
                     for (Token token: this.tokens) {
                         //已包含该类型的token
                         if(token.getType().equals(key)){
-                            token.getAttrs().add(lexeme);
+                            //token.getAttrs().add(lexeme);
                             flag = 1;
                             break;
                         }
@@ -67,4 +67,5 @@ public class SymbolTable {
         }
         return count == lexemes.size();
     }
+    */
 }
