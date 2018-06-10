@@ -2,6 +2,7 @@ import com.ecnu.compiler.component.parser.LLParser;
 import com.ecnu.compiler.component.parser.domain.*;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LLParsingTable;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LLTableItem;
+import com.ecnu.compiler.component.parser.domain.PredictTable.PredictTable;
 import org.junit.Test;
 
 import java.util.HashSet;
@@ -102,7 +103,13 @@ public class ParsersTest {
         System.out.println("------------");
         String w = "id + id * id";
         TD syntaxTree = LLParser.predict(w, cfg);
+        PredictTable predictTable = LLParser.getPredictTable();
+        System.out.println("----------------------");
+        System.out.println(predictTable);
+        System.out.println("----------------------");
         LLParser.printTree(syntaxTree);
+        System.out.println("----------------------");
+
     }
 
     @Test

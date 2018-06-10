@@ -5,11 +5,14 @@ import com.ecnu.compiler.component.parser.domain.CFG;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LLParsingTable;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LLTableItem;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.ParsingTable;
+import com.ecnu.compiler.component.parser.domain.PredictTable.PredictTable;
+import com.ecnu.compiler.component.parser.domain.PredictTable.TableEntry;
 import com.ecnu.compiler.component.parser.domain.Production;
 import com.ecnu.compiler.component.parser.domain.Symbol;
 import com.ecnu.compiler.component.parser.domain.TD;
 import com.ecnu.compiler.component.storage.SymbolTable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
@@ -22,6 +25,8 @@ import java.util.Stack;
  */
 public class LLParser extends Parser {
 
+    private static PredictTable predictTable;
+
     public LLParser(CFG CFG, ParsingTable parsingTable) {
         super(CFG, parsingTable);
     }
@@ -32,6 +37,9 @@ public class LLParser extends Parser {
     }
 
     public static TD predict(String w, CFG cfg) {
+        //预测分析表
+        predictTable = new PredictTable();
+        List<TableEntry> tableEntryList = new ArrayList<>();
         //语法树
         TD.TNode<String> root = new TD.TNode<>();
         root.setContent(cfg.getStartSymbol().getType());
@@ -40,7 +48,7 @@ public class LLParser extends Parser {
         LLParsingTable llParsingTable = new LLParsingTable(cfg);
         Set<LLTableItem> itemSet = llParsingTable.getItemSet();
         //已匹配
-        Stack<Symbol> matched = new Stack<>();
+        List<Symbol> matched = new ArrayList<>();
         //栈
         Stack<Symbol> stack = new Stack<>();
         stack.push(Symbol.TERMINAL_SYMBOL);
@@ -66,6 +74,9 @@ public class LLParser extends Parser {
                 return null;
             }
         }
+//        Stack<Symbol> tempStack = stack.clone();
+        TableEntry tableEntry = new TableEntry(null, stack, buffer, "");
+        tableEntryList.add(tableEntry);
 
         Symbol stackTop = stack.peek();
         Symbol bufferTop = buffer.peek();
@@ -98,9 +109,12 @@ public class LLParser extends Parser {
                     System.out.println("Tree match error!");
                 }
 
-                matched.push(stackTop);
+                matched.add(stackTop);
                 stack.pop();
                 buffer.pop();
+
+                TableEntry entry = new TableEntry(matched, stack, buffer, "Match:" + stackTop.getType());
+                tableEntryList.add(entry);
             } else if (stackTop.isTerminal()) {
                 System.out.println("Error: Terminal.");
                 return null;
@@ -160,11 +174,19 @@ public class LLParser extends Parser {
                             stack.push(prod.getRight().get(i));
                         }
                     }
+
+                    String output = "Output:" + prod.getLeft().getType() + "->";
+                    for (Symbol sym : prod.getRight()) {
+                        output += sym.getType() + " ";
+                    }
+                    TableEntry entry = new TableEntry(matched, stack, buffer, output);
+                    tableEntryList.add(entry);
                 }
             }
             stackTop = stack.peek();
             bufferTop = buffer.peek();
         }
+        predictTable.setTableEntryList(tableEntryList);
         return syntaxTree;
     }
 
@@ -185,4 +207,7 @@ public class LLParser extends Parser {
         }
     }
 
+    public static PredictTable getPredictTable() {
+        return predictTable;
+    }
 }
