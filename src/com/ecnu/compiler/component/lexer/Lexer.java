@@ -123,6 +123,7 @@ public class Lexer {
                     if (itemIndex < toMatch.length()){
                         tokenList.add(addPosition, new Token(null, toMatch.substring(itemIndex, toMatch.length())));
                     }
+                    i--;
                     break;
                 }
             }
