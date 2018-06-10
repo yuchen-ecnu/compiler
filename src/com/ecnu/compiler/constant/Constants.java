@@ -14,7 +14,7 @@ public class Constants {
     /** 空格字符 */
     public static final String SPACE_TOKEN = " ";
     /** 换行符号 */
-    public static final String NEWLINE = "\n";
+    public static final String NEWLINE = "\n|(\r\n)";
 
     // RE表达式集合
     //注释
