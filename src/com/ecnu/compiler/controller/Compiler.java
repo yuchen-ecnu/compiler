@@ -1,15 +1,11 @@
 package com.ecnu.compiler.controller;
 
 import com.ecnu.compiler.component.CacheManager.Language;
-import com.ecnu.compiler.component.parser.domain.Symbol;
 import com.ecnu.compiler.component.storage.ErrorList;
 import com.ecnu.compiler.component.storage.SymbolTable;
 import com.ecnu.compiler.constant.Config;
 import com.ecnu.compiler.constant.Constants;
 import com.ecnu.compiler.constant.StatusCode;
-import com.ecnu.compiler.controller.base.BaseController;
-
-import java.io.File;
 
 /**
  * 编译器  --定义对外的所有接口
@@ -25,6 +21,8 @@ public class Compiler {
     private StatusCode mStatus;
     //错误信息列表
     private ErrorList mErrorList;
+    //运行时间表
+    private TimeHolder mTimeHolder;
 
     /**
      * 根据传入语言构建编译器
@@ -32,7 +30,8 @@ public class Compiler {
     public Compiler(Language language, Config config){
         mStatus = StatusCode.STAGE_INIT;
         mErrorList = new ErrorList();
-        mController = createController(language, config, mErrorList);
+        mTimeHolder = new TimeHolder();
+        mController = createController(language, config, mErrorList, mTimeHolder);
         mStatus = StatusCode.RUNNING;
     }
 
@@ -67,23 +66,62 @@ public class Compiler {
     }
 
     /**
+     * 获取时间表
+     * @return 时间表
+     */
+    public TimeHolder getTimeHolder() {
+        return mTimeHolder;
+    }
+
+    /**
+     * 获取错误列表
+     * @return 错误列表
+     */
+    public ErrorList getErrorList() {
+        return mErrorList;
+    }
+
+    /**
      * 创建编译进程控制器
      * @param language 语言信息
      * @param config 配置信息
      * @param errorList 错误列表
      * @return 相应的控制器
      */
-    private BaseController createController(Language language, Config config, ErrorList errorList){
-        switch(language.getBaseLanguage()){
-            case Constants.LANGUAGE_JAVA:
-                return new JavaController(language,config, errorList);
-            case Constants.LANGUAGE_C:
-                return new CController(language,config, errorList);
-            case Constants.LANGUAGE_CPLUS:
-                return new CplusController(language,config, errorList);
-            default:
-                //todo 语言不支持
-                return null;
+    private BaseController createController(Language language, Config config, ErrorList errorList, TimeHolder timeHolder){
+        return new BaseController(language, config, errorList, timeHolder);
+    }
+
+    public class TimeHolder {
+        //预处理时间
+        private long preprocessorTime;
+        //词法分析时间
+        private long lexerTime;
+        //语法分析时间
+        private long parserTime;
+
+        public long getPreprocessorTime() {
+            return preprocessorTime;
+        }
+
+        void setPreprocessorTime(long preprocessorTime) {
+            this.preprocessorTime = preprocessorTime;
+        }
+
+        public long getLexerTime() {
+            return lexerTime;
+        }
+
+        void setLexerTime(long lexerTime) {
+            this.lexerTime = lexerTime;
+        }
+
+        public long getParserTime() {
+            return parserTime;
+        }
+
+        void setParserTime(long parserTime) {
+            this.parserTime = parserTime;
         }
     }
 
