@@ -1,40 +1,62 @@
 package com.ecnu.compiler.component.parser.domain;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class LRItem{
     //对应产生式
-    private Production production;
+    private Production mProduction;
     //点的位置
-    private int pointPosition;
+    private int mPointPosition;
     //向前看符号
-    private Symbol lookAhead;
+    private Set<Symbol> mLookAheadSet;
 
     public LRItem(Production production, int pointPosition, Symbol lookAhead) {
-        this.production = production;
-        this.pointPosition = pointPosition;
-        this.lookAhead = lookAhead;
+        this.mProduction = production;
+        this.mPointPosition = pointPosition;
+        mLookAheadSet = new HashSet<>();
+        mLookAheadSet.add(lookAhead);
     }
 
+
+    public LRItem(Production production, int pointPosition) {
+        this.mProduction = production;
+        this.mPointPosition = pointPosition;
+        mLookAheadSet = new HashSet<>();
+    }
+
+
     public Production getProduction() {
-        return production;
+        return mProduction;
     }
 
     public int getPointPosition() {
-        return pointPosition;
+        return mPointPosition;
     }
 
-    public Symbol getLookAhead() {
-        return lookAhead;
+    public Set<Symbol> getLookAhead() {
+        return mLookAheadSet;
+    }
+
+    public void addLookAhead(Symbol lookAhead){
+        mLookAheadSet.add(lookAhead);
+    }
+
+    public void addLookAheadSet(Set<Symbol> lookAheadSet){
+        mLookAheadSet.addAll(lookAheadSet);
     }
 
     public LRItem gotoNext(){
-        if (pointPosition >= production.getRight().size())
+        if (mPointPosition >= mProduction.getRight().size())
             return null;
-        return new LRItem(production, pointPosition + 1, lookAhead);
+        LRItem newItem = new LRItem(mProduction, mPointPosition + 1);
+        newItem.addLookAheadSet(mLookAheadSet);
+        return newItem;
     }
 
     @Override
     public int hashCode() {
-        return production.hashCode() + 31 * pointPosition + lookAhead.hashCode();
+        return mProduction.hashCode() + 31 * mPointPosition + mLookAheadSet.hashCode();
     }
 
     @Override
@@ -44,7 +66,7 @@ public class LRItem{
         if (hashCode() != obj.hashCode() || !(obj instanceof LRItem)){ return false; }
 
         LRItem item = (LRItem) obj;
-        return production.equals(item.production) && pointPosition == item.pointPosition
-                && lookAhead.equals(item.lookAhead);
+        return mProduction.equals(item.mProduction) && mPointPosition == item.mPointPosition
+                && mLookAheadSet.equals(item.mLookAheadSet);
     }
 }

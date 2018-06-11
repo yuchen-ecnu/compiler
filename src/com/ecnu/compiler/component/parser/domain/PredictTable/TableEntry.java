@@ -12,21 +12,23 @@ public class TableEntry {
     private String action;
 
     public TableEntry(List<Symbol> symbols, Stack<Symbol> stack, Stack<Symbol> input, String action) {
-        this.symbols = "";
-        this.stack = "";
-        this.input = "";
         this.action = action;
+        StringBuilder stringBuilder = new StringBuilder();
         if (!(symbols == null || symbols.isEmpty())) {
             for (Symbol sym : symbols) {
-                this.symbols += sym.getType() + " ";
+                stringBuilder.append(sym.getType()).append(" ");
             }
         }
+        this.symbols = stringBuilder.toString();
+        stringBuilder = new StringBuilder();
         for (Symbol sym : stack) {
-            this.stack += sym.getType() + " ";
+            stringBuilder.append(sym.getType()).append(" ");
         }
+        this.stack = stringBuilder.toString();
         for (Symbol sym : input) {
-            this.input += sym.getType() + " ";
+            stringBuilder.append(sym.getType()).append(" ");
         }
+        this.input = stringBuilder.toString();
     }
 
     @Override

@@ -25,10 +25,7 @@ public class LRParserBuilder {
         mCfg = cfg;
         mFirstFollowSet = new FirstFollowSet(cfg);
         //创建空的ParsingTable
-        List<Symbol> allSymbol = new ArrayList<>();
-        allSymbol.addAll(cfg.getNonTerminalSet());
-        allSymbol.addAll(cfg.getTerminalSet());
-        LRParsingTable lrParsingTable = new LRParsingTable(allSymbol);
+        LRParsingTable lrParsingTable = new LRParsingTable(cfg.getTerminalSet(), cfg.getNonTerminalSet());
         //创建ItemSet的列表保存每个状态
         List<LRItemSet> stateList = new ArrayList<>();
         //创建Map保存状态和编号的映射
@@ -41,7 +38,7 @@ public class LRParserBuilder {
         productionRight.add(firstSymbol);
         Symbol startSymbol = new Symbol("startSymbol");
         Production production = new Production(startSymbol, productionRight, -1); //构造初始产生式
-        itemSet.add(new LRItem(production, 0, Symbol.TERMINAL_SYMBOL)); //添加初始项
+        itemSet.add(getNewLRItem(production, Symbol.TERMINAL_SYMBOL)); //添加初始项
         mFirstFollowSet.getFirstMap().put(startSymbol, mFirstFollowSet.getFirstMap().get(firstSymbol));
         mFirstFollowSet.getFollowMap().put(startSymbol, mFirstFollowSet.getFollowMap().get(firstSymbol));
         //把初始状态添加到状态列表与解析表中
@@ -57,8 +54,12 @@ public class LRParserBuilder {
                 int pointPosition = item.getPointPosition();
                 if (pointPosition == item.getProduction().getRight().size()){
                     //假如点后面没有别的符号了
-                    //添加reduce表项
-                    addReduceTableItem(lrParsingTable, i, item);
+                    if (item.getProduction().getId() >= 0)
+                        //添加reduce表项
+                        addReduceTableItem(lrParsingTable, i, item);
+                    else
+                        //接受
+                        lrParsingTable.set(i, Symbol.TERMINAL_SYMBOL, LRParsingTable.ACCEPT, 0);
                 } else {
                     //点后面有符号
                     //点后的符号
@@ -73,9 +74,9 @@ public class LRParserBuilder {
                             stateList.add(newItemSet);
                             targetIndex = stateList.size() - 1;
                             stateMap.put(newItemSet, targetIndex);
+                            //在解析表中添加新状态
+                            lrParsingTable.addState();
                         }
-                        //在解析表中添加新状态
-                        lrParsingTable.addState();
                         //区分是否终结符
                         boolean isTerminal = cfg.getTerminalSet().contains(symbolAfterPoint);
                         //添加表项
@@ -85,20 +86,31 @@ public class LRParserBuilder {
                 }
             }
         }
-
-        //解析表最少2行，而包含s->s'的只有[1,$]项，所以设置其为acc
-        lrParsingTable.set(1, Symbol.TERMINAL_SYMBOL, LRParsingTable.ACCEPT, 0);
-
         return lrParsingTable;
     }
 
     protected void addReduceTableItem(LRParsingTable lrParsingTable, int row, LRItem item){
-        lrParsingTable.set(row, item.getLookAhead(), LRParsingTable.REDUCE, item.getProduction().getId());
+        for (Symbol lookAhead : item.getLookAhead()){
+            lrParsingTable.set(row, lookAhead, LRParsingTable.REDUCE, item.getProduction().getId());
+        }
+    }
+    
+    protected LRItem getNewLRItem(Production production, Symbol lookahead){
+        return new LRItem(production, 0, lookahead);
+    }
+
+
+    protected LRItem getNewLRItem(Production production, Set<Symbol> lookaheadSet){
+        LRItem lrItem = new LRItem(production, 0);
+        lrItem.addLookAheadSet(lookaheadSet);
+        return lrItem;
     }
 
     //获得项集闭包，返回的是输入参数的引用
     protected LRItemSet getClosure(LRItemSet itemSet){
-        for (LRItem item : itemSet){
+        ArrayList<LRItem> lrItemList = new ArrayList<>(itemSet);
+        for (int i = 0; i < lrItemList.size(); i++) {
+            LRItem item = lrItemList.get(i);
             //点的位置
             int pointPosition = item.getPointPosition();
             //产生式右边
@@ -112,15 +124,19 @@ public class LRParserBuilder {
                 //产生式点两位后的列表
                 List<Symbol> beta = productionRight.subList(pointPosition + 1, productionRight.size());
                 beta = new ArrayList<>(beta);
-                beta.add(item.getLookAhead());
+                beta.add(null);
                 //所求列表
-                Set<Symbol> lookAheadList = mFirstFollowSet.getFirst(beta);
+                Set<Symbol> lookAheadSet = new HashSet<>();
+                for (Symbol lookAhead : item.getLookAhead()){
+                    beta.set(beta.size() - 1, lookAhead);
+                    lookAheadSet.addAll(mFirstFollowSet.getFirst(beta));
+                }
                 //如果该符号是非终结符，则对应产生式列表不为空
                 if (productions != null){
                     for (Production production : productions){
-                        for (Symbol lookAhead : lookAheadList){
-                            itemSet.add(new LRItem(production, 0, lookAhead));
-                        }
+                        LRItem newLrItem = getNewLRItem(production, lookAheadSet);
+                        if (itemSet.add(newLrItem))
+                            lrItemList.add(newLrItem);
                     }
                 }
             }
