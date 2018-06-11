@@ -43,7 +43,7 @@ public class CompilerBuilderTest {
         //创建一种随便的语言
         int languageId = 0;
         List<RE> reList = new ArrayList<>();
-        reList.add(new RE("((", "\\(\\(", RE.SPILT_SYMBOL));
+        reList.add(new RE("(", "\\(", RE.SPILT_SYMBOL));
         reList.add(new RE(")", "\\)", RE.SPILT_SYMBOL));
         reList.add(new RE("if", "if", RE.NOMAL_SYMBOL));
         reList.add(new RE("id", "a|(a|b)*", RE.NOMAL_SYMBOL));

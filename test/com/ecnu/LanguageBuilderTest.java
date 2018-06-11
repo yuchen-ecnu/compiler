@@ -49,7 +49,7 @@ public class LanguageBuilderTest {
         symbolSet.add(s2);
         symbolSet.add(s3);
         symbolSet.add(s4);
-        CFG cfg = new CFG(productionStrList, symbolSet);
+        CFG cfg = new CFG(productionStrList);
 
         LanguageBuilder languageBuilder = new LanguageBuilder();
         LanguageBuilder.ParserHolder parserHolder  =languageBuilder.buildPaserComponents(cfg);

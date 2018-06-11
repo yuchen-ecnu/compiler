@@ -16,7 +16,7 @@ public class CFG {
     //开始符号
     private Symbol mStartSymbol = null;
 
-    public Set<Symbol> getSymbolSet(String[] productionStrList) {
+    public Set<Symbol> getSymbolSet(List<String> productionStrList) {
         Set<Symbol> symbolSet = new HashSet<>();
         for (String s : productionStrList) {
             String[] arr = s.split("->");
@@ -59,7 +59,7 @@ public class CFG {
      * 构造函数，需要传入CFG的列表
      */
 
-    public CFG(String[] productionStrList) {
+    public CFG(List<String> productionStrList) {
         Set<Symbol> mSymbolSet = getSymbolSet(productionStrList);
         if (mSymbolSet == null || mSymbolSet.isEmpty()) {
             return;

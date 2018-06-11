@@ -192,6 +192,9 @@ public class Compiler {
                 if (mSymbolTable != null){
                     mPredictTable = new PredictTable();
                     mSyntaxTree = mParser.buildSyntaxTree(getSymbolTable(), mPredictTable);
+                    mStatus = StatusCode.STAGE_SEMANTIC_ANALYZER;
+                    //计时
+                    mTimeHolder.setParserTime(System.currentTimeMillis() - startTime);
                 }
                 break;
             case STAGE_SEMANTIC_ANALYZER:
