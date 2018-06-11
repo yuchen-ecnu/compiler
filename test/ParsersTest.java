@@ -40,7 +40,7 @@ public class ParsersTest {
         symbolSet.add(s9);
         symbolSet.add(s10);
         symbolSet.add(s11);
-        CFG cfg = new CFG(cfgList, symbolSet);
+        CFG cfg = new CFG(cfgList);
         System.out.println("Start Symbol:" + cfg.getStartSymbol().getType());
         System.out.println("------------");
         for(Map.Entry<Symbol, List<Integer>> entry : cfg.getNonTerminalMap().entrySet()) {
@@ -141,7 +141,7 @@ public class ParsersTest {
         symbolSet.add(s1);
         symbolSet.add(s2);
         symbolSet.add(s3);
-        CFG cfg = new CFG(cfgList, symbolSet);
+        CFG cfg = new CFG(cfgList);
         cfg.cleanImmediateLeftRecursion(s1);
         for(Map.Entry<Symbol, List<Integer>> entry : cfg.getNonTerminalMap().entrySet()) {
             System.out.print(entry.getKey().getType() + "----");
@@ -185,7 +185,7 @@ public class ParsersTest {
         symbolSet.add(s4);
         symbolSet.add(s5);
         symbolSet.add(s6);
-        CFG cfg = new CFG(cfgList, symbolSet);
+        CFG cfg = new CFG(cfgList);
         cfg.cleanLeftRecursion();
         for(Map.Entry<Symbol, List<Integer>> entry : cfg.getNonTerminalMap().entrySet()) {
             System.out.print(entry.getKey().getType() + "----");
@@ -226,7 +226,7 @@ public class ParsersTest {
         symbolSet.add(s3);
         symbolSet.add(s4);
         symbolSet.add(s5);
-        CFG cfg = new CFG(cfgList, symbolSet);
+        CFG cfg = new CFG(cfgList);
         cfg.extractLeftCommonFactor();
         for(Map.Entry<Symbol, List<Integer>> entry : cfg.getNonTerminalMap().entrySet()) {
             System.out.print(entry.getKey().getType() + "----");

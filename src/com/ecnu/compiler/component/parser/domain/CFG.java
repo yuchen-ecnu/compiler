@@ -16,10 +16,54 @@ public class CFG {
     //开始符号
     private Symbol mStartSymbol = null;
 
+    public Set<Symbol> getSymbolSet(String[] productionStrList) {
+        Set<Symbol> symbolSet = new HashSet<>();
+        for (String s : productionStrList) {
+            String[] arr = s.split("->");
+            if (arr.length != 2) {
+                return null;
+            }
+            Symbol left = new Symbol(arr[0]);
+            symbolSet.add(left);
+        }
+        for (String s : productionStrList) {
+            String[] arr = s.split("->");
+            String right = arr[1];
+            String[] rightArr = right.split("\\|");
+            for (String rs : rightArr) {
+                String[] rRightArr = rs.split(" ");
+                for (String rrs : rRightArr) {
+                    boolean flag = false;
+                    Symbol rightSym = new Symbol(rrs);
+                    for (Symbol sym : symbolSet) {
+                        if (sym.getType().equals(rightSym.getType())) {
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if (!flag) {
+                        symbolSet.add(rightSym);
+                    }
+                }
+            }
+        }
+//        System.out.println("*************");
+//        for (Symbol s : symbolSet) {
+//            System.out.println(s.getType() + "----" + s.isTerminal());
+//        }
+//        System.out.println("*************");
+        return symbolSet;
+    }
+
     /**
      * 构造函数，需要传入CFG的列表
      */
-    public CFG(List<String> productionStrList, Set<Symbol> mSymbolSet) {
+
+    public CFG(String[] productionStrList) {
+        Set<Symbol> mSymbolSet = getSymbolSet(productionStrList);
+        if (mSymbolSet == null || mSymbolSet.isEmpty()) {
+            return;
+        }
         int nonTermId = 1;
         int prodId = 1;
         Set<String> stringSet = new HashSet<>();

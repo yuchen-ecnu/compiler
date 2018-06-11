@@ -29,8 +29,10 @@ public class PredictTable {
     @Override
     public String toString() {
         String string = "";
-        for (TableEntry e : tableEntryList) {
-            string += e.toString() + "\n";
+        if (tableEntryList != null) {
+            for (TableEntry e : tableEntryList) {
+                string += e.toString() + "\n";
+            }
         }
         return string;
     }
