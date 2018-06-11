@@ -4,6 +4,7 @@ import com.ecnu.compiler.component.CacheManager.Language;
 import com.ecnu.compiler.component.CacheManager.LanguageCache;
 import com.ecnu.compiler.component.lexer.domain.DFA;
 import com.ecnu.compiler.component.lexer.domain.RE;
+import com.ecnu.compiler.component.parser.domain.CFG;
 import com.ecnu.compiler.component.storage.ErrorList;
 import com.ecnu.compiler.component.storage.domain.ErrorMsg;
 import com.ecnu.compiler.constant.Config;

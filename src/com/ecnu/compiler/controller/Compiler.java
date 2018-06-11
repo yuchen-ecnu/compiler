@@ -6,6 +6,8 @@ import com.ecnu.compiler.component.lexer.domain.DFA;
 import com.ecnu.compiler.component.parser.LLParser;
 import com.ecnu.compiler.component.parser.LRParser;
 import com.ecnu.compiler.component.parser.base.Parser;
+import com.ecnu.compiler.component.parser.domain.PredictTable.PredictTable;
+import com.ecnu.compiler.component.parser.domain.TD;
 import com.ecnu.compiler.component.preprocessor.Preprocessor;
 import com.ecnu.compiler.component.semantic.SemanticAnalyzer;
 import com.ecnu.compiler.component.storage.ErrorList;
@@ -57,6 +59,9 @@ public class Compiler {
     //词法分析器得到的符号表
     private SymbolTable mSymbolTable;
     //语法分析后得到的语法树
+    private TD mSyntaxTree;
+    //语法分析过程的记录表
+    private PredictTable mPredictTable;
 
 
     /**
@@ -75,7 +80,7 @@ public class Compiler {
         mPreprocessor = new Preprocessor(Constants.ANNOTATION);
         //创建词法分析器，固定创建Lexer
         //mLexer = createLexer(language.getDFAList());
-        mLexer = new Lexer(language.getREList(), 0);
+        mLexer = new Lexer(language.getREList(), mErrorList, 0);
         //创建语法分析器，根据config创建
         mParser = createParser(language);
 
@@ -99,6 +104,31 @@ public class Compiler {
      */
     public TimeHolder getTimeHolder() {
         return mTimeHolder;
+    }
+
+
+    /**
+     * 获得生成的符号表
+     * @return 符号表，可能为null
+     */
+    public SymbolTable getSymbolTable() {
+        return mSymbolTable;
+    }
+
+    /**
+     * 获得生成的语法树
+     * @return
+     */
+    public TD getSyntaxTree() {
+        return mSyntaxTree;
+    }
+
+    /**
+     * 获得语法分析过程中的分析表
+     * @return
+     */
+    public PredictTable getPredictTable() {
+        return mPredictTable;
     }
 
     /**
@@ -136,14 +166,6 @@ public class Compiler {
         return mStatus;
     }
 
-    /**
-     * 获得生成的符号表
-     * @return 符号表，可能为null
-     */
-    public SymbolTable getSymbolTable() {
-        return mSymbolTable;
-    }
-
     /** 单步执行 */
     private StatusCode nextStep(){
         long startTime = System.currentTimeMillis();
@@ -167,6 +189,10 @@ public class Compiler {
                 }
                 break;
             case STAGE_PARSER:
+                if (mSymbolTable != null){
+                    mPredictTable = new PredictTable();
+                    mSyntaxTree = mParser.buildSyntaxTree(getSymbolTable(), mPredictTable);
+                }
                 break;
             case STAGE_SEMANTIC_ANALYZER:
                 break;
@@ -185,7 +211,7 @@ public class Compiler {
      * @return 词法分析器
      */
     private Lexer createLexer(List<DFA> dfaList) {
-        return new Lexer(dfaList);
+        return new Lexer(dfaList, mErrorList);
     }
 
     /**

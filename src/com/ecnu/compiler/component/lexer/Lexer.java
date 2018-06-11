@@ -2,7 +2,9 @@ package com.ecnu.compiler.component.lexer;
 
 import com.ecnu.compiler.component.lexer.domain.DFA;
 import com.ecnu.compiler.component.lexer.domain.RE;
+import com.ecnu.compiler.component.storage.ErrorList;
 import com.ecnu.compiler.component.storage.SymbolTable;
+import com.ecnu.compiler.component.storage.domain.ErrorMsg;
 import com.ecnu.compiler.component.storage.domain.Token;
 
 import java.util.ArrayList;
@@ -16,6 +18,8 @@ public class Lexer {
 
     //用来识别的DFA列表
     List<DFA> mDFAList;
+    //错误列表
+    ErrorList mErrorList;
     //用来识别的Pattern列表
     ArrayList<RE> mSplitREList;
     ArrayList<RE> mNormalREList;
@@ -23,11 +27,11 @@ public class Lexer {
     ArrayList<Pattern> mSplitPatList;
     ArrayList<Pattern> mNormalPatList;
 
-    public Lexer(List<DFA> DFAList) {
+    public Lexer(List<DFA> DFAList, ErrorList errorList) {
         mDFAList = DFAList;
     }
 
-    public Lexer(List<RE> reList, int i){
+    public Lexer(List<RE> reList, ErrorList errorList, int i){
         mSplitPatList = new ArrayList<>();
         mNormalPatList = new ArrayList<>();
         mSplitREList = new ArrayList<>();

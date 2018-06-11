@@ -3,6 +3,8 @@ package com.ecnu.compiler.component.parser.domain.ParsingTable;
 import com.ecnu.compiler.component.parser.domain.Symbol;
 import javafx.util.Pair;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +35,8 @@ public class LRParsingTable extends ParsingTable {
     //构造时需要传入纵坐标对应的符号集合
     public LRParsingTable(List<Symbol> symbols){
         int i = 0;
+        colMap = new HashMap<>();
+        table = new ArrayList<>();
         for (Symbol symbol : symbols){
             colMap.put(symbol.getType(), i);
             i++;
@@ -47,7 +51,7 @@ public class LRParsingTable extends ParsingTable {
     //设置表项
     public boolean set(int state, Symbol colSymbol, char operate, int value){
         Integer col = colMap.get(colSymbol.getType());
-        if (state < table.size() && col != null && table.get(state)[col] != null){
+        if (state < table.size() && col != null){
             TableItem tableItem = new TableItem();
             tableItem.operate = operate;
             tableItem.value = value;

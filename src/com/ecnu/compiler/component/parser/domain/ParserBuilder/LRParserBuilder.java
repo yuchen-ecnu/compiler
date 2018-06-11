@@ -20,7 +20,7 @@ public class LRParserBuilder {
         return mFirstFollowSet;
     }
 
-    protected LRParsingTable buildParsingTable(CFG cfg){
+    public LRParsingTable buildParsingTable(CFG cfg){
         //保存cfg，构建firstFollowSet
         mCfg = cfg;
         mFirstFollowSet = new FirstFollowSet(cfg);
@@ -36,9 +36,14 @@ public class LRParserBuilder {
         //添加初始状态
         LRItemSet itemSet= new LRItemSet();
         List<Symbol> productionRight = new ArrayList<>();
-        productionRight.add(cfg.getAllProductions().get(0).getLeft()); //使用第一个产生式的左边作为起始符号
-        Production production = new Production(new Symbol("startSymbol"), productionRight, -1); //构造初始产生式
+        //使用第一个产生式的左边作为起始符号
+        Symbol firstSymbol = cfg.getAllProductions().get(0).getLeft();
+        productionRight.add(firstSymbol);
+        Symbol startSymbol = new Symbol("startSymbol");
+        Production production = new Production(startSymbol, productionRight, -1); //构造初始产生式
         itemSet.add(new LRItem(production, 0, Symbol.TERMINAL_SYMBOL)); //添加初始项
+        mFirstFollowSet.getFirstMap().put(startSymbol, mFirstFollowSet.getFirstMap().get(firstSymbol));
+        mFirstFollowSet.getFollowMap().put(startSymbol, mFirstFollowSet.getFollowMap().get(firstSymbol));
         //把初始状态添加到状态列表与解析表中
         //由于初始状态只可能出现在第一次，所以就不用添加到映射中去了。
         stateList.add(getClosure(itemSet));
@@ -98,7 +103,7 @@ public class LRParserBuilder {
             int pointPosition = item.getPointPosition();
             //产生式右边
             List<Symbol> productionRight = item.getProduction().getRight();
-            if (pointPosition <= productionRight.size()) {
+            if (pointPosition < productionRight.size()) {
                 //点后有符号
                 Symbol symbolAfterPoint = item.getProduction().getRight().get(pointPosition);
                 //符号对应产生式

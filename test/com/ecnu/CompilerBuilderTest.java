@@ -1,6 +1,7 @@
 package com.ecnu;
 
 import com.ecnu.compiler.component.lexer.domain.RE;
+import com.ecnu.compiler.component.parser.domain.TD;
 import com.ecnu.compiler.component.storage.domain.Token;
 import com.ecnu.compiler.constant.Config;
 import com.ecnu.compiler.constant.Constants;
@@ -42,18 +43,17 @@ public class CompilerBuilderTest {
         //创建一种随便的语言
         int languageId = 0;
         List<RE> reList = new ArrayList<>();
-//        reList.add(new RE("((", "\\(\\(", RE.SPILT_SYMBOL));
-//        reList.add(new RE(")", "\\)", RE.SPILT_SYMBOL));
-//        reList.add(new RE("if", "if", RE.NOMAL_SYMBOL));
-//        reList.add(new RE("id", "a|(a|b)*", RE.NOMAL_SYMBOL));
-        reList.add(new RE("and", "&&", RE.SPILT_SYMBOL));
-        reList.add(new RE("<", "<", RE.SPILT_SYMBOL));
+        reList.add(new RE("((", "\\(\\(", RE.SPILT_SYMBOL));
+        reList.add(new RE(")", "\\)", RE.SPILT_SYMBOL));
+        reList.add(new RE("if", "if", RE.NOMAL_SYMBOL));
+        reList.add(new RE("id", "a|(a|b)*", RE.NOMAL_SYMBOL));
         List<String> productionStrList = new ArrayList<>();
         productionStrList.add("T -> id E id");
         productionStrList.add("E -> id | if T");
         //配置Config
         Config config = new Config();
         config.setExecuteType(Constants.EXECUTE_STAGE_BY_STAGE);
+        config.setParserAlgorithm(Constants.PARSER_LR);
         //测试
         CompilerBuilder compilerBuilder = new CompilerBuilder();
         if (!compilerBuilder.checkLanguage(languageId)){
@@ -62,11 +62,11 @@ public class CompilerBuilderTest {
         Compiler compiler = compilerBuilder.getCompilerInstance(languageId, config);
         //使用compiler
         //随便的一段代码
-        String text = "<&&";
+        String text = "aa if ba aabb bb ab";
         //初始化编译器
         compiler.prepare(text);
         //利用状态码判断是否达到了对应的步骤
-        while (compiler.getStatus() != StatusCode.STAGE_PARSER){
+        while (compiler.getStatus() != StatusCode.STAGE_SEMANTIC_ANALYZER){
             compiler.next();
             System.out.println("now status is: " + compiler.getStatus().getText());
         }
@@ -78,7 +78,18 @@ public class CompilerBuilderTest {
         if (compiler.getSymbolTable() != null)
             compiler.getSymbolTable().getTokens().forEach((token) -> System.out.println(token.getType()));
         else
-            System.out.println("匹配失败");
+            System.out.println("词法匹配失败");
+
+        if (compiler.getSyntaxTree() != null){
+            TD syntaxTree = compiler.getSyntaxTree();
+            TD.TNode<String> cur = syntaxTree.getRoot();
+            while (cur != null){
+                System.out.println(cur.getContent());
+            }
+        }else {
+            System.out.println("语法分析失败");
+        }
+
 
         /* 当然你也可以这样来进行循环
         while (compiler.next() != StatusCode.STAGE_PARSER){

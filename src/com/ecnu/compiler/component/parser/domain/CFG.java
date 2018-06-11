@@ -58,6 +58,7 @@ public class CFG {
     /**
      * 构造函数，需要传入CFG的列表
      */
+
     public CFG(String[] productionStrList) {
         Set<Symbol> mSymbolSet = getSymbolSet(productionStrList);
         if (mSymbolSet == null || mSymbolSet.isEmpty()) {

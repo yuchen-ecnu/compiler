@@ -4,6 +4,7 @@ import com.ecnu.compiler.component.parser.base.Parser;
 import com.ecnu.compiler.component.parser.domain.*;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LRParsingTable;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.ParsingTable;
+import com.ecnu.compiler.component.parser.domain.PredictTable.PredictTable;
 import com.ecnu.compiler.component.storage.SymbolTable;
 import com.ecnu.compiler.component.storage.domain.Token;
 import com.ecnu.compiler.constant.Constants;
@@ -30,7 +31,7 @@ public class LRParser extends Parser {
      * @return
      */
     @Override
-    protected TD getSyntaxTree(CFG cfg, ParsingTable parsingTable, SymbolTable symbolTable) {
+    protected TD getSyntaxTree(CFG cfg, ParsingTable parsingTable, SymbolTable symbolTable, PredictTable predictTable) {
         //LR解析表
         LRParsingTable lrParsingTable = (LRParsingTable)parsingTable;
         //所有的产生式

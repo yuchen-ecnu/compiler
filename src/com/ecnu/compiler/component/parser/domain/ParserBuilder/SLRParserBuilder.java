@@ -18,7 +18,7 @@ public class SLRParserBuilder extends LRParserBuilder {
             int pointPosition = item.getPointPosition();
             //产生式右边
             List<Symbol> productionRight = item.getProduction().getRight();
-            if (pointPosition <= productionRight.size()) {
+            if (pointPosition < productionRight.size()) {
                 //点后有符号
                 Symbol symbolAfterPoint = item.getProduction().getRight().get(pointPosition);
                 //符号对应产生式
