@@ -34,6 +34,13 @@ public class LLParser extends Parser {
 
     @Override
     protected TD getSyntaxTree(CFG cfg, ParsingTable parsingTable, SymbolTable symbolTable, PredictTable predictTable) {
+        //添加预测表表头
+        ArrayList<String> tableHead = new ArrayList<>();
+        tableHead.add("Matched");
+        tableHead.add("Stack");
+        tableHead.add("Input");
+        tableHead.add("Action");
+        predictTable.setTableHead(tableHead);
         List<TableEntry> tableEntryList = new ArrayList<>();
         //语法树
         TD.TNode<String> root = new TD.TNode<>();

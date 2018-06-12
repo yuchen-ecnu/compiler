@@ -9,6 +9,7 @@ import com.ecnu.compiler.component.parser.domain.ParserBuilder.LRParserBuilder;
 import com.ecnu.compiler.component.parser.domain.ParserBuilder.SLRParserBuilder;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LLParsingTable;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LRParsingTable;
+import com.ecnu.compiler.component.parser.domain.Production;
 import com.ecnu.compiler.component.storage.ErrorList;
 
 import java.util.ArrayList;
@@ -48,7 +49,8 @@ public class LanguageBuilder {
     /**
      * 从CFG构造语法分析器需要的所有信息
      */
-    public ParserHolder buildPaserComponents(CFG cfg){
+    public ParserHolder buildParserComponents(List<String> productionList){
+        CFG cfg = new CFG(productionList);
         ParserHolder holder = new ParserHolder();
         holder.mLLParsingTable = new LLParsingTable(cfg);
         holder.mLRParsingTable = new LRParserBuilder().buildParsingTable(cfg);

@@ -44,15 +44,9 @@ public class LanguageBuilderTest {
         Symbol s1 = new Symbol("E");
         Symbol s3 = new Symbol("id");
         Symbol s4 = new Symbol("if");
-        Set<Symbol> symbolSet = new HashSet<>();
-        symbolSet.add(s1);
-        symbolSet.add(s2);
-        symbolSet.add(s3);
-        symbolSet.add(s4);
-        CFG cfg = new CFG(productionStrList);
 
         LanguageBuilder languageBuilder = new LanguageBuilder();
-        LanguageBuilder.ParserHolder parserHolder  =languageBuilder.buildPaserComponents(cfg);
+        LanguageBuilder.ParserHolder parserHolder  =languageBuilder.buildParserComponents(productionStrList);
         parserHolder.getLRParsingTable();
         parserHolder.getSLRParsingTable();
         parserHolder.getLALRParsingTable();

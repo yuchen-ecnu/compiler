@@ -59,19 +59,23 @@ public class CompilerBuilder {
         //todo 构造时出现问题之后单独做一个EXCEPTION来处理，现在先假设RE没毛病。
         //创建语言信息
         Language language = new Language(languageId);
-        //保存RE列表
-        language.setREList(reList);
-        //构造DFA
-        List<DFA> dfaList = DFA.buildDFAListFromREList(reList);
-        language.setDFAList(dfaList);
-        //构造CFG
-        CFG cfg = new CFG(productionStrList);
-        language.setCFG(cfg);
-        //构造各解析表
-        language.setLLParsingTable(new LLParsingTable(cfg));
-        language.setLRParsingTable(new LRParserBuilder().buildParsingTable(cfg));
-        language.setSLRParsingTable(new SLRParserBuilder().buildParsingTable(cfg));
-        language.setLALRParsingTable(new LALRParserBuilder().buildParsingTable(cfg));
+        if (reList != null){
+            //保存RE列表
+            language.setREList(reList);
+            //构造DFA
+            List<DFA> dfaList = DFA.buildDFAListFromREList(reList);
+            language.setDFAList(dfaList);
+        }
+        if (productionStrList != null && productionStrList.size() > 0){
+            //构造CFG
+            CFG cfg = new CFG(productionStrList);
+            language.setCFG(cfg);
+            //构造各解析表
+            language.setLLParsingTable(new LLParsingTable(cfg));
+            language.setLRParsingTable(new LRParserBuilder().buildParsingTable(cfg));
+            language.setSLRParsingTable(new SLRParserBuilder().buildParsingTable(cfg));
+            language.setLALRParsingTable(new LALRParserBuilder().buildParsingTable(cfg));
+        }
         //保存language到缓存
         mLanguageCache.saveToCache(language);
     }

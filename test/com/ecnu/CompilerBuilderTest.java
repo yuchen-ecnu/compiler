@@ -1,6 +1,7 @@
 package com.ecnu;
 
 import com.ecnu.compiler.component.lexer.domain.RE;
+import com.ecnu.compiler.component.parser.domain.Symbol;
 import com.ecnu.compiler.component.parser.domain.TD;
 import com.ecnu.compiler.component.storage.domain.Token;
 import com.ecnu.compiler.constant.Config;
@@ -62,7 +63,7 @@ public class CompilerBuilderTest {
         Compiler compiler = compilerBuilder.getCompilerInstance(languageId, config);
         //使用compiler
         //随便的一段代码
-        String text = "aa if ba aabb bb ab";
+        String text = "aa (if ba) //sdfsdfs\naabb \n bb ab";
         //初始化编译器
         compiler.prepare(text);
         //利用状态码判断是否达到了对应的步骤
@@ -76,7 +77,9 @@ public class CompilerBuilderTest {
         System.out.println("语法编译器时间：" + timeHolder.getParserTime());
 
         if (compiler.getSymbolTable() != null)
-            compiler.getSymbolTable().getTokens().forEach((token) -> System.out.println(token.getType()));
+            compiler.getSymbolTable().getTokens().forEach((token) -> {
+                System.out.println(token.getType() + " " + token.getRowNumber() + " " + token.getColPosition());
+            });
         else
             System.out.println("词法匹配失败");
 

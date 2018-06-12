@@ -61,4 +61,14 @@ public class Production {
         Production p = (Production) obj;
         return right.equals(p.right) && left.equals(p.left);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(left).append(" -> ");
+        for (Symbol symbol : right){
+            stringBuilder.append(symbol).append(" ");
+        }
+        return stringBuilder.toString().trim();
+    }
 }
