@@ -5,6 +5,10 @@ import com.ecnu.compiler.component.CacheManager.LanguageCache;
 import com.ecnu.compiler.component.lexer.domain.DFA;
 import com.ecnu.compiler.component.lexer.domain.RE;
 import com.ecnu.compiler.component.parser.domain.CFG;
+import com.ecnu.compiler.component.parser.domain.ParserBuilder.LALRParserBuilder;
+import com.ecnu.compiler.component.parser.domain.ParserBuilder.LRParserBuilder;
+import com.ecnu.compiler.component.parser.domain.ParserBuilder.SLRParserBuilder;
+import com.ecnu.compiler.component.parser.domain.ParsingTable.LLParsingTable;
 import com.ecnu.compiler.component.storage.ErrorList;
 import com.ecnu.compiler.component.storage.domain.ErrorMsg;
 import com.ecnu.compiler.constant.Config;
@@ -61,9 +65,13 @@ public class CompilerBuilder {
         List<DFA> dfaList = DFA.buildDFAListFromREList(reList);
         language.setDFAList(dfaList);
         //构造CFG
-        //CFG cfg = new CFG(productionStrList);
+        CFG cfg = new CFG(productionStrList);
+        language.setCFG(cfg);
         //构造各解析表
-
+        language.setLLParsingTable(new LLParsingTable(cfg));
+        language.setLRParsingTable(new LRParserBuilder().buildParsingTable(cfg));
+        language.setSLRParsingTable(new SLRParserBuilder().buildParsingTable(cfg));
+        language.setLALRParsingTable(new LALRParserBuilder().buildParsingTable(cfg));
         //保存language到缓存
         mLanguageCache.saveToCache(language);
     }

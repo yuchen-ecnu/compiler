@@ -43,17 +43,17 @@ public class CompilerBuilderTest {
         //创建一种随便的语言
         int languageId = 0;
         List<RE> reList = new ArrayList<>();
-        reList.add(new RE("((", "\\(\\(", RE.SPILT_SYMBOL));
+        reList.add(new RE("(", "\\(", RE.SPILT_SYMBOL));
         reList.add(new RE(")", "\\)", RE.SPILT_SYMBOL));
         reList.add(new RE("if", "if", RE.NOMAL_SYMBOL));
         reList.add(new RE("id", "a|(a|b)*", RE.NOMAL_SYMBOL));
         List<String> productionStrList = new ArrayList<>();
-        productionStrList.add("T -> id E id");
-        productionStrList.add("E -> id | if T");
+        productionStrList.add("T->id E id");
+        productionStrList.add("E->id|if T");
         //配置Config
         Config config = new Config();
         config.setExecuteType(Constants.EXECUTE_STAGE_BY_STAGE);
-        config.setParserAlgorithm(Constants.PARSER_LR);
+        config.setParserAlgorithm(Constants.PARSER_LL);
         //测试
         CompilerBuilder compilerBuilder = new CompilerBuilder();
         if (!compilerBuilder.checkLanguage(languageId)){
@@ -82,10 +82,7 @@ public class CompilerBuilderTest {
 
         if (compiler.getSyntaxTree() != null){
             TD syntaxTree = compiler.getSyntaxTree();
-            TD.TNode<String> cur = syntaxTree.getRoot();
-            while (cur != null){
-                System.out.println(cur.getContent());
-            }
+            TD.printTree(syntaxTree);
         }else {
             System.out.println("语法分析失败");
         }

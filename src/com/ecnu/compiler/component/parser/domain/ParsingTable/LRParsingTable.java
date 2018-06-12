@@ -1,12 +1,8 @@
 package com.ecnu.compiler.component.parser.domain.ParsingTable;
 
 import com.ecnu.compiler.component.parser.domain.Symbol;
-import javafx.util.Pair;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class LRParsingTable extends ParsingTable {
     //4种表项操作
@@ -28,34 +24,53 @@ public class LRParsingTable extends ParsingTable {
         }
     }
     //表
-    List<TableItem[]> table;
+    private List<TableItem[]> mTable;
     //表的纵坐标映射
-    Map<String, Integer> colMap;
+    private Map<String, Integer> mColMap;
+    //表的两部分划分
+    private int mDivOfTowParts;
 
     //构造时需要传入纵坐标对应的符号集合
-    public LRParsingTable(List<Symbol> symbols){
+    public LRParsingTable(Set<Symbol> terminalSymbols, Set<Symbol> nonterminalSymbols){
         int i = 0;
-        colMap = new HashMap<>();
-        table = new ArrayList<>();
-        for (Symbol symbol : symbols){
-            colMap.put(symbol.getType(), i);
+        mColMap = new HashMap<>();
+        mTable = new ArrayList<>();
+        for (Symbol symbol : terminalSymbols){
+            mColMap.put(symbol.getType(), i);
+            i++;
+        }
+        mDivOfTowParts = i;
+        for (Symbol symbol : nonterminalSymbols){
+            mColMap.put(symbol.getType(), i);
             i++;
         }
     }
 
+    public List<TableItem[]> getTable() {
+        return mTable;
+    }
+
+    public Map<String, Integer> getColMap() {
+        return mColMap;
+    }
+
+    public int getDivOfTowParts() {
+        return mDivOfTowParts;
+    }
+
     //添加状态（横坐标）
     public void addState(){
-        table.add(new TableItem[colMap.size()]);
+        mTable.add(new TableItem[mColMap.size()]);
     }
 
     //设置表项
     public boolean set(int state, Symbol colSymbol, char operate, int value){
-        Integer col = colMap.get(colSymbol.getType());
-        if (state < table.size() && col != null){
+        Integer col = mColMap.get(colSymbol.getType());
+        if (state < mTable.size() && col != null){
             TableItem tableItem = new TableItem();
             tableItem.operate = operate;
             tableItem.value = value;
-            table.get(state)[col] = tableItem;
+            mTable.get(state)[col] = tableItem;
             return true;
         } else
             return false;
@@ -63,17 +78,17 @@ public class LRParsingTable extends ParsingTable {
 
     //获取表项
     public TableItem getItem(int state, Symbol colSymbol){
-        Integer col = colMap.get(colSymbol.getType());
-        if (state < table.size() && col != null){
-            return table.get(state)[col];
+        Integer col = mColMap.get(colSymbol.getType());
+        if (state < mTable.size() && col != null){
+            return mTable.get(state)[col];
         }
         return null;
     }
 
     public TableItem getItem(int state, String colSymbol){
-        Integer col = colMap.get(colSymbol);
-        if (state < table.size() && col != null){
-            return table.get(state)[col];
+        Integer col = mColMap.get(colSymbol);
+        if (state < mTable.size() && col != null){
+            return mTable.get(state)[col];
         }
         return null;
     }

@@ -2,6 +2,7 @@ package com.ecnu.compiler.component.parser.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * Tree Diagram
@@ -29,6 +30,24 @@ public class TD {
         this.root = root;
     }
 
+
+    public static void printTree(TD tree) {
+        Stack<TNode> stack = new Stack<>();
+        System.out.println("Root:" + tree.getRoot().getContent());
+        System.out.println("-----------");
+        stack.push(tree.getRoot());
+        while(!stack.isEmpty()) {
+            TD.TNode<String> curNode = stack.pop();
+            System.out.println("Cur:" + curNode.getContent());
+            if (!curNode.getChildren().isEmpty()) {
+                List<TD.TNode<String>> children = curNode.getChildren();
+                for (int i = children.size() - 1; i >= 0; i--) {
+                    stack.push(children.get(i));
+                }
+            }
+        }
+    }
+
     //树节点
     static public class TNode<NodeType>{
         //节点内容
@@ -38,6 +57,8 @@ public class TD {
 
         public TNode(NodeType content) {
             this.content = content;
+            this.children = new ArrayList<>();
+            this.matched = false;
         }
 
         private boolean matched;
@@ -66,6 +87,14 @@ public class TD {
 
         public void addChild(TNode<NodeType> child){
             children.add(child);
+        }
+
+        public void reverseChildren(){
+            List<TNode<NodeType>> newChildren = new ArrayList<>();
+            for (int i = this.children.size() - 1; i >= 0; i--) {
+                newChildren.add(this.children.get(i));
+            }
+            this.children = newChildren;
         }
 
         public boolean isMatched() {
