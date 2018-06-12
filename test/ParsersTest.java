@@ -104,13 +104,13 @@ public class ParsersTest {
         }
         System.out.println("------------");
         String w = "id + id * id";
-        TD syntaxTree = LLParser.predict(w, cfg);
-        PredictTable predictTable = LLParser.getPredictTable();
-        System.out.println("----------------------");
-        System.out.println(predictTable);
-        System.out.println("----------------------");
-        LLParser.printTree(syntaxTree);
-        System.out.println("----------------------");
+//        TD syntaxTree = LLParser.predict(w, cfg);
+//        PredictTable predictTable = LLParser.getPredictTable();
+//        System.out.println("----------------------");
+//        System.out.println(predictTable);
+//        System.out.println("----------------------");
+//        TD.printTree(syntaxTree);
+//        System.out.println("----------------------");
 
     }
 

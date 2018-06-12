@@ -2,6 +2,7 @@ package com.ecnu.compiler.component.parser.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * Tree Diagram
@@ -27,6 +28,24 @@ public class TD {
 
     public void setRoot(TNode<String> root) {
         this.root = root;
+    }
+
+
+    public static void printTree(TD tree) {
+        Stack<TNode> stack = new Stack<>();
+        System.out.println("Root:" + tree.getRoot().getContent());
+        System.out.println("-----------");
+        stack.push(tree.getRoot());
+        while(!stack.isEmpty()) {
+            TD.TNode<String> curNode = stack.pop();
+            System.out.println("Cur:" + curNode.getContent());
+            if (!curNode.getChildren().isEmpty()) {
+                List<TD.TNode<String>> children = curNode.getChildren();
+                for (int i = children.size() - 1; i >= 0; i--) {
+                    stack.push(children.get(i));
+                }
+            }
+        }
     }
 
     //树节点
