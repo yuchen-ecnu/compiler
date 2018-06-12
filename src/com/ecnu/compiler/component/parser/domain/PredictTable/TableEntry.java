@@ -31,6 +31,8 @@ public class TableEntry {
         this.input = stringBuilder.toString();
     }
 
+
+
     @Override
     public String toString() {
         String symbols = "Symbols: " + this.symbols;
