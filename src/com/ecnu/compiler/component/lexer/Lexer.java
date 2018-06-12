@@ -92,9 +92,16 @@ public class Lexer {
         if (mSplitPatList == null || mNormalPatList == null)
             return null;
 
+        //记录行号列号
+        int oldLineNum = 1;
+        int colPosition = 1;
         //处理分割符号
         for (int i = 0; i < tokenList.size(); i++) {
             Token token = tokenList.get(i);
+            if (token.getRowNumber() != oldLineNum){
+                colPosition = 1;
+                oldLineNum = token.getRowNumber();
+            }
             if (token.getType() != null)
                 continue;
             //使用分割符号进行分割
@@ -116,16 +123,23 @@ public class Lexer {
                     do {
                         if (matcher.start() > itemIndex){
                             Token newToken = new Token(null, toMatch.substring(itemIndex, matcher.start()));
+                            newToken.setRowNumber(oldLineNum);
+                            newToken.setColPosition(colPosition++);
                             tokenList.add(addPosition, newToken);
                             addPosition ++;
                         }
                         Token splitToken = new Token(re.getName(), matcher.group());
+                        splitToken.setRowNumber(oldLineNum);
+                        splitToken.setColPosition(colPosition++);
                         tokenList.add(addPosition, splitToken);
                         addPosition ++;
                         itemIndex = matcher.end();
                     } while (matcher.find());
                     if (itemIndex < toMatch.length()){
-                        tokenList.add(addPosition, new Token(null, toMatch.substring(itemIndex, toMatch.length())));
+                        Token newToken = new Token(null, toMatch.substring(itemIndex, toMatch.length()));
+                        newToken.setRowNumber(oldLineNum);
+                        newToken.setColPosition(colPosition++);
+                        tokenList.add(addPosition,newToken);
                     }
                     i--;
                     break;

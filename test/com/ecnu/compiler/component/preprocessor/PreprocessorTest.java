@@ -13,7 +13,7 @@ public class PreprocessorTest {
 
     @Test
     public void preprocess() {
-        String text = "aa if ba //sdfsdfs\naabb \n bb ab";
+        String text = "for (int i = 0; i < 10; i++) {\n}";
         System.out.println(text);
 
         Preprocessor preprocessor = new Preprocessor(Constants.JAVA_COMMENT);
