@@ -6,6 +6,7 @@ import com.ecnu.compiler.component.parser.domain.ParsingTable.LRParsingTable;
 import com.ecnu.compiler.component.parser.domain.Production;
 import com.ecnu.compiler.component.parser.domain.Symbol;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -13,7 +14,9 @@ public class SLRParserBuilder extends LRParserBuilder {
 
     @Override
     protected LRItemSet getClosure(LRItemSet itemSet) {
-        for (LRItem item : itemSet){
+        ArrayList<LRItem> lrItemList = new ArrayList<>(itemSet);
+        for (int i = 0; i < lrItemList.size(); i++) {
+            LRItem item = lrItemList.get(i);
             //点的位置
             int pointPosition = item.getPointPosition();
             //产生式右边
