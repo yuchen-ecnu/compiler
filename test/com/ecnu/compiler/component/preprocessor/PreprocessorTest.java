@@ -13,7 +13,7 @@ public class PreprocessorTest {
 
     @Test
     public void preprocess() {
-        String text = "  11  /* 22 33 4 */  aaa    //bb\ncc\n//t  \nddd /*a*/ t\n";
+        String text = "aa if ba //sdfsdfs\naabb \n bb ab";
         System.out.println(text);
 
         Preprocessor preprocessor = new Preprocessor(Constants.JAVA_COMMENT);
