@@ -78,7 +78,7 @@ public class CFG {
                 System.err.println("格式错误，请确认输入。");
                 return;
             }
-            String leftStr = result[0];
+            String leftStr = result[0].trim();
             List<Integer> integerList = new ArrayList<>();
             integerList.add(0);
             Symbol leftSym = null;
@@ -101,11 +101,12 @@ public class CFG {
                     }
                 }
             }
-            String[] rightArr = result[1].split("\\|");
+            String[] rightArr = result[1].trim().split("\\|");
             for (String rStr : rightArr) {
                 List<Symbol> rightList = new ArrayList<>();
                 String[] rightStrList = rStr.trim().split(" ");
                 for (String s : rightStrList) {
+                    s = s.trim();
                     for (Symbol sym : mSymbolSet) {
                         if (sym.getType().equals(s)) {
                             rightList.add(sym);
