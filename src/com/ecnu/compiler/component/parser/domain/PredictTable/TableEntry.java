@@ -62,6 +62,10 @@ public class TableEntry {
         mItemList.add(action);
     }
 
+    public List<String> getItemList() {
+        return mItemList;
+    }
+
     @Override
     public String toString() {
         String symbols = "Symbols: " + mItemList.get(0);
