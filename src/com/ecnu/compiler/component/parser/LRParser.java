@@ -5,6 +5,7 @@ import com.ecnu.compiler.component.parser.domain.*;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LRParsingTable;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.ParsingTable;
 import com.ecnu.compiler.component.parser.domain.PredictTable.PredictTable;
+import com.ecnu.compiler.component.parser.domain.PredictTable.TableEntry;
 import com.ecnu.compiler.component.storage.SymbolTable;
 import com.ecnu.compiler.component.storage.domain.Token;
 import com.ecnu.compiler.constant.Constants;
@@ -32,6 +33,13 @@ public class LRParser extends Parser {
      */
     @Override
     protected TD getSyntaxTree(CFG cfg, ParsingTable parsingTable, SymbolTable symbolTable, PredictTable predictTable) {
+        //添加预测表表头
+        ArrayList<String> tableHead = new ArrayList<>();
+        tableHead.add("States");
+        tableHead.add("Symbols");
+        tableHead.add("Input");
+        tableHead.add("Action");
+        predictTable.setTableHead(tableHead);
         //LR解析表
         LRParsingTable lrParsingTable = (LRParsingTable)parsingTable;
         //所有的产生式
@@ -64,6 +72,9 @@ public class LRParser extends Parser {
                     syntaxTreeStack.push(new TD.TNode<>(curInputStr));
                     //更新当前处理的输入符号
                     curInputStr = tokenList.get(++curIndex).getType();
+                    //记录预测表
+                    predictTable.addTableEntry(new TableEntry(stateStack, syntaxTreeStack,
+                            symbolTable.getTokens(), curIndex, "Shift " + tableItem.getValue()));
                     break;
 
                 case LRParsingTable.REDUCE:
@@ -90,10 +101,16 @@ public class LRParser extends Parser {
                     }
                     //把新状态插入状态栈
                     stateStack.push(gotoTableItem.getValue());
+                    //记录预测表
+                    predictTable.addTableEntry(new TableEntry(stateStack, syntaxTreeStack,
+                            symbolTable.getTokens(), curIndex, "Reduce " + production));
                     break;
 
                 case LRParsingTable.ACCEPT:
                     //返回构造完成的树
+                    //记录预测表
+                    predictTable.addTableEntry(new TableEntry(stateStack, syntaxTreeStack,
+                            symbolTable.getTokens(), curIndex, "Accept "));
                     return new TD(syntaxTreeStack.pop());
 
                 default:

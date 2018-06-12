@@ -10,6 +10,8 @@ import java.util.Stack;
 public class PredictTable {
     private List<TableEntry> tableEntryList;
 
+    private List<String> mTableHead;
+
     public PredictTable() {
         tableEntryList = new ArrayList<>();
     }
@@ -24,6 +26,10 @@ public class PredictTable {
 
     public void setTableEntryList(List<TableEntry> tableEntryList) {
         this.tableEntryList = tableEntryList;
+    }
+
+    public void setTableHead(List<String> tableHead) {
+        mTableHead = tableHead;
     }
 
     @Override

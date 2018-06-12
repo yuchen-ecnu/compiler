@@ -48,4 +48,9 @@ public class Symbol {
         }
         return this.type.equals(((Symbol) obj).type) && this.isTerminal == ((Symbol) obj).isTerminal;
     }
+
+    @Override
+    public String toString() {
+        return type;
+    }
 }
