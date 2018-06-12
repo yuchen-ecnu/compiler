@@ -9,6 +9,7 @@ public class Token {
     private String mStr;
     private int mRowNumber;
     private int mColPosition;
+    private boolean isError = false;
 
     public Token(String type, String stringText) {
         this.mType = type;
@@ -19,7 +20,9 @@ public class Token {
         mType = type;
     }
 
-
+    public void setError(boolean error) {
+        isError = error;
+    }
 
     public String getType() {
         return mType;

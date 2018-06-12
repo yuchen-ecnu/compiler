@@ -54,7 +54,7 @@ public class CompilerBuilderTest {
         //配置Config
         Config config = new Config();
         config.setExecuteType(Constants.EXECUTE_STAGE_BY_STAGE);
-        config.setParserAlgorithm(Constants.PARSER_LL);
+        config.setParserAlgorithm(Constants.PARSER_LR);
         //测试
         CompilerBuilder compilerBuilder = new CompilerBuilder();
         if (!compilerBuilder.checkLanguage(languageId)){
@@ -63,7 +63,7 @@ public class CompilerBuilderTest {
         Compiler compiler = compilerBuilder.getCompilerInstance(languageId, config);
         //使用compiler
         //随便的一段代码
-        String text = "aa (if ba) //sdfsdfs\naabb \n bb ab";
+        String text = "aa if ba //sdfsdfs\naabb \n bb ab";
         //初始化编译器
         compiler.prepare(text);
         //利用状态码判断是否达到了对应的步骤

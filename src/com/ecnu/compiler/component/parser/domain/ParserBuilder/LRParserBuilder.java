@@ -150,7 +150,7 @@ public class LRParserBuilder {
         for (LRItem item : itemSet){
             //点的位置
             int pointPosition = item.getPointPosition();
-            if (pointPosition <= item.getProduction().getRight().size()) {
+            if (pointPosition < item.getProduction().getRight().size()) {
                 //点后有符号
                 Symbol symbolAfterPoint = item.getProduction().getRight().get(pointPosition);
                 if (symbolAfterPoint.equals(gotoSymbol)) {
