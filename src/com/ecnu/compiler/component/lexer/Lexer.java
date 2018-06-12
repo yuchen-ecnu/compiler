@@ -149,7 +149,10 @@ public class Lexer {
                 Matcher matcher = pattern.matcher(token.getStr());
                 if (matcher.matches()){
                     //匹配成功
-                    symbolTable.addToken(new Token(name, token.getStr()));
+                    Token tokenToAdd = new Token(name, token.getStr());
+                    tokenToAdd.setRowNumber(token.getRowNumber());
+                    tokenToAdd.setColPosition(token.getColPosition());
+                    symbolTable.addToken(tokenToAdd);
                     continue tag;
                 }
             }
