@@ -41,4 +41,11 @@ public class ErrorList {
     public void addError(ErrorMsg errorMsg){
         errorMsgList.add(errorMsg);
     }
+
+    /**
+     * 获取erroMsgList
+     */
+    public List<ErrorMsg> getErrorMsgList(){
+        return this.errorMsgList;
+    }
 }
