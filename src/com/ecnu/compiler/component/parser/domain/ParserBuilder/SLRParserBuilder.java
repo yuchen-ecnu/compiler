@@ -38,7 +38,7 @@ public class SLRParserBuilder extends LRParserBuilder {
     protected void addReduceTableItem(LRParsingTable lrParsingTable, int row, LRItem item) {
         Set<Symbol> followSymbols = getFirstFollowSet().getFollow(item.getProduction().getLeft());
         for (Symbol symbol : followSymbols){
-            lrParsingTable.set(row, symbol, LRParsingTable.REDUCE, item.getProduction().getId());
+            lrParsingTable.set(row, symbol, LRParsingTable.REDUCE, item.getProduction().getId() - 1);
         }
     }
 }
