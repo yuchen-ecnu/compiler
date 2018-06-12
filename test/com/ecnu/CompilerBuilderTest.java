@@ -54,7 +54,7 @@ public class CompilerBuilderTest {
         //配置Config
         Config config = new Config();
         config.setExecuteType(Constants.EXECUTE_STAGE_BY_STAGE);
-        config.setParserAlgorithm(Constants.PARSER_LL);
+        config.setParserAlgorithm(Constants.PARSER_LR);
         //测试
         CompilerBuilder compilerBuilder = new CompilerBuilder();
         if (!compilerBuilder.checkLanguage(languageId)){

@@ -171,6 +171,7 @@ public class Lexer {
                 }
             }
             //todo 匹配失败错误处理
+//            ErrorMsg
             return null;
         }
         return symbolTable;
