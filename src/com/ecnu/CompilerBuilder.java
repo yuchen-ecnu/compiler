@@ -70,8 +70,8 @@ public class CompilerBuilder {
         //构造各解析表
         language.setLLParsingTable(new LLParsingTable(cfg));
         language.setLRParsingTable(new LRParserBuilder().buildParsingTable(cfg));
-        language.setLRParsingTable(new SLRParserBuilder().buildParsingTable(cfg));
-        language.setLRParsingTable(new LALRParserBuilder().buildParsingTable(cfg));
+        language.setSLRParsingTable(new SLRParserBuilder().buildParsingTable(cfg));
+        language.setLALRParsingTable(new LALRParserBuilder().buildParsingTable(cfg));
         //保存language到缓存
         mLanguageCache.saveToCache(language);
     }

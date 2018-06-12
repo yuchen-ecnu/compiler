@@ -91,7 +91,7 @@ public class LRParserBuilder {
 
     protected void addReduceTableItem(LRParsingTable lrParsingTable, int row, LRItem item){
         for (Symbol lookAhead : item.getLookAhead()){
-            lrParsingTable.set(row, lookAhead, LRParsingTable.REDUCE, item.getProduction().getId());
+            lrParsingTable.set(row, lookAhead, LRParsingTable.REDUCE, item.getProduction().getId() - 1);
         }
     }
     

@@ -38,6 +38,8 @@ public class TD {
 
         public TNode(NodeType content) {
             this.content = content;
+            this.children = new ArrayList<>();
+            this.matched = false;
         }
 
         private boolean matched;
@@ -66,6 +68,14 @@ public class TD {
 
         public void addChild(TNode<NodeType> child){
             children.add(child);
+        }
+
+        public void reverseChildren(){
+            List<TNode<NodeType>> newChildren = new ArrayList<>();
+            for (int i = this.children.size() - 1; i >= 0; i--) {
+                newChildren.add(this.children.get(i));
+            }
+            this.children = newChildren;
         }
 
         public boolean isMatched() {

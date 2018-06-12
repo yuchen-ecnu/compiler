@@ -77,6 +77,8 @@ public class LRParser extends Parser {
                         TD.TNode<String> childNode = syntaxTreeStack.pop();
                         parentNode.addChild(childNode);
                     }
+                    //反向孩子节点
+                    parentNode.reverseChildren();
                     //将新节点放入节点栈
                     syntaxTreeStack.push(parentNode);
                     //查GOTO表
