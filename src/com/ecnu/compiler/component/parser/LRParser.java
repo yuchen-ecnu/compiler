@@ -6,6 +6,7 @@ import com.ecnu.compiler.component.parser.domain.ParsingTable.LRParsingTable;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.ParsingTable;
 import com.ecnu.compiler.component.parser.domain.PredictTable.PredictTable;
 import com.ecnu.compiler.component.parser.domain.PredictTable.TableEntry;
+import com.ecnu.compiler.component.storage.ErrorList;
 import com.ecnu.compiler.component.storage.SymbolTable;
 import com.ecnu.compiler.component.storage.domain.Token;
 import com.ecnu.compiler.constant.Constants;
@@ -20,8 +21,8 @@ import java.util.*;
  */
 public class LRParser extends Parser {
 
-    public LRParser(CFG CFG, ParsingTable parsingTable) {
-        super(CFG, parsingTable);
+    public LRParser(CFG CFG, ParsingTable parsingTable, ErrorList errorList) {
+        super(CFG, parsingTable, errorList);
     }
 
 
@@ -48,7 +49,7 @@ public class LRParser extends Parser {
         Stack<Integer> stateStack = new Stack<>();
         stateStack.push(0);
         //语法子树栈
-        Stack<TD.TNode<String>> syntaxTreeStack = new Stack<>();
+        Stack<TD.TNode> syntaxTreeStack = new Stack<>();
         //当前分析的输入Token列表
         List<Token> tokenList = symbolTable.getTokens();
         //添加终结符
@@ -69,7 +70,7 @@ public class LRParser extends Parser {
                 case LRParsingTable.SHIFT:
                     //如果是Shift，则移入相应状态以及添加一个新的树节点
                     stateStack.push(tableItem.getValue());
-                    syntaxTreeStack.push(new TD.TNode<>(curInputStr));
+                    syntaxTreeStack.push(new TD.TNode(curInputStr));
                     //更新当前处理的输入符号
                     curInputStr = tokenList.get(++curIndex).getType();
                     //记录预测表
@@ -81,12 +82,15 @@ public class LRParser extends Parser {
                     //获取相应产生式
                     Production production = productionList.get(tableItem.getValue());
                     //构造新的树节点
-                    TD.TNode<String> parentNode = new TD.TNode<>(production.getLeft().getType());
+                    TD.TNode parentNode = new TD.TNode(production.getLeft().getName());
                     List<Symbol> right = production.getRight();
-                    for (int i = 0; i < right.size(); i++) {
-                        stateStack.pop();
-                        TD.TNode<String> childNode = syntaxTreeStack.pop();
-                        parentNode.addChild(childNode);
+                    if (right.size() > 0){
+                        parentNode.setProductionId(production.getId());
+                        for (int i = 0; i < right.size(); i++) {
+                            stateStack.pop();
+                            TD.TNode childNode = syntaxTreeStack.pop();
+                            parentNode.addChild(childNode);
+                        }
                     }
                     //反向孩子节点
                     parentNode.reverseChildren();

@@ -2,9 +2,7 @@ package com.ecnu.compiler.component.parser.domain.PredictTable;
 
 import com.ecnu.compiler.component.parser.domain.Symbol;
 import com.ecnu.compiler.component.parser.domain.TD;
-import com.ecnu.compiler.component.storage.SymbolTable;
 import com.ecnu.compiler.component.storage.domain.Token;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,27 +16,27 @@ public class TableEntry {
         StringBuilder stringBuilder = new StringBuilder();
         if (!(symbols == null || symbols.isEmpty())) {
             for (Symbol sym : symbols) {
-                stringBuilder.append(sym.getType()).append(" ");
+                stringBuilder.append(sym.getName()).append(" ");
             }
         }
         mItemList.add(stringBuilder.toString());
 
         stringBuilder = new StringBuilder();
         for (Symbol sym : stack) {
-            stringBuilder.append(sym.getType()).append(" ");
+            stringBuilder.append(sym.getName()).append(" ");
         }
         mItemList.add(stringBuilder.toString());
 
         stringBuilder = new StringBuilder();
         for (Symbol sym : input) {
-            stringBuilder.append(sym.getType()).append(" ");
+            stringBuilder.append(sym.getName()).append(" ");
         }
         mItemList.add(stringBuilder.toString());
 
         mItemList.add(action);
     }
 
-    public TableEntry(Stack<Integer> stateStack, Stack<TD.TNode<String>> treeNodeStack,
+    public TableEntry(Stack<Integer> stateStack, Stack<TD.TNode> treeNodeStack,
                       List<Token> tokenList, int curIndex, String action) {
         mItemList = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
@@ -48,7 +46,7 @@ public class TableEntry {
         mItemList.add(stringBuilder.toString());
 
         stringBuilder = new StringBuilder();
-        for (TD.TNode<String> node : treeNodeStack){
+        for (TD.TNode node : treeNodeStack){
             stringBuilder.append(node.getContent());
         }
         mItemList.add(stringBuilder.toString());

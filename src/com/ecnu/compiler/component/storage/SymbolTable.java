@@ -47,7 +47,7 @@ public class SymbolTable {
                     int flag = 0;
                     for (Token token: this.tokens) {
                         //已包含该类型的token
-                        if(token.getType().equals(key)){
+                        if(token.getName().equals(key)){
                             //token.getAttrs().add(lexeme);
                             flag = 1;
                             break;

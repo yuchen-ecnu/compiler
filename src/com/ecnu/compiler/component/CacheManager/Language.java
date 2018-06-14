@@ -5,6 +5,7 @@ import com.ecnu.compiler.component.lexer.domain.RE;
 import com.ecnu.compiler.component.parser.domain.CFG;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LLParsingTable;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LRParsingTable;
+import com.ecnu.compiler.component.semantic.domain.AG;
 
 import java.util.List;
 
@@ -14,10 +15,12 @@ import java.util.List;
 public class Language {
     //语言编号
     int mId;
+
     //RE列表,优先级高的排在列表前面
     List<RE> mREList;
     //DFA列表,优先级高的排在列表前面
     List<DFA> mDFAList;
+
     //CFG
     CFG mCFG;
     //CFG对应解析表
@@ -29,6 +32,9 @@ public class Language {
     LRParsingTable mLRParsingTable;
     //LALR
     LRParsingTable mLALRParsingTable;
+
+    //AG
+    AG mAG;
 
     public Language(int id) {
         mId = id;
@@ -92,5 +98,13 @@ public class Language {
 
     public void setLALRParsingTable(LRParsingTable LALRParsingTable) {
         mLALRParsingTable = LALRParsingTable;
+    }
+
+    public AG getAG() {
+        return mAG;
+    }
+
+    public void setAG(AG AG) {
+        mAG = AG;
     }
 }

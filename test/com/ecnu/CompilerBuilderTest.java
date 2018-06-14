@@ -11,7 +11,9 @@ import com.ecnu.compiler.controller.Compiler;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,8 +51,14 @@ public class CompilerBuilderTest {
         reList.add(new RE("if", "if", RE.NOMAL_SYMBOL));
         reList.add(new RE("id", "a|(a|b)*", RE.NOMAL_SYMBOL));
         List<String> productionStrList = new ArrayList<>();
-        productionStrList.add("T->id E id");
-        productionStrList.add("E->id|if T");
+        productionStrList.add("T -> ( id ) E id");
+        productionStrList.add("E -> id | if T");
+        Map<String, String> agActionMap = new HashMap<>();
+        agActionMap.put("P", "E.in = id0.digit");
+        agActionMap.put("Q", "E.s = if.s");
+        List<String> agProductionStrList = new ArrayList<>();
+        agProductionStrList.add("T -> ( id ) P E id");
+        agProductionStrList.add("E -> id | if T Q");
         //配置Config
         Config config = new Config();
         config.setExecuteType(Constants.EXECUTE_STAGE_BY_STAGE);
@@ -58,23 +66,25 @@ public class CompilerBuilderTest {
         //测试
         CompilerBuilder compilerBuilder = new CompilerBuilder();
         if (!compilerBuilder.checkLanguage(languageId)){
-            compilerBuilder.prepareLanguage(languageId, reList, productionStrList);
+            compilerBuilder.prepareLanguage(languageId, reList, productionStrList,
+                    agProductionStrList, agActionMap);
         }
         Compiler compiler = compilerBuilder.getCompilerInstance(languageId, config);
         //使用compiler
         //随便的一段代码
-        String text = "aa if ba //sdfsdfs\naabb \n bb ab";
+        String text = "(aa) if (ba) aabb \n bb ab";
         //初始化编译器
         compiler.prepare(text);
         //利用状态码判断是否达到了对应的步骤
-        while (compiler.getStatus() != StatusCode.STAGE_SEMANTIC_ANALYZER){
+        while (compiler.getStatus().getCode() > 0 && compiler.getStatus() != StatusCode.STAGE_BACKEND){
             compiler.next();
             System.out.println("now status is: " + compiler.getStatus().getText());
         }
         Compiler.TimeHolder timeHolder = compiler.getTimeHolder();
         System.out.println("预处理时间：" + timeHolder.getPreprocessorTime());
-        System.out.println("词法编译器时间：" + timeHolder.getLexerTime());
-        System.out.println("语法编译器时间：" + timeHolder.getParserTime());
+        System.out.println("词法处理器时间：" + timeHolder.getLexerTime());
+        System.out.println("语法处理器时间：" + timeHolder.getParserTime());
+        System.out.println("语义处理器时间：" + timeHolder.getParserTime());
 
         if (compiler.getSymbolTable() != null)
             compiler.getSymbolTable().getTokens().forEach((token) -> {
@@ -90,12 +100,8 @@ public class CompilerBuilderTest {
             System.out.println("语法分析失败");
         }
 
+        compiler.getActionList().forEach(System.out::println);
 
-        /* 当然你也可以这样来进行循环
-        while (compiler.next() != StatusCode.STAGE_PARSER){
-            System.out.println("now status is: " + compiler.getStatus().getText());
-        }*/
-        //结束了
         System.out.println("Ok!!");
     }
 }

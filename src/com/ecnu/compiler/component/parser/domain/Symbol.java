@@ -8,49 +8,49 @@ public class Symbol {
     //空符号
     public static final Symbol EMPTY_SYMBOL = new Symbol(Constants.EMPTY_TOKEN);
     //符号类型
-    private String type;
+    private String mName;
     //是否终结符
-    private boolean isTerminal;
+    private boolean mIsTerminal;
 
-    public Symbol(String type) {
-        this(type, false);
+    public Symbol(String name) {
+        this(name, false);
     }
 
-    public Symbol(String type, boolean isTerminal) {
-        this.type = type;
-        this.isTerminal = isTerminal;
+    public Symbol(String name, boolean isTerminal) {
+        mName = name;
+        mIsTerminal = isTerminal;
     }
 
-    public String getType() {
-        return type;
+    public String getName() {
+        return mName;
     }
 
     public boolean isTerminal() {
-        return isTerminal;
+        return mIsTerminal;
     }
 
     public void setTerminal(boolean terminal) {
-        isTerminal = terminal;
+        mIsTerminal = terminal;
     }
 
     @Override
     public int hashCode() {
-        return type.hashCode();
+        return mName.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Symbol)) {
+        if (getClass() != obj.getClass()) {
             return false;
         }
         if (obj == this) {
             return true;
         }
-        return this.type.equals(((Symbol) obj).type) && this.isTerminal == ((Symbol) obj).isTerminal;
+        return this.mName.equals(((Symbol) obj).mName);
     }
 
     @Override
     public String toString() {
-        return type;
+        return mName;
     }
 }

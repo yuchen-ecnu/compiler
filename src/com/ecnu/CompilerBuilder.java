@@ -9,6 +9,7 @@ import com.ecnu.compiler.component.parser.domain.ParserBuilder.LALRParserBuilder
 import com.ecnu.compiler.component.parser.domain.ParserBuilder.LRParserBuilder;
 import com.ecnu.compiler.component.parser.domain.ParserBuilder.SLRParserBuilder;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LLParsingTable;
+import com.ecnu.compiler.component.semantic.domain.AG;
 import com.ecnu.compiler.component.storage.ErrorList;
 import com.ecnu.compiler.component.storage.domain.ErrorMsg;
 import com.ecnu.compiler.constant.Config;
@@ -17,6 +18,7 @@ import com.ecnu.compiler.constant.StatusCode;
 import com.ecnu.compiler.controller.Compiler;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 编译器  --定义对外的所有接口
@@ -55,7 +57,8 @@ public class CompilerBuilder {
      * @param languageId
      * @return
      */
-    public void prepareLanguage(int languageId, List<RE> reList, List<String> productionStrList){
+    public void prepareLanguage(int languageId, List<RE> reList, List<String> productionStrList,
+            List<String> AGProductionStrList, Map<String, String> actionMap){
         //todo 构造时出现问题之后单独做一个EXCEPTION来处理，现在先假设RE没毛病。
         //创建语言信息
         Language language = new Language(languageId);
@@ -75,6 +78,11 @@ public class CompilerBuilder {
             language.setLRParsingTable(new LRParserBuilder().buildParsingTable(cfg));
             language.setSLRParsingTable(new SLRParserBuilder().buildParsingTable(cfg));
             language.setLALRParsingTable(new LALRParserBuilder().buildParsingTable(cfg));
+        }
+        if (actionMap != null && actionMap.size() > 0){
+            //构造ag
+            AG ag = new AG(AGProductionStrList, actionMap);
+            language.setAG(ag);
         }
         //保存language到缓存
         mLanguageCache.saveToCache(language);

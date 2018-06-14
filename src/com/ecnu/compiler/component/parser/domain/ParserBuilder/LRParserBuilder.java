@@ -36,7 +36,7 @@ public class LRParserBuilder {
         //使用第一个产生式的左边作为起始符号
         Symbol firstSymbol = cfg.getAllProductions().get(0).getLeft();
         productionRight.add(firstSymbol);
-        Symbol startSymbol = new Symbol("startSymbol");
+        Symbol startSymbol = new Symbol("startSymbol", false);
         Production production = new Production(startSymbol, productionRight, -1); //构造初始产生式
         itemSet.add(getNewLRItem(production, Symbol.TERMINAL_SYMBOL)); //添加初始项
         mFirstFollowSet.getFirstMap().put(startSymbol, mFirstFollowSet.getFirstMap().get(firstSymbol));

@@ -36,7 +36,7 @@ public class CFG {
                     boolean flag = false;
                     Symbol rightSym = new Symbol(rrs);
                     for (Symbol sym : symbolSet) {
-                        if (sym.getType().equals(rightSym.getType())) {
+                        if (sym.getName().equals(rightSym.getName())) {
                             flag = true;
                             break;
                         }
@@ -49,7 +49,7 @@ public class CFG {
         }
 //        System.out.println("*************");
 //        for (Symbol s : symbolSet) {
-//            System.out.println(s.getType() + "----" + s.isTerminal());
+//            System.out.println(s.getName() + "----" + s.isTerminal());
 //        }
 //        System.out.println("*************");
         return symbolSet;
@@ -68,7 +68,7 @@ public class CFG {
         int prodId = 1;
         Set<String> stringSet = new HashSet<>();
         for (Symbol sym : mSymbolSet) {
-            stringSet.add(sym.getType());
+            stringSet.add(sym.getName());
         }
         for (String item : productionStrList) {
             item = item.trim();
@@ -88,7 +88,7 @@ public class CFG {
                 return;
             } else {
                 for (Symbol sym : mSymbolSet) {
-                    if (sym.getType().equals(leftStr)) {
+                    if (sym.getName().equals(leftStr)) {
                         leftSym = sym;
                         //只有初次执行到这里，才会把当前的左部作为开始符号
                         if (mStartSymbol == null) {
@@ -108,7 +108,7 @@ public class CFG {
                 for (String s : rightStrList) {
                     s = s.trim();
                     for (Symbol sym : mSymbolSet) {
-                        if (sym.getType().equals(s)) {
+                        if (sym.getName().equals(s)) {
                             rightList.add(sym);
                             if (!mNonTerminalMap.containsKey(sym)) {
                                 mTerminalSet.add(sym);
@@ -121,7 +121,7 @@ public class CFG {
 //                    String s = rStr.substring(0, i);
 //                    while (stringSet.contains(s) && !rStr.isEmpty()) {
 //                        for (Symbol sym : mSymbolSet) {
-//                            if (sym.getType().equals(s)) {
+//                            if (sym.getName().equals(s)) {
 //                                rightList.add(sym);
 //                                rStr = rStr.substring(i);
 //                                if (!mNonTerminalMap.containsKey(sym)) {
@@ -223,9 +223,9 @@ public class CFG {
             removeProductionsByLeft(symbol);
             int id = getMaxId();
             List<Production> allProductions = getAllProductions();
-            Symbol prime = new Symbol(symbol.getType() + "\'");
+            Symbol prime = new Symbol(symbol.getName() + "\'");
             while (getNonTerminalSet().contains(prime)) {
-                prime = new Symbol(prime.getType() + "\'");
+                prime = new Symbol(prime.getName() + "\'");
             }
             for (List<Symbol> l : beta) {
                 l.add(prime);
@@ -310,12 +310,12 @@ public class CFG {
             List<Integer> nonTermList = new ArrayList<>();
 //        System.out.println("LCP:");
 //        for (Symbol s : lcp) {
-//            System.out.println(s.getType());
+//            System.out.println(s.getName());
 //        }
             if (size > 0) {
-                prime = new Symbol(sym.getType() + "\'");
+                prime = new Symbol(sym.getName() + "\'");
                 while (getNonTerminalSet().contains(prime)) {
-                    prime = new Symbol(prime.getType() + "\'");
+                    prime = new Symbol(prime.getName() + "\'");
                 }
                 for (Production prod : productions) {
                     List<Symbol> right = prod.getRight();

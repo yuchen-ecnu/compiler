@@ -58,10 +58,12 @@ public class Compiler {
     private List<Token> mTextListAfterPreprocess;
     //词法分析器得到的符号表
     private SymbolTable mSymbolTable;
-    //语法分析后得到的语法树
+    //语法分析后得到的语法树,以及语义分析后得到的注释语法树
     private TD mSyntaxTree;
     //语法分析过程的记录表
     private PredictTable mPredictTable;
+    //语义分析后得到的动作列表
+    private List<String> mActionList;
 
 
     /**
@@ -82,7 +84,9 @@ public class Compiler {
         //mLexer = createLexer(language.getDFAList());
         mLexer = new Lexer(language.getREList(), mErrorList, 0);
         //创建语法分析器，根据config创建
-        mParser = createParser(language);
+        mParser = createParser(language, mErrorList);
+        //创建语义分析器
+        mSemanticAnalyzer = new SemanticAnalyzer(language.getAG(), mErrorList);
 
         mStatus = StatusCode.RUNNING;
     }
@@ -122,6 +126,15 @@ public class Compiler {
     public TD getSyntaxTree() {
         return mSyntaxTree;
     }
+
+    /**
+     * 获得语义分析得到的动作列表
+     * @return
+     */
+    public List<String> getActionList() {
+        return mActionList;
+    }
+
 
     /**
      * 获得语法分析过程中的分析表
@@ -170,8 +183,6 @@ public class Compiler {
     private StatusCode nextStep(){
         long startTime = System.currentTimeMillis();
         switch (mStatus){
-            case ERROR:
-                break;
             case STAGE_PREPROCESSOR:
                 if (!"".equals(mTextToCompiler)){
                     mTextListAfterPreprocess = mPreprocessor.preprocess(mTextToCompiler);
@@ -198,6 +209,12 @@ public class Compiler {
                 }
                 break;
             case STAGE_SEMANTIC_ANALYZER:
+                if (mSyntaxTree != null){
+                    mActionList = mSemanticAnalyzer.buildAttrubuteTree(mSyntaxTree);
+                    mStatus = StatusCode.STAGE_BACKEND;
+                    //计时
+                    mTimeHolder.setSemanticTime(System.currentTimeMillis() - startTime);
+                }
                 break;
             case STAGE_BACKEND:
                 break;
@@ -221,16 +238,16 @@ public class Compiler {
      * 创建语法分析器
      * @return 对应算法的语法分析器
      */
-    private Parser createParser(Language language) {
+    private Parser createParser(Language language, ErrorList errorList) {
         switch(mConfig.getParserAlgorithm()){
             case Constants.PARSER_LL:
-                return new LLParser(language.getCFG(), language.getLLParsingTable());
+                return new LLParser(language.getCFG(), language.getLLParsingTable(), errorList);
             case Constants.PARSER_LR:
-                return new LRParser(language.getCFG(), language.getLRParsingTable());
+                return new LRParser(language.getCFG(), language.getLRParsingTable(), errorList);
             case Constants.PARSER_SLR:
-                return new LRParser(language.getCFG(), language.getSLRParsingTable());
+                return new LRParser(language.getCFG(), language.getSLRParsingTable(), errorList);
             case Constants.PARSER_LALR:
-                return new LRParser(language.getCFG(), language.getLALRParsingTable());
+                return new LRParser(language.getCFG(), language.getLALRParsingTable(), errorList);
             default:
                 //todo 配置错误处理
                 return null;
@@ -245,6 +262,8 @@ public class Compiler {
         private long lexerTime;
         //语法分析时间
         private long parserTime;
+        //语义分析时间
+        private long semanticTime;
 
         public long getPreprocessorTime() {
             return preprocessorTime;
@@ -268,6 +287,14 @@ public class Compiler {
 
         void setParserTime(long parserTime) {
             this.parserTime = parserTime;
+        }
+
+        public long getSemanticTime() {
+            return semanticTime;
+        }
+
+        public void setSemanticTime(long semanticTime) {
+            this.semanticTime = semanticTime;
         }
     }
 }
