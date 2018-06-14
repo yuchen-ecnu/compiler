@@ -168,6 +168,9 @@ public class LLParser extends Parser {
                                 child.setMatched(true);
                             }
                             r.addChild(child);
+                            if (r.getProductionId() <= 0) {
+                                r.setProductionId(prod.getId());
+                            }
                         }
                     } else {
                         System.out.println("Tree output error!");
