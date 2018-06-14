@@ -8,6 +8,8 @@ import com.ecnu.compiler.component.parser.domain.TD;
 import com.ecnu.compiler.component.storage.ErrorList;
 import com.ecnu.compiler.component.storage.SymbolTable;
 
+import java.util.List;
+
 /**
  * 语法分析器
  * @author Michael Chen

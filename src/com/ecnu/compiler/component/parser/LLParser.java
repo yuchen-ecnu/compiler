@@ -62,7 +62,9 @@ public class LLParser extends Parser {
 
         Set<Symbol> allSymbols = cfg.getTerminalSet();
         allSymbols.addAll(cfg.getNonTerminalSet());
-        for (Token t : symbolTable.getTokens()) {
+        List<Token> tokens = symbolTable.getTokens();
+        for (int i = tokens.size() - 1; i >= 0; i--) {
+            Token t = tokens.get(i);
             boolean found = false;
             String s = t.getType();
             for (Symbol sym : allSymbols) {
@@ -188,6 +190,11 @@ public class LLParser extends Parser {
             }
             stackTop = stack.peek();
             bufferTop = buffer.peek();
+        }
+        if (!buffer.peek().equals(Symbol.TERMINAL_SYMBOL)) {
+            System.out.println("Stack Empty Error.");
+            getErrorList();
+            return null;
         }
         predictTable.setTableEntryList(tableEntryList);
         return syntaxTree;
