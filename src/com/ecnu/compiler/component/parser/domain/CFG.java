@@ -142,6 +142,8 @@ public class CFG {
             }
         }
         setListForMap(mNonTerminalMap);
+        this.cleanLeftRecursion();
+        this.extractLeftCommonFactor();
     }
 
     public Symbol getStartSymbol() {
