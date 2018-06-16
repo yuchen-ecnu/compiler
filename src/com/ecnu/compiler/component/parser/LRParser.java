@@ -10,6 +10,7 @@ import com.ecnu.compiler.component.storage.ErrorList;
 import com.ecnu.compiler.component.storage.SymbolTable;
 import com.ecnu.compiler.component.storage.domain.Token;
 import com.ecnu.compiler.constant.Constants;
+import com.ecnu.compiler.constant.StatusCode;
 
 import java.util.*;
 
@@ -62,8 +63,10 @@ public class LRParser extends Parser {
             //获取表项
             LRParsingTable.TableItem tableItem = lrParsingTable.getItem(stateStack.peek(), curInputStr);
             if (tableItem == null){
-                //todo 处理查表失败
-                System.out.println("查表失败");
+                predictTable.addTableEntry(new TableEntry(stateStack, syntaxTreeStack,
+                        symbolTable.getTokens(), curIndex, "Error: Cannot find item in action table"));
+                getErrorList().addErrorMsg("语法分析错误， Action表项("
+                                + stateStack.peek() + ", " + curInputStr + ")找不到", StatusCode.ERROR_PARSER);
                 return null;
             }
             switch (tableItem.getOperate()){
@@ -99,8 +102,10 @@ public class LRParser extends Parser {
                     //查GOTO表
                     LRParsingTable.TableItem gotoTableItem = lrParsingTable.getItem(stateStack.peek(), parentNode.getContent());
                     if (gotoTableItem == null || gotoTableItem.getOperate() != LRParsingTable.GOTO){
-                        //todo 处理查表失败
-                        System.out.println("查表失败");
+                        predictTable.addTableEntry(new TableEntry(stateStack, syntaxTreeStack,
+                                symbolTable.getTokens(), curIndex, "Error: Cannot find item in goto table"));
+                        getErrorList().addErrorMsg("语法分析错误， Goto表项("
+                                + stateStack.peek() + ", " + curInputStr + ")找不到", StatusCode.ERROR_PARSER);
                         return null;
                     }
                     //把新状态插入状态栈
@@ -118,14 +123,16 @@ public class LRParser extends Parser {
                     return new TD(syntaxTreeStack.pop());
 
                 default:
-                    //todo 处理查表失败
-                    System.out.println("查表失败");
+                    predictTable.addTableEntry(new TableEntry(stateStack, syntaxTreeStack,
+                            symbolTable.getTokens(), curIndex, "System Error"));
+                    getErrorList().addErrorMsg("语法分析内部错误（未知的表项内容）", StatusCode.ERROR_PARSER);
                     return null;
             }
         }
         //如果输入都完了还没到达，那么匹配就失败了，语法有错误。
-        //todo 处理语法错误
-        System.out.println("语法错误");
+        predictTable.addTableEntry(new TableEntry(stateStack, syntaxTreeStack,
+                symbolTable.getTokens(), curIndex, "Error: Cannot find item in action table"));
+        getErrorList().addErrorMsg("语法分析错误， 无法抵达接受项，分析失败", StatusCode.ERROR_PARSER);
         return null;
     }
 }

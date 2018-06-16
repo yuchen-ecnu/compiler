@@ -2,6 +2,7 @@ package com.ecnu.compiler.component.parser.domain.ParserBuilder;
 
 import com.ecnu.compiler.component.parser.domain.*;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LRParsingTable;
+import com.ecnu.compiler.component.storage.ErrorList;
 
 import java.util.*;
 
@@ -80,6 +81,10 @@ public class LRParserBuilder {
                         //区分是否终结符
                         boolean isTerminal = cfg.getTerminalSet().contains(symbolAfterPoint);
                         //添加表项
+                        if (lrParsingTable.getItem(i, symbolAfterPoint) != null){
+                            //构造失败
+                            return null;
+                        }
                         lrParsingTable.set(i, symbolAfterPoint,
                                 isTerminal ? LRParsingTable.SHIFT : LRParsingTable.GOTO, targetIndex);
                     }

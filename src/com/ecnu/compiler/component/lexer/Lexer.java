@@ -6,6 +6,7 @@ import com.ecnu.compiler.component.storage.ErrorList;
 import com.ecnu.compiler.component.storage.SymbolTable;
 import com.ecnu.compiler.component.storage.domain.ErrorMsg;
 import com.ecnu.compiler.component.storage.domain.Token;
+import com.ecnu.compiler.constant.StatusCode;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -54,43 +55,45 @@ public class Lexer {
      * @param lexemes 希望匹配的所有词素组成的文本列表
      * @return 符号表
      */
-    public SymbolTable buildSymbolTable(List<Token> lexemes){
+    public boolean buildSymbolTable(List<Token> lexemes, SymbolTable symbolTable){
         //return buildSymbolTableByDFA(lexemes);
-        return buildSymbolTableByJavaRE(lexemes);
+        return buildSymbolTableByJavaRE(lexemes, symbolTable);
     }
 
     /**
      * 根据DFA列表构造符号表
-     * @param lexemes 希望匹配的所有词素组成的文本列表
-     * @return 符号表
+     * @param tokenList 希望匹配的所有词素组成的文本列表
+     * @return 匹配结果
      */
-    private SymbolTable buildSymbolTableByDFA(List<String> lexemes){
+    private boolean buildSymbolTableByDFA(List<Token> tokenList, SymbolTable symbolTable){
         if (mDFAList == null)
-            return null;
-        SymbolTable symbolTable = new SymbolTable();
-        tag: for (String lexeme:lexemes){
+            return false;
+
+        boolean result = true;
+        tag: for (Token token:tokenList){
             //遍历DFA
             for (DFA dfa : mDFAList){
-                if (dfa.match(lexeme) != null){
+                if (dfa.match(token.getStr()) != null){
                     //匹配成功
                     symbolTable.addToken(new Token(dfa.getName()));
                     continue tag;
                 }
             }
-            //todo 匹配失败错误处理
-            return null;
+            mErrorList.addErrorMsg("无法识别的词素，位置：("
+                    + token.getRowNumber() + ", " + token.getColPosition() + ")", StatusCode.ERROR_LEXER);
+            result = false;
         }
-        return symbolTable;
+        return result;
     }
 
     /**
      * 使用JAVA自带的RE匹配来实现匹配
      * @param tokenList 希望匹配的所有词素组成的文本列表
-     * @return
+     * @return 匹配是否成功
      */
-    private SymbolTable buildSymbolTableByJavaRE(List<Token> tokenList){
+    private boolean buildSymbolTableByJavaRE(List<Token> tokenList, SymbolTable symbolTable){
         if (mSplitPatList == null || mNormalPatList == null)
-            return null;
+            return false;
 
         //记录行号列号
         int oldLineNum = 1;
@@ -148,7 +151,7 @@ public class Lexer {
         }
 
         //构造符号表
-        SymbolTable symbolTable = new SymbolTable();
+        boolean result = true;
         tag:
         for (Token token : tokenList){
             if (token.getType() != null){
@@ -170,10 +173,10 @@ public class Lexer {
                     continue tag;
                 }
             }
-            //todo 匹配失败错误处理
-//            ErrorMsg
-            return null;
+            mErrorList.addErrorMsg("无法识别的词素，位置：("
+                    + token.getRowNumber() + ", " + token.getColPosition() + ")", StatusCode.ERROR_LEXER);
+            result = false;
         }
-        return symbolTable;
+        return result;
     }
 }

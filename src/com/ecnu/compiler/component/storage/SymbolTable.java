@@ -35,7 +35,6 @@ public class SymbolTable {
      * @return 是否存在一个DFA能够匹配
      */
     /*public boolean build(Map<String, DFA> dfaMap, List<String> lexemes){
-        //todo 尝试使用每个DFA匹配每个词素，匹配成功则向符号表中添加一个Token,现在的Token的属性只有一个，就是每个单词
         int count =0;
         for (String lexeme:lexemes){
             //遍历DFA
