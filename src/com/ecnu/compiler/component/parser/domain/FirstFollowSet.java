@@ -30,6 +30,7 @@ public class FirstFollowSet {
             if (prod.getRight().size() == 1 && prod.getRight().get(0) == Symbol.EMPTY_SYMBOL) {
                 Symbol leftSym = prod.getLeft();
                 Set<Symbol> symbolSet = firstMap.get(leftSym);
+                if (symbolSet == null) symbolSet = new HashSet<>();
                 symbolSet.add(Symbol.EMPTY_SYMBOL);
                 firstMap.put(leftSym, symbolSet);
             }
@@ -114,7 +115,9 @@ public class FirstFollowSet {
                         continue;
                     }
                     if (betaList.isEmpty()) {
-                        symbolSet.addAll(getFollow(left));
+                        if (getFollow(left) != null) {
+                            symbolSet.addAll(getFollow(left));
+                        }
                         if (size != symbolSet.size()) {
                             changed = true;
                         }
@@ -150,12 +153,17 @@ public class FirstFollowSet {
         for (Symbol symbol : symbols){
             //当前符号对应的first集，将其添加到结果中
             Set<Symbol> tmpSymbolSet = firstMap.get(symbol);
-            firstSet.addAll(tmpSymbolSet);
+            if (tmpSymbolSet != null) {
+                firstSet.addAll(tmpSymbolSet);
+            }
             //如果发现当前first集中没有空符号，则删除结果中的空符号，然后返回结果，否则继续查看下一个符号的first集合
-            if (!tmpSymbolSet.contains(Symbol.EMPTY_SYMBOL)){
+            if (tmpSymbolSet != null && !tmpSymbolSet.contains(Symbol.EMPTY_SYMBOL)){
                 firstSet.remove(Symbol.EMPTY_SYMBOL);
                 return firstSet;
             }
+        }
+        if (firstSet.isEmpty()) {
+            firstSet.add(Symbol.EMPTY_SYMBOL);
         }
         return firstSet;
     }
