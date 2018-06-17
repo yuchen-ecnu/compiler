@@ -55,13 +55,15 @@ public class LRParserBuilder {
                 int pointPosition = item.getPointPosition();
                 if (pointPosition == item.getProduction().getRight().size()){
                     //假如点后面没有别的符号了
-                    if (item.getProduction().getId() >= 0)
+                    if (item.getProduction().getId() >= 0) {
                         //添加reduce表项
                         if (!addReduceTableItem(lrParsingTable, i, item))
                             return null;
-                    else
+                    }
+                    else {
                         //接受
                         lrParsingTable.set(i, Symbol.TERMINAL_SYMBOL, LRParsingTable.ACCEPT, 0);
+                    }
                 } else {
                     //点后面有符号
                     //点后的符号

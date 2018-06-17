@@ -53,14 +53,14 @@ public class CompilerBuilderTest {
         reList.add(new RE("if", "if", RE.NOMAL_SYMBOL));
         reList.add(new RE("id", "a|(a|b)*", RE.NOMAL_SYMBOL));
         List<String> productionStrList = new ArrayList<>();
-        productionStrList.add("T -> if E if");
-        productionStrList.add("E -> if | if T");
+        productionStrList.add("T -> ( id ) E id");
+        productionStrList.add("E -> id | if T");
         Map<String, String> agActionMap = new HashMap<>();
         agActionMap.put("P", "E.in = id0.digit");
         agActionMap.put("Q", "E.s = if.s");
         List<String> agProductionStrList = new ArrayList<>();
-        agProductionStrList.add("T -> if  P E if");
-        agProductionStrList.add("E -> if | if T Q");
+        agProductionStrList.add("T -> ( id )  P E id");
+        agProductionStrList.add("E -> id | if T Q");
         //配置Config
         Config config = new Config();
         config.setExecuteType(Constants.EXECUTE_STAGE_BY_STAGE);
@@ -80,7 +80,7 @@ public class CompilerBuilderTest {
         //使用compiler
         //随便的一段代码
         //String text = "(if) if (if) aabb \n if if";
-        String text = "if if if";
+        String text = "(aa) if (bb) ab ba aabba";
         //初始化编译器
         compiler.prepare(text);
         //利用状态码判断是否达到了对应的步骤

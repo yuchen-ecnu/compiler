@@ -69,4 +69,10 @@ public class LRItem{
         return mProduction.equals(item.mProduction) && mPointPosition == item.mPointPosition
                 && mLookAheadSet.equals(item.mLookAheadSet);
     }
+
+    @Override
+    public String toString() {
+        String production = mProduction.toString();
+        return production + ", pos." + mPointPosition;
+    }
 }
