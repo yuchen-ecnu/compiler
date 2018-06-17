@@ -53,13 +53,13 @@ public class CompilerBuilderTest {
         reList.add(new RE("if", "if", RE.NOMAL_SYMBOL));
         reList.add(new RE("id", "a|(a|b)*", RE.NOMAL_SYMBOL));
         List<String> productionStrList = new ArrayList<>();
-        productionStrList.add("T -> ( if ) E if");
+        productionStrList.add("T -> if E if");
         productionStrList.add("E -> if | if T");
         Map<String, String> agActionMap = new HashMap<>();
         agActionMap.put("P", "E.in = id0.digit");
         agActionMap.put("Q", "E.s = if.s");
         List<String> agProductionStrList = new ArrayList<>();
-        agProductionStrList.add("T -> ( if ) P E if");
+        agProductionStrList.add("T -> if  P E if");
         agProductionStrList.add("E -> if | if T Q");
         //配置Config
         Config config = new Config();
@@ -70,15 +70,17 @@ public class CompilerBuilderTest {
         if (!compilerBuilder.checkLanguage(languageId)){
             Language language = compilerBuilder.prepareLanguage(languageId, reList, productionStrList,
                     agProductionStrList, agActionMap);
-            if (language == null){
+            if (language.getLRParsingTable() == null){
                 System.out.println("构造失败");
                 compilerBuilder.getErrorList().printAllErrorAndClear();
+                return;
             }
         }
         Compiler compiler = compilerBuilder.getCompilerInstance(languageId, config);
         //使用compiler
         //随便的一段代码
-        String text = "(if) if (if) aabb \n if if";
+        //String text = "(if) if (if) aabb \n if if";
+        String text = "if if if";
         //初始化编译器
         compiler.prepare(text);
         //利用状态码判断是否达到了对应的步骤

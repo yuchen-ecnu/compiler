@@ -270,7 +270,7 @@ public class Compiler {
             case Constants.PARSER_LALR:
                 return new LRParser(language.getCFG(), language.getLALRParsingTable(), errorList);
             default:
-                mErrorList.addErrorMsg("配置错误：使用了未知的语法分析算法,使用默认LL继续运行", StatusCode.ERROR_INIT);
+                mErrorList.addErrorMsg("配置错误：使用了未知的语法分析算法", StatusCode.ERROR_INIT);
                 mStatus = StatusCode.ERROR_INIT;
                 return null;
         }

@@ -57,7 +57,8 @@ public class LRParserBuilder {
                     //假如点后面没有别的符号了
                     if (item.getProduction().getId() >= 0)
                         //添加reduce表项
-                        addReduceTableItem(lrParsingTable, i, item);
+                        if (!addReduceTableItem(lrParsingTable, i, item))
+                            return null;
                     else
                         //接受
                         lrParsingTable.set(i, Symbol.TERMINAL_SYMBOL, LRParsingTable.ACCEPT, 0);
@@ -65,8 +66,11 @@ public class LRParserBuilder {
                     //点后面有符号
                     //点后的符号
                     Symbol symbolAfterPoint = item.getProduction().getRight().get(pointPosition);
+                    //区分是否终结符
+                    boolean isTerminal = cfg.getTerminalSet().contains(symbolAfterPoint);
                     //判断是否已经计算过该符号
-                    if (lrParsingTable.getItem(i, symbolAfterPoint) == null) {
+                    LRParsingTable.TableItem tableItem = lrParsingTable.getItem(i, symbolAfterPoint);
+                    if (tableItem == null) {
                         // 表项为null，则要计算goto，并添加新状态
                         LRItemSet newItemSet = getGoto(itemSet, symbolAfterPoint);
                         Integer targetIndex = stateMap.get(newItemSet); //跳转状态编号
@@ -78,15 +82,12 @@ public class LRParserBuilder {
                             //在解析表中添加新状态
                             lrParsingTable.addState();
                         }
-                        //区分是否终结符
-                        boolean isTerminal = cfg.getTerminalSet().contains(symbolAfterPoint);
                         //添加表项
-                        if (lrParsingTable.getItem(i, symbolAfterPoint) != null){
-                            //构造失败
-                            return null;
-                        }
                         lrParsingTable.set(i, symbolAfterPoint,
                                 isTerminal ? LRParsingTable.SHIFT : LRParsingTable.GOTO, targetIndex);
+                    } else if (tableItem.getOperate() == LRParsingTable.REDUCE){
+                        //构造失败
+                        return null;
                     }
                 }
             }
@@ -94,10 +95,15 @@ public class LRParserBuilder {
         return lrParsingTable;
     }
 
-    protected void addReduceTableItem(LRParsingTable lrParsingTable, int row, LRItem item){
+    protected boolean addReduceTableItem(LRParsingTable lrParsingTable, int row, LRItem item){
         for (Symbol lookAhead : item.getLookAhead()){
+            if (lrParsingTable.getItem(row, lookAhead) != null){
+                //构造失败
+                return false;
+            }
             lrParsingTable.set(row, lookAhead, LRParsingTable.REDUCE, item.getProduction().getId() - 1);
         }
+        return true;
     }
     
     protected LRItem getNewLRItem(Production production, Symbol lookahead){
