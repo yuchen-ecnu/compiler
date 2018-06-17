@@ -50,6 +50,7 @@ public class CompilerBuilderTest {
         List<RE> reList = new ArrayList<>();
         reList.add(new RE("(", "\\(", RE.SPILT_SYMBOL));
         reList.add(new RE(")", "\\)", RE.SPILT_SYMBOL));
+        reList.add(new RE("empty", "", RE.NOMAL_SYMBOL));
         reList.add(new RE("if", "if", RE.NOMAL_SYMBOL));
         reList.add(new RE("id", "a|(a|b)*", RE.NOMAL_SYMBOL));
         List<String> productionStrList = new ArrayList<>();
@@ -68,8 +69,10 @@ public class CompilerBuilderTest {
         //测试
         CompilerBuilder compilerBuilder = new CompilerBuilder();
         if (!compilerBuilder.checkLanguage(languageId)){
+            /*Language language = compilerBuilder.prepareLanguage(languageId, reList, productionStrList,
+                    agProductionStrList, agActionMap);*/
             Language language = compilerBuilder.prepareLanguage(languageId, reList, productionStrList,
-                    agProductionStrList, agActionMap);
+                    new ArrayList<>(), new HashMap<>());
         }
         Compiler compiler = compilerBuilder.getCompilerInstance(languageId, config);
         //使用compiler
@@ -79,12 +82,13 @@ public class CompilerBuilderTest {
         //初始化编译器
         compiler.prepare(text);
         //利用状态码判断是否达到了对应的步骤
-        while (compiler.getStatus().getCode() > 0 && compiler.getStatus() != StatusCode.STAGE_BACKEND){
+        while (compiler.getStatus().getCode() > 0 && compiler.getStatus() != StatusCode.STAGE_SEMANTIC_ANALYZER){
             compiler.next();
             System.out.println("now status is: " + compiler.getStatus().getText());
         }
         if (compiler.getStatus().getCode() < 0){
             System.out.println("编译失败");
+            compiler.getErrorList().printAllErrorAndClear();
             return;
         }
         Compiler.TimeHolder timeHolder = compiler.getTimeHolder();

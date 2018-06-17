@@ -276,6 +276,7 @@ public class Compiler {
                 if (language.getLLParsingTable() == null){
                     mErrorList.addErrorMsg("LL解析表构造失败", StatusCode.ERROR_INIT);
                     mStatus = StatusCode.ERROR_INIT;
+                    return null;
                 }
                 return new LLParser(language.getCFG(), language.getLLParsingTable(), errorList);
             }
@@ -283,18 +284,21 @@ public class Compiler {
                 if (language.getLRParsingTable() == null){
                     mErrorList.addErrorMsg("LR解析表构造失败", StatusCode.ERROR_INIT);
                     mStatus = StatusCode.ERROR_INIT;
+                    return null;
                 }
                 return new LRParser(language.getCFG(), language.getLRParsingTable(), errorList);
             case Constants.PARSER_SLR:
                 if (language.getSLRParsingTable() == null){
                     mErrorList.addErrorMsg("SLR解析表构造失败", StatusCode.ERROR_INIT);
                     mStatus = StatusCode.ERROR_INIT;
+                    return null;
                 }
                 return new LRParser(language.getCFG(), language.getSLRParsingTable(), errorList);
             case Constants.PARSER_LALR:
                 if (language.getLALRParsingTable() == null){
                     mErrorList.addErrorMsg("LALR解析表构造失败", StatusCode.ERROR_INIT);
                     mStatus = StatusCode.ERROR_INIT;
+                    return null;
                 }
                 return new LRParser(language.getCFG(), language.getLALRParsingTable(), errorList);
             default:

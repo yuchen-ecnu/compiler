@@ -13,6 +13,7 @@ import java.util.Set;
 public class LLParsingTable extends ParsingTable {
 
     private Set<LLTableItem> itemSet = new HashSet<>();
+    private boolean isOk = false;
 
     public LLParsingTable(CFG cfg) {
         List<Production> productionList = cfg.getAllProductions();
@@ -39,9 +40,16 @@ public class LLParsingTable extends ParsingTable {
                 }
             }
         }
+        if (!(itemSet == null || itemSet.isEmpty())) {
+            isOk = true;
+        }
     }
 
     public Set<LLTableItem> getItemSet() {
         return itemSet;
+    }
+
+    public boolean isOk() {
+        return isOk;
     }
 }

@@ -81,9 +81,15 @@ public class CompilerBuilder {
             }
             language.setCFG(cfg);
             //构造各解析表
-            language.setLLParsingTable(new LLParsingTable(cfg));
-            LRParsingTable lrParsingTable;
             boolean canParser = false;
+            LLParsingTable llParsingTable = new LLParsingTable(cfg);
+            if (llParsingTable.isOk()){
+                language.setLLParsingTable(llParsingTable);
+                canParser = true;
+            } else {
+                getErrorList().addErrorMsg("构造LL解析表失败", StatusCode.ERROR_INIT);
+            }
+            LRParsingTable lrParsingTable;
             if ((lrParsingTable = new LRParserBuilder().buildParsingTable(cfg)) != null){
                 language.setLRParsingTable(lrParsingTable);
                 canParser = true;
@@ -91,13 +97,13 @@ public class CompilerBuilder {
                 getErrorList().addErrorMsg("构造LR解析表失败", StatusCode.ERROR_INIT);
             }
             if ((lrParsingTable = new SLRParserBuilder().buildParsingTable(cfg)) != null){
-                language.setLRParsingTable(lrParsingTable);
+                language.setSLRParsingTable(lrParsingTable);
                 canParser = true;
             } else {
                 getErrorList().addErrorMsg("构造SLR解析表失败", StatusCode.ERROR_INIT);
             }
             if ((lrParsingTable = new LALRParserBuilder().buildParsingTable(cfg)) != null){
-                language.setLRParsingTable(lrParsingTable);
+                language.setLALRParsingTable(lrParsingTable);
                 canParser = true;
             } else {
                 getErrorList().addErrorMsg("构造LALR解析表失败", StatusCode.ERROR_INIT);
