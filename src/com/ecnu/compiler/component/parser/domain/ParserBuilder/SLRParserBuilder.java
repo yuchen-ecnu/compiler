@@ -29,7 +29,9 @@ public class SLRParserBuilder extends LRParserBuilder {
                 //如果该符号是非终结符，则对应产生式列表不为空
                 if (productions != null){
                     for (Production production : productions){
-                        itemSet.add(new LRItem(production, 0, Symbol.TERMINAL_SYMBOL));
+                        LRItem newItem = getNewLRItem(production, Symbol.TERMINAL_SYMBOL);
+                        if (itemSet.add(newItem))
+                            lrItemList.add(newItem);
                     }
                 }
             }

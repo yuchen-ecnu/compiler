@@ -50,12 +50,19 @@ public class CompilerBuilderTest {
         List<RE> reList = new ArrayList<>();
         reList.add(new RE("(", "\\(", RE.SPILT_SYMBOL));
         reList.add(new RE(")", "\\)", RE.SPILT_SYMBOL));
-        reList.add(new RE("empty", "", RE.NOMAL_SYMBOL));
+        reList.add(new RE("+", "\\+", RE.SPILT_SYMBOL));
+        reList.add(new RE("*", "\\*", RE.SPILT_SYMBOL));
         reList.add(new RE("if", "if", RE.NOMAL_SYMBOL));
         reList.add(new RE("id", "a|(a|b)*", RE.NOMAL_SYMBOL));
         List<String> productionStrList = new ArrayList<>();
-        productionStrList.add("T -> ( id ) E id");
-        productionStrList.add("E -> id | if T");
+//        productionStrList.add("T -> ( id ) E id");
+//        productionStrList.add("E -> id | if T");
+        productionStrList.add("E -> E + T");
+        productionStrList.add("E -> T");
+        productionStrList.add("T -> T * F");
+        productionStrList.add("T -> F");
+        productionStrList.add("F -> ( E )");
+        productionStrList.add("F -> id");
         Map<String, String> agActionMap = new HashMap<>();
         agActionMap.put("P", "E.in = id0.digit");
         agActionMap.put("Q", "E.s = if.s");
@@ -65,20 +72,18 @@ public class CompilerBuilderTest {
         //配置Config
         Config config = new Config();
         config.setExecuteType(Constants.EXECUTE_STAGE_BY_STAGE);
-        config.setParserAlgorithm(Constants.PARSER_LR);
+        config.setParserAlgorithm(Constants.PARSER_SLR);
         //测试
         CompilerBuilder compilerBuilder = new CompilerBuilder();
         if (!compilerBuilder.checkLanguage(languageId)){
-            /*Language language = compilerBuilder.prepareLanguage(languageId, reList, productionStrList,
-                    agProductionStrList, agActionMap);*/
             Language language = compilerBuilder.prepareLanguage(languageId, reList, productionStrList,
-                    new ArrayList<>(), new HashMap<>());
+                    agProductionStrList, agActionMap);
         }
         Compiler compiler = compilerBuilder.getCompilerInstance(languageId, config);
         //使用compiler
         //随便的一段代码
         //String text = "(if) if (if) aabb \n if if";
-        String text = "(aa) if (bbb) aabb \n aa bb";
+        String text = "aa * aa + aa";
         //初始化编译器
         compiler.prepare(text);
         //利用状态码判断是否达到了对应的步骤
