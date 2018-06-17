@@ -317,6 +317,7 @@ public class CFG {
         Map<Symbol, List<Integer>> tempMap = new HashMap<>();
         for (Symbol sym : getNonTerminalSet()) {
             List<Production> productions = getProductions(sym);
+            if (productions.size() <= 1) continue;
             List<Symbol> prefix = getPrefix(productions);
             int size = prefix.size();
             Symbol prime = null;
