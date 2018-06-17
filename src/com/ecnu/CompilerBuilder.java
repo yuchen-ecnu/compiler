@@ -65,12 +65,12 @@ public class CompilerBuilder {
             //保存RE列表
             language.setREList(reList);
             //构造DFA
-            List<DFA> dfaList = DFA.buildDFAListFromREList(reList);
+            /*List<DFA> dfaList = DFA.buildDFAListFromREList(reList);
             if (dfaList == null) {
                 mErrorList.addErrorMsg("构造DFA失败，RE有错误", StatusCode.ERROR_INIT);
                 return null;
             }
-            language.setDFAList(dfaList);
+            language.setDFAList(dfaList);*/
         }
         if (productionStrList != null && productionStrList.size() > 0){
             //构造CFG
@@ -83,20 +83,28 @@ public class CompilerBuilder {
             //构造各解析表
             language.setLLParsingTable(new LLParsingTable(cfg));
             LRParsingTable lrParsingTable;
+            boolean canParser = false;
             if ((lrParsingTable = new LRParserBuilder().buildParsingTable(cfg)) != null){
                 language.setLRParsingTable(lrParsingTable);
+                canParser = true;
             } else {
                 getErrorList().addErrorMsg("构造LR解析表失败", StatusCode.ERROR_INIT);
             }
             if ((lrParsingTable = new SLRParserBuilder().buildParsingTable(cfg)) != null){
                 language.setLRParsingTable(lrParsingTable);
+                canParser = true;
             } else {
                 getErrorList().addErrorMsg("构造SLR解析表失败", StatusCode.ERROR_INIT);
             }
             if ((lrParsingTable = new LALRParserBuilder().buildParsingTable(cfg)) != null){
                 language.setLRParsingTable(lrParsingTable);
+                canParser = true;
             } else {
                 getErrorList().addErrorMsg("构造LALR解析表失败", StatusCode.ERROR_INIT);
+            }
+            if (!canParser){
+                getErrorList().addErrorMsg("该语言不可进行语法分析", StatusCode.ERROR_INIT);
+                return null;
             }
         }
         if (actionMap != null && actionMap.size() > 0){

@@ -30,10 +30,12 @@ public class Lexer {
     ArrayList<Pattern> mNormalPatList;
 
     public Lexer(List<DFA> DFAList, ErrorList errorList) {
+        mErrorList = errorList;
         mDFAList = DFAList;
     }
 
     public Lexer(List<RE> reList, ErrorList errorList, int i){
+        mErrorList = errorList;
         mSplitPatList = new ArrayList<>();
         mNormalPatList = new ArrayList<>();
         mSplitREList = new ArrayList<>();

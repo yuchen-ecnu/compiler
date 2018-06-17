@@ -70,23 +70,22 @@ public class CompilerBuilderTest {
         if (!compilerBuilder.checkLanguage(languageId)){
             Language language = compilerBuilder.prepareLanguage(languageId, reList, productionStrList,
                     agProductionStrList, agActionMap);
-            if (language.getLRParsingTable() == null){
-                System.out.println("构造失败");
-                compilerBuilder.getErrorList().printAllErrorAndClear();
-                return;
-            }
         }
         Compiler compiler = compilerBuilder.getCompilerInstance(languageId, config);
         //使用compiler
         //随便的一段代码
         //String text = "(if) if (if) aabb \n if if";
-        String text = "(aa) if (bb) ab ba aabba";
+        String text = "(aa) if (bbb) aabb \n aa bb";
         //初始化编译器
         compiler.prepare(text);
         //利用状态码判断是否达到了对应的步骤
         while (compiler.getStatus().getCode() > 0 && compiler.getStatus() != StatusCode.STAGE_BACKEND){
             compiler.next();
             System.out.println("now status is: " + compiler.getStatus().getText());
+        }
+        if (compiler.getStatus().getCode() < 0){
+            System.out.println("编译失败");
+            return;
         }
         Compiler.TimeHolder timeHolder = compiler.getTimeHolder();
         System.out.println("预处理时间：" + timeHolder.getPreprocessorTime());
