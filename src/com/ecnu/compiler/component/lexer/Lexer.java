@@ -6,6 +6,7 @@ import com.ecnu.compiler.component.storage.ErrorList;
 import com.ecnu.compiler.component.storage.SymbolTable;
 import com.ecnu.compiler.component.storage.domain.ErrorMsg;
 import com.ecnu.compiler.component.storage.domain.Token;
+import com.ecnu.compiler.constant.Constants;
 import com.ecnu.compiler.constant.StatusCode;
 
 import java.util.ArrayList;
@@ -175,6 +176,10 @@ public class Lexer {
             }
             mErrorList.addErrorMsg("无法识别的词素，位置：("
                     + token.getRowNumber() + ", " + token.getColPosition() + ")", StatusCode.ERROR_LEXER);
+            Token tokenToAdd = new Token(Constants.ERROR_TOKEN, token.getStr());
+            tokenToAdd.setRowNumber(token.getRowNumber());
+            tokenToAdd.setColPosition(token.getColPosition());
+            symbolTable.addToken(tokenToAdd);
             result = false;
         }
         return result;

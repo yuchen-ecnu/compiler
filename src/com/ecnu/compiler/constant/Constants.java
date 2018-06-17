@@ -15,6 +15,8 @@ public class Constants {
     public static final String SPACE_TOKEN = " ";
     /** 换行符号 */
     public static final String NEWLINE = "\n|(\r\n)";
+    /** 错误的Token */
+    public static final String ERROR_TOKEN = "errorToken";
 
     // RE表达式集合
     //注释
