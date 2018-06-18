@@ -15,6 +15,14 @@ public class LLParsingTable extends ParsingTable {
     private Set<LLTableItem> itemSet = new HashSet<>();
     private boolean isOk = false;
 
+    public Map<Symbol, List<Integer>> getNonTerminalMap() {
+        return nonTerminalMap;
+    }
+
+    public Set<Symbol> getTerminalSet() {
+        return terminalSet;
+    }
+
     public LLParsingTable(CFG cfg) {
         nonTerminalMap = cfg.getNonTerminalMap();
         terminalSet = cfg.getTerminalSet();
