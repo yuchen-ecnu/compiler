@@ -1,6 +1,7 @@
 import com.ecnu.compiler.component.parser.domain.*;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LLParsingTable;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LLTableItem;
+import com.ecnu.compiler.component.storage.ErrorList;
 import org.junit.Test;
 
 import java.util.*;
@@ -38,7 +39,7 @@ public class ParsersTest {
         symbolSet.add(s9);
         symbolSet.add(s10);
         symbolSet.add(s11);
-        CFG cfg = new CFG(cfgList);
+        CFG cfg = new CFG(cfgList, new ErrorList());
         System.out.println("Start Symbol:" + cfg.getStartSymbol().getName());
         System.out.println("------------");
         for(Map.Entry<Symbol, List<Integer>> entry : cfg.getNonTerminalMap().entrySet()) {
@@ -139,7 +140,7 @@ public class ParsersTest {
         symbolSet.add(s1);
         symbolSet.add(s2);
         symbolSet.add(s3);
-        CFG cfg = new CFG(cfgList);
+        CFG cfg = new CFG(cfgList, new ErrorList());
         cfg.cleanImmediateLeftRecursion(s1);
         for(Map.Entry<Symbol, List<Integer>> entry : cfg.getNonTerminalMap().entrySet()) {
             System.out.print(entry.getKey().getName() + "----");
@@ -183,7 +184,7 @@ public class ParsersTest {
         symbolSet.add(s4);
         symbolSet.add(s5);
         symbolSet.add(s6);
-        CFG cfg = new CFG(cfgList);
+        CFG cfg = new CFG(cfgList, new ErrorList());
         cfg.cleanLeftRecursion();
         for(Map.Entry<Symbol, List<Integer>> entry : cfg.getNonTerminalMap().entrySet()) {
             System.out.print(entry.getKey().getName() + "----");
@@ -224,7 +225,7 @@ public class ParsersTest {
         symbolSet.add(s3);
         symbolSet.add(s4);
         symbolSet.add(s5);
-        CFG cfg = new CFG(cfgList);
+        CFG cfg = new CFG(cfgList, new ErrorList());
         cfg.extractLeftCommonFactor();
         for(Map.Entry<Symbol, List<Integer>> entry : cfg.getNonTerminalMap().entrySet()) {
             System.out.print(entry.getKey().getName() + "----");

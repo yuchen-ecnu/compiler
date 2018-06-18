@@ -5,6 +5,7 @@ import com.ecnu.compiler.component.parser.domain.TD;
 import com.ecnu.compiler.component.storage.domain.Token;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
@@ -37,27 +38,24 @@ public class TableEntry {
     }
 
     public TableEntry(Stack<Integer> stateStack, Stack<TD.TNode> treeNodeStack,
-                      List<Token> tokenList, int curIndex, String action) {
+                      String input, String action, String output) {
         mItemList = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
-        for (int state : stateStack){
-            stringBuilder.append(state);
+        Iterator<Integer> stateStackIterator = stateStack.iterator();
+        Iterator<TD.TNode> treeNodeStackIterator = treeNodeStack.iterator();
+        while (stateStackIterator.hasNext() && treeNodeStackIterator.hasNext()){
+            stringBuilder.append(stateStackIterator.next()).append(" ").append(treeNodeStackIterator.next()).append(" ");
         }
+        if (stateStackIterator.hasNext())
+            stringBuilder.append(stateStackIterator.next());
+
         mItemList.add(stringBuilder.toString());
 
-        stringBuilder = new StringBuilder();
-        for (TD.TNode node : treeNodeStack){
-            stringBuilder.append(node.getContent());
-        }
-        mItemList.add(stringBuilder.toString());
-
-        stringBuilder = new StringBuilder();
-        for (int i = curIndex; i < tokenList.size(); i++) {
-            stringBuilder.append(tokenList.get(i).getType());
-        }
-        mItemList.add(stringBuilder.toString());
+        mItemList.add(input);
 
         mItemList.add(action);
+
+        mItemList.add(output);
     }
 
     public List<String> getItemList() {

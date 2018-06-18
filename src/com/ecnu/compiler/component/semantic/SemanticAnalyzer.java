@@ -51,7 +51,6 @@ public class SemanticAnalyzer {
 
     private List<String> getActionList(TD syntaxTree){
         ArrayList<String> actionList = new ArrayList<>();
-        //todo 深度中序遍历获取所有的Action
         syntaxTree.DFS(tNode -> {
             if (tNode instanceof TD.ActionNode){
                 actionList.add(((TD.ActionNode) tNode).getAction());

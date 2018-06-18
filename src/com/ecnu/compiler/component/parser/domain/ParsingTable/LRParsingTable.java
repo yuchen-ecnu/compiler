@@ -22,6 +22,11 @@ public class LRParsingTable extends ParsingTable {
         public int getValue() {
             return value;
         }
+
+        @Override
+        public String toString() {
+            return String.valueOf(operate) + String.valueOf(value);
+        }
     }
     //表
     private List<TableItem[]> mTable;

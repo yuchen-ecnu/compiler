@@ -50,7 +50,7 @@ public class LanguageBuilder {
      * 从CFG构造语法分析器需要的所有信息
      */
     public ParserHolder buildParserComponents(List<String> productionList){
-        CFG cfg = new CFG(productionList);
+        CFG cfg = new CFG(productionList, mErrorList);
         ParserHolder holder = new ParserHolder();
         holder.mLLParsingTable = new LLParsingTable(cfg);
         holder.mLRParsingTable = new LRParserBuilder().buildParsingTable(cfg);

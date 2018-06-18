@@ -1,5 +1,8 @@
 package com.ecnu.compiler.component.parser.domain;
 
+import com.ecnu.compiler.component.storage.ErrorList;
+import com.ecnu.compiler.constant.StatusCode;
+
 import java.util.*;
 
 /**
@@ -15,6 +18,8 @@ public class CFG {
     private List<Production> mProductions = new ArrayList<>();
     //开始符号
     private Symbol mStartSymbol = null;
+    //是否构造成功
+    private boolean mIsSucessfulBuild;
 
     public Set<Symbol> getSymbolSet(List<String> productionStrList) {
         Set<Symbol> symbolSet = new HashSet<>();
@@ -59,7 +64,8 @@ public class CFG {
      * 构造函数，需要传入CFG的列表
      */
 
-    public CFG(List<String> productionStrList) {
+    public CFG(List<String> productionStrList, ErrorList errorList) {
+        mIsSucessfulBuild = true;
         Set<Symbol> mSymbolSet = getSymbolSet(productionStrList);
         if (mSymbolSet == null || mSymbolSet.isEmpty()) {
             return;
@@ -74,8 +80,8 @@ public class CFG {
             item = item.trim();
             String[] result = item.split("->");
             if (result.length != 2) {
-                //todo CFG格式错误处理
-                System.err.println("格式错误，请确认输入。");
+                mIsSucessfulBuild = false;
+                errorList.addErrorMsg("CFG格式错误", StatusCode.ERROR_INIT);
                 return;
             }
             String leftStr = result[0].trim();
@@ -83,8 +89,9 @@ public class CFG {
             integerList.add(0);
             Symbol leftSym = null;
             if (!stringSet.contains(leftStr)) {
-                //todo CFG格式错误处理
-                System.err.println("无法识别的左部 \"" + leftStr + "\"，请确认输入。");
+                mIsSucessfulBuild = false;
+                errorList.addErrorMsg("CFG格式错误：无法识别的左部 \"" + leftStr + "\"，请确认输入。"
+                        , StatusCode.ERROR_INIT);
                 return;
             } else {
                 for (Symbol sym : mSymbolSet) {
@@ -142,8 +149,12 @@ public class CFG {
             }
         }
         setListForMap(mNonTerminalMap);
-        this.cleanLeftRecursion();
-        this.extractLeftCommonFactor();
+        //this.cleanLeftRecursion();
+        //this.extractLeftCommonFactor();
+    }
+
+    public boolean isSucessfulBuild() {
+        return mIsSucessfulBuild;
     }
 
     public Symbol getStartSymbol() {
