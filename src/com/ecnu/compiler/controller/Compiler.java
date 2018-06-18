@@ -12,6 +12,7 @@ import com.ecnu.compiler.component.preprocessor.Preprocessor;
 import com.ecnu.compiler.component.semantic.SemanticAnalyzer;
 import com.ecnu.compiler.component.storage.ErrorList;
 import com.ecnu.compiler.component.storage.SymbolTable;
+import com.ecnu.compiler.component.storage.domain.ErrorMsg;
 import com.ecnu.compiler.component.storage.domain.Token;
 import com.ecnu.compiler.constant.Config;
 import com.ecnu.compiler.constant.Constants;
@@ -58,19 +59,21 @@ public class Compiler {
     private List<Token> mTextListAfterPreprocess;
     //词法分析器得到的符号表
     private SymbolTable mSymbolTable;
-    //语法分析后得到的语法树
+    //语法分析后得到的语法树,以及语义分析后得到的注释语法树
     private TD mSyntaxTree;
     //语法分析过程的记录表
     private PredictTable mPredictTable;
+    //语义分析后得到的动作列表
+    private List<String> mActionList;
 
 
     /**
      * 根据传入语言构建编译器
      */
-    public Compiler(Language language, Config config){
+    public Compiler(Language language, Config config, ErrorList errorList){
         //初始化变量
         mStatus = StatusCode.STAGE_INIT;
-        mErrorList = new ErrorList();
+        mErrorList = errorList;
         mConfig = config;
         mLanguage = language;
         mTimeHolder = new TimeHolder();
@@ -80,9 +83,13 @@ public class Compiler {
         mPreprocessor = new Preprocessor(Constants.ANNOTATION);
         //创建词法分析器，固定创建Lexer
         //mLexer = createLexer(language.getDFAList());
-        mLexer = new Lexer(language.getREList(), mErrorList, 0);
+        if (language.getREList() != null)
+            mLexer = new Lexer(language.getREList(), mErrorList, 0);
         //创建语法分析器，根据config创建
-        mParser = createParser(language);
+        mParser = createParser(language, mErrorList);
+        //创建语义分析器
+        if (language.getAG() != null)
+            mSemanticAnalyzer = new SemanticAnalyzer(language.getAG(), mErrorList);
 
         mStatus = StatusCode.RUNNING;
     }
@@ -122,6 +129,15 @@ public class Compiler {
     public TD getSyntaxTree() {
         return mSyntaxTree;
     }
+
+    /**
+     * 获得语义分析得到的动作列表
+     * @return
+     */
+    public List<String> getActionList() {
+        return mActionList;
+    }
+
 
     /**
      * 获得语法分析过程中的分析表
@@ -170,69 +186,124 @@ public class Compiler {
     private StatusCode nextStep(){
         long startTime = System.currentTimeMillis();
         switch (mStatus){
-            case ERROR:
-                break;
             case STAGE_PREPROCESSOR:
-                if (!"".equals(mTextToCompiler)){
-                    mTextListAfterPreprocess = mPreprocessor.preprocess(mTextToCompiler);
-                    mStatus = StatusCode.STAGE_LEXER;
-                    //计时
-                    mTimeHolder.setPreprocessorTime(System.currentTimeMillis() - startTime);
-                }
+                mTextListAfterPreprocess = mPreprocessor.preprocess(mTextToCompiler);
+                mStatus = StatusCode.STAGE_LEXER;
+                //计时
+                mTimeHolder.setPreprocessorTime(System.currentTimeMillis() - startTime);
                 break;
             case STAGE_LEXER:
+                if (mLexer == null){
+                    mStatus = StatusCode.ERROR_INIT;
+                    mErrorList.addErrorMsg("词法分析器未构造,无法进行词法分析", StatusCode.ERROR_INIT);
+                    break;
+                }
                 if (mTextListAfterPreprocess != null){
-                    mSymbolTable = mLexer.buildSymbolTable(mTextListAfterPreprocess);
-                    mStatus = StatusCode.STAGE_PARSER;
+                    mSymbolTable = new SymbolTable();
+                    boolean result = mLexer.buildSymbolTable(mTextListAfterPreprocess, mSymbolTable);
+                    mStatus = result ? StatusCode.STAGE_PARSER : StatusCode.ERROR;
                     //计时
                     mTimeHolder.setLexerTime(System.currentTimeMillis() - startTime);
+                } else {
+                    mStatus = StatusCode.ERROR;
+                    mErrorList.addErrorMsg("预处理内部错误", StatusCode.ERROR_PREPROCESSOR);
                 }
                 break;
             case STAGE_PARSER:
+                if (mParser == null){
+                    mStatus = StatusCode.ERROR_INIT;
+                    mErrorList.addErrorMsg("语法分析器未构造,无法进行语法分析", StatusCode.ERROR_INIT);
+                    break;
+                }
                 if (mSymbolTable != null){
                     mPredictTable = new PredictTable();
                     mSyntaxTree = mParser.buildSyntaxTree(getSymbolTable(), mPredictTable);
+                    if (mSyntaxTree == null){
+                        mStatus = StatusCode.ERROR;
+                        break;
+                    }
                     mStatus = StatusCode.STAGE_SEMANTIC_ANALYZER;
                     //计时
                     mTimeHolder.setParserTime(System.currentTimeMillis() - startTime);
+                } else {
+                    mStatus = StatusCode.ERROR;
+                    mErrorList.addErrorMsg("词法分析内部错误", StatusCode.ERROR_LEXER);
                 }
                 break;
             case STAGE_SEMANTIC_ANALYZER:
+                if (mSemanticAnalyzer == null){
+                    mStatus = StatusCode.ERROR_INIT;
+                    mErrorList.addErrorMsg("语义分析器未构造,无法进行语义分析", StatusCode.ERROR_INIT);
+                    break;
+                }
+                if (mSyntaxTree != null){
+                    mActionList = mSemanticAnalyzer.buildAttrubuteTree(mSyntaxTree);
+                    if (mActionList == null){
+                        mStatus = StatusCode.ERROR;
+                        break;
+                    }
+                    mStatus = StatusCode.STAGE_BACKEND;
+                    //计时
+                    mTimeHolder.setSemanticTime(System.currentTimeMillis() - startTime);
+                } else {
+                    mStatus = StatusCode.ERROR;
+                    mErrorList.addErrorMsg("语法分析内部错误", StatusCode.ERROR_PARSER);
+                }
                 break;
             case STAGE_BACKEND:
+                mStatus = StatusCode.ERROR;
+                mErrorList.addErrorMsg("后端操作未实现", StatusCode.ERROR);
                 break;
             case STAGE_FINISHED:
+                mStatus = StatusCode.ERROR;
+                mErrorList.addErrorMsg("后端操作未实现", StatusCode.ERROR);
                 break;
             default:
+                mStatus = StatusCode.ERROR;
+                mErrorList.addErrorMsg("未知状态", StatusCode.ERROR);
                 break;
         }
         return mStatus;
     }
 
     /**
-     * 创建词法分析器
-     * @return 词法分析器
-     */
-    private Lexer createLexer(List<DFA> dfaList) {
-        return new Lexer(dfaList, mErrorList);
-    }
-
-    /**
      * 创建语法分析器
      * @return 对应算法的语法分析器
      */
-    private Parser createParser(Language language) {
+    private Parser createParser(Language language, ErrorList errorList) {
         switch(mConfig.getParserAlgorithm()){
-            case Constants.PARSER_LL:
-                return new LLParser(language.getCFG(), language.getLLParsingTable());
+            case Constants.PARSER_LL:{
+                if (language.getLLParsingTable() == null){
+                    mErrorList.addErrorMsg("LL解析表构造失败", StatusCode.ERROR_INIT);
+                    mStatus = StatusCode.ERROR_INIT;
+                    return null;
+                }
+                return new LLParser(language.getCFG(), language.getLLParsingTable(), errorList);
+            }
             case Constants.PARSER_LR:
-                return new LRParser(language.getCFG(), language.getLRParsingTable());
+                if (language.getLRParsingTable() == null){
+                    mErrorList.addErrorMsg("LR解析表构造失败", StatusCode.ERROR_INIT);
+                    mStatus = StatusCode.ERROR_INIT;
+                    return null;
+                }
+                return new LRParser(language.getCFG(), language.getLRParsingTable(), errorList);
             case Constants.PARSER_SLR:
-                return new LRParser(language.getCFG(), language.getSLRParsingTable());
+                if (language.getSLRParsingTable() == null){
+                    mErrorList.addErrorMsg("SLR解析表构造失败", StatusCode.ERROR_INIT);
+                    mStatus = StatusCode.ERROR_INIT;
+                    return null;
+                }
+                return new LRParser(language.getCFG(), language.getSLRParsingTable(), errorList);
             case Constants.PARSER_LALR:
-                return new LRParser(language.getCFG(), language.getLALRParsingTable());
+                if (language.getLALRParsingTable() == null){
+                    mErrorList.addErrorMsg("LALR解析表构造失败", StatusCode.ERROR_INIT);
+                    mStatus = StatusCode.ERROR_INIT;
+                    return null;
+                }
+                return new LRParser(language.getCFG(), language.getLALRParsingTable(), errorList);
             default:
-                //todo 配置错误处理
+                mErrorList.addErrorMsg("配置错误：使用了未知的语法分析算法", StatusCode.ERROR_INIT);
+                mStatus = StatusCode.ERROR_INIT;
                 return null;
         }
     }
@@ -245,6 +316,8 @@ public class Compiler {
         private long lexerTime;
         //语法分析时间
         private long parserTime;
+        //语义分析时间
+        private long semanticTime;
 
         public long getPreprocessorTime() {
             return preprocessorTime;
@@ -268,6 +341,14 @@ public class Compiler {
 
         void setParserTime(long parserTime) {
             this.parserTime = parserTime;
+        }
+
+        public long getSemanticTime() {
+            return semanticTime;
+        }
+
+        public void setSemanticTime(long semanticTime) {
+            this.semanticTime = semanticTime;
         }
     }
 }

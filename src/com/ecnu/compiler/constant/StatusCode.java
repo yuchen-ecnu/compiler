@@ -45,7 +45,11 @@ public enum  StatusCode implements Serializable {
     STAGE_BACKEND(806,"后端字节码处理中"),
     STAGE_FINISHED(807,"编译结束"),
 
-    ERROR_INIT(-800,"初始化出错，请查看异常信息列表");
+    ERROR_INIT(-801,"初始化出错，请查看异常信息列表"),
+    ERROR_PREPROCESSOR(-802,"预处理出错，请查看异常信息列表"),
+    ERROR_LEXER(-803,"词法分析出错，请查看异常信息列表"),
+    ERROR_PARSER(-804,"语法分析出错，请查看异常信息列表"),
+    ERROR_SEMANTIC_ANALYZER(-805,"语义分析出错，请查看异常信息列表");
 
     /** 词法分析器 StatusCode */
 

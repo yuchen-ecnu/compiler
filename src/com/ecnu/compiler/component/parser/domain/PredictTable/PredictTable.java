@@ -32,6 +32,10 @@ public class PredictTable {
         mTableHead = tableHead;
     }
 
+    public List<String> getTableHead() {
+        return mTableHead;
+    }
+
     @Override
     public String toString() {
         String string = "";

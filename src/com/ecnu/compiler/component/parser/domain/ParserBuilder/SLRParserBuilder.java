@@ -6,6 +6,7 @@ import com.ecnu.compiler.component.parser.domain.ParsingTable.LRParsingTable;
 import com.ecnu.compiler.component.parser.domain.Production;
 import com.ecnu.compiler.component.parser.domain.Symbol;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -13,7 +14,9 @@ public class SLRParserBuilder extends LRParserBuilder {
 
     @Override
     protected LRItemSet getClosure(LRItemSet itemSet) {
-        for (LRItem item : itemSet){
+        ArrayList<LRItem> lrItemList = new ArrayList<>(itemSet);
+        for (int i = 0; i < lrItemList.size(); i++) {
+            LRItem item = lrItemList.get(i);
             //点的位置
             int pointPosition = item.getPointPosition();
             //产生式右边
@@ -26,7 +29,9 @@ public class SLRParserBuilder extends LRParserBuilder {
                 //如果该符号是非终结符，则对应产生式列表不为空
                 if (productions != null){
                     for (Production production : productions){
-                        itemSet.add(new LRItem(production, 0, Symbol.TERMINAL_SYMBOL));
+                        LRItem newItem = getNewLRItem(production, Symbol.TERMINAL_SYMBOL);
+                        if (itemSet.add(newItem))
+                            lrItemList.add(newItem);
                     }
                 }
             }
@@ -35,10 +40,15 @@ public class SLRParserBuilder extends LRParserBuilder {
     }
 
     @Override
-    protected void addReduceTableItem(LRParsingTable lrParsingTable, int row, LRItem item) {
+    protected boolean addReduceTableItem(LRParsingTable lrParsingTable, int row, LRItem item) {
         Set<Symbol> followSymbols = getFirstFollowSet().getFollow(item.getProduction().getLeft());
         for (Symbol symbol : followSymbols){
+            if (lrParsingTable.getItem(row, symbol) != null){
+                //构造失败
+                return false;
+            }
             lrParsingTable.set(row, symbol, LRParsingTable.REDUCE, item.getProduction().getId() - 1);
         }
+        return true;
     }
 }

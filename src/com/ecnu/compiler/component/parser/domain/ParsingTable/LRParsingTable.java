@@ -22,6 +22,11 @@ public class LRParsingTable extends ParsingTable {
         public int getValue() {
             return value;
         }
+
+        @Override
+        public String toString() {
+            return String.valueOf(operate) + String.valueOf(value);
+        }
     }
     //表
     private List<TableItem[]> mTable;
@@ -36,12 +41,12 @@ public class LRParsingTable extends ParsingTable {
         mColMap = new HashMap<>();
         mTable = new ArrayList<>();
         for (Symbol symbol : terminalSymbols){
-            mColMap.put(symbol.getType(), i);
+            mColMap.put(symbol.getName(), i);
             i++;
         }
         mDivOfTowParts = i;
         for (Symbol symbol : nonterminalSymbols){
-            mColMap.put(symbol.getType(), i);
+            mColMap.put(symbol.getName(), i);
             i++;
         }
     }
@@ -65,7 +70,7 @@ public class LRParsingTable extends ParsingTable {
 
     //设置表项
     public boolean set(int state, Symbol colSymbol, char operate, int value){
-        Integer col = mColMap.get(colSymbol.getType());
+        Integer col = mColMap.get(colSymbol.getName());
         if (state < mTable.size() && col != null){
             TableItem tableItem = new TableItem();
             tableItem.operate = operate;
@@ -78,7 +83,7 @@ public class LRParsingTable extends ParsingTable {
 
     //获取表项
     public TableItem getItem(int state, Symbol colSymbol){
-        Integer col = mColMap.get(colSymbol.getType());
+        Integer col = mColMap.get(colSymbol.getName());
         if (state < mTable.size() && col != null){
             return mTable.get(state)[col];
         }

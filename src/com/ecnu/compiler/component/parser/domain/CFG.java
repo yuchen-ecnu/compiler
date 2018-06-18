@@ -1,5 +1,8 @@
 package com.ecnu.compiler.component.parser.domain;
 
+import com.ecnu.compiler.component.storage.ErrorList;
+import com.ecnu.compiler.constant.StatusCode;
+
 import java.util.*;
 
 /**
@@ -15,6 +18,8 @@ public class CFG {
     private List<Production> mProductions = new ArrayList<>();
     //开始符号
     private Symbol mStartSymbol = null;
+    //是否构造成功
+    private boolean mIsSucessfulBuild;
 
     public Set<Symbol> getSymbolSet(List<String> productionStrList) {
         Set<Symbol> symbolSet = new HashSet<>();
@@ -36,7 +41,7 @@ public class CFG {
                     boolean flag = false;
                     Symbol rightSym = new Symbol(rrs);
                     for (Symbol sym : symbolSet) {
-                        if (sym.getType().equals(rightSym.getType())) {
+                        if (sym.getName().equals(rightSym.getName())) {
                             flag = true;
                             break;
                         }
@@ -49,7 +54,7 @@ public class CFG {
         }
 //        System.out.println("*************");
 //        for (Symbol s : symbolSet) {
-//            System.out.println(s.getType() + "----" + s.isTerminal());
+//            System.out.println(s.getName() + "----" + s.isTerminal());
 //        }
 //        System.out.println("*************");
         return symbolSet;
@@ -59,7 +64,8 @@ public class CFG {
      * 构造函数，需要传入CFG的列表
      */
 
-    public CFG(List<String> productionStrList) {
+    public CFG(List<String> productionStrList, ErrorList errorList) {
+        mIsSucessfulBuild = true;
         Set<Symbol> mSymbolSet = getSymbolSet(productionStrList);
         if (mSymbolSet == null || mSymbolSet.isEmpty()) {
             return;
@@ -68,27 +74,28 @@ public class CFG {
         int prodId = 1;
         Set<String> stringSet = new HashSet<>();
         for (Symbol sym : mSymbolSet) {
-            stringSet.add(sym.getType());
+            stringSet.add(sym.getName());
         }
         for (String item : productionStrList) {
             item = item.trim();
             String[] result = item.split("->");
             if (result.length != 2) {
-                //todo CFG格式错误处理
-                System.err.println("格式错误，请确认输入。");
+                mIsSucessfulBuild = false;
+                errorList.addErrorMsg("CFG格式错误", StatusCode.ERROR_INIT);
                 return;
             }
-            String leftStr = result[0];
+            String leftStr = result[0].trim();
             List<Integer> integerList = new ArrayList<>();
             integerList.add(0);
             Symbol leftSym = null;
             if (!stringSet.contains(leftStr)) {
-                //todo CFG格式错误处理
-                System.err.println("无法识别的左部 \"" + leftStr + "\"，请确认输入。");
+                mIsSucessfulBuild = false;
+                errorList.addErrorMsg("CFG格式错误：无法识别的左部 \"" + leftStr + "\"，请确认输入。"
+                        , StatusCode.ERROR_INIT);
                 return;
             } else {
                 for (Symbol sym : mSymbolSet) {
-                    if (sym.getType().equals(leftStr)) {
+                    if (sym.getName().equals(leftStr)) {
                         leftSym = sym;
                         //只有初次执行到这里，才会把当前的左部作为开始符号
                         if (mStartSymbol == null) {
@@ -101,13 +108,14 @@ public class CFG {
                     }
                 }
             }
-            String[] rightArr = result[1].split("\\|");
+            String[] rightArr = result[1].trim().split("\\|");
             for (String rStr : rightArr) {
                 List<Symbol> rightList = new ArrayList<>();
                 String[] rightStrList = rStr.trim().split(" ");
                 for (String s : rightStrList) {
+                    s = s.trim();
                     for (Symbol sym : mSymbolSet) {
-                        if (sym.getType().equals(s)) {
+                        if (sym.getName().equals(s)) {
                             rightList.add(sym);
                             if (!mNonTerminalMap.containsKey(sym)) {
                                 mTerminalSet.add(sym);
@@ -120,7 +128,7 @@ public class CFG {
 //                    String s = rStr.substring(0, i);
 //                    while (stringSet.contains(s) && !rStr.isEmpty()) {
 //                        for (Symbol sym : mSymbolSet) {
-//                            if (sym.getType().equals(s)) {
+//                            if (sym.getName().equals(s)) {
 //                                rightList.add(sym);
 //                                rStr = rStr.substring(i);
 //                                if (!mNonTerminalMap.containsKey(sym)) {
@@ -141,6 +149,12 @@ public class CFG {
             }
         }
         setListForMap(mNonTerminalMap);
+        //this.cleanLeftRecursion();
+        //this.extractLeftCommonFactor();
+    }
+
+    public boolean isSucessfulBuild() {
+        return mIsSucessfulBuild;
     }
 
     public Symbol getStartSymbol() {
@@ -222,9 +236,9 @@ public class CFG {
             removeProductionsByLeft(symbol);
             int id = getMaxId();
             List<Production> allProductions = getAllProductions();
-            Symbol prime = new Symbol(symbol.getType() + "\'");
+            Symbol prime = new Symbol(symbol.getName() + "\'");
             while (getNonTerminalSet().contains(prime)) {
-                prime = new Symbol(prime.getType() + "\'");
+                prime = new Symbol(prime.getName() + "\'");
             }
             for (List<Symbol> l : beta) {
                 l.add(prime);
@@ -303,18 +317,19 @@ public class CFG {
         Map<Symbol, List<Integer>> tempMap = new HashMap<>();
         for (Symbol sym : getNonTerminalSet()) {
             List<Production> productions = getProductions(sym);
+            if (productions.size() <= 1) continue;
             List<Symbol> prefix = getPrefix(productions);
             int size = prefix.size();
             Symbol prime = null;
             List<Integer> nonTermList = new ArrayList<>();
 //        System.out.println("LCP:");
 //        for (Symbol s : lcp) {
-//            System.out.println(s.getType());
+//            System.out.println(s.getName());
 //        }
             if (size > 0) {
-                prime = new Symbol(sym.getType() + "\'");
+                prime = new Symbol(sym.getName() + "\'");
                 while (getNonTerminalSet().contains(prime)) {
-                    prime = new Symbol(prime.getType() + "\'");
+                    prime = new Symbol(prime.getName() + "\'");
                 }
                 for (Production prod : productions) {
                     List<Symbol> right = prod.getRight();

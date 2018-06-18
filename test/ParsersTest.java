@@ -1,8 +1,7 @@
-import com.ecnu.compiler.component.parser.LLParser;
 import com.ecnu.compiler.component.parser.domain.*;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LLParsingTable;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LLTableItem;
-import com.ecnu.compiler.component.parser.domain.PredictTable.PredictTable;
+import com.ecnu.compiler.component.storage.ErrorList;
 import org.junit.Test;
 
 import java.util.*;
@@ -40,11 +39,11 @@ public class ParsersTest {
         symbolSet.add(s9);
         symbolSet.add(s10);
         symbolSet.add(s11);
-        CFG cfg = new CFG(cfgList);
-        System.out.println("Start Symbol:" + cfg.getStartSymbol().getType());
+        CFG cfg = new CFG(cfgList, new ErrorList());
+        System.out.println("Start Symbol:" + cfg.getStartSymbol().getName());
         System.out.println("------------");
         for(Map.Entry<Symbol, List<Integer>> entry : cfg.getNonTerminalMap().entrySet()) {
-            System.out.print(entry.getKey().getType() + "----");
+            System.out.print(entry.getKey().getName() + "----");
             for (Integer i : entry.getValue()) {
                 System.out.print(i + " ");
             }
@@ -52,15 +51,15 @@ public class ParsersTest {
         }
         System.out.println("------------");
         for(Symbol s : cfg.getTerminalSet()) {
-            System.out.println(s.getType() + "----" + s.isTerminal());
+            System.out.println(s.getName() + "----" + s.isTerminal());
         }
         System.out.println("------------");
         for (Production p : cfg.getAllProductions()) {
             System.out.println("Id:" + p.getId());
-            System.out.println("Left:" + p.getLeft().getType());
+            System.out.println("Left:" + p.getLeft().getName());
             System.out.print("Right:");
             for (Symbol s : p.getRight()) {
-                System.out.print(s.getType() + " ");
+                System.out.print(s.getName() + " ");
             }
             System.out.println();
         }
@@ -70,10 +69,10 @@ public class ParsersTest {
         Map<Symbol, Set<Symbol>> firstMap = firstFollowSet.getFirstMap();
         Map<Symbol, Set<Symbol>> followMap = firstFollowSet.getFollowMap();
         for (Map.Entry<Symbol, Set<Symbol>> entry : firstMap.entrySet()) {
-            System.out.print(entry.getKey().getType() + "----");
+            System.out.print(entry.getKey().getName() + "----");
             if (entry.getValue() != null) {
                 for (Symbol s : entry.getValue()) {
-                    System.out.print(s.getType() + " ");
+                    System.out.print(s.getName() + " ");
                 }
             }
             System.out.println();
@@ -81,10 +80,10 @@ public class ParsersTest {
         System.out.println("------------");
         System.out.println("Follow:");
         for (Map.Entry<Symbol, Set<Symbol>> entry : followMap.entrySet()) {
-            System.out.print(entry.getKey().getType() + "----");
+            System.out.print(entry.getKey().getName() + "----");
             if (entry.getValue() != null) {
                 for (Symbol s : entry.getValue()) {
-                    System.out.print(s.getType() + " ");
+                    System.out.print(s.getName() + " ");
                 }
             }
             System.out.println();
@@ -93,11 +92,11 @@ public class ParsersTest {
         LLParsingTable llParsingTable = new LLParsingTable(cfg);
         Set<LLTableItem> itemSet = llParsingTable.getItemSet();
         for (LLTableItem item : itemSet) {
-            System.out.println("Non-term:" + item.getNonTerm().getType());
-            System.out.println("Term:" + item.getTerm().getType());
-            System.out.print("Value:" + item.getValue().getLeft().getType() + " -> ");
+            System.out.println("Non-term:" + item.getNonTerm().getName());
+            System.out.println("Term:" + item.getTerm().getName());
+            System.out.print("Value:" + item.getValue().getLeft().getName() + " -> ");
             for (Symbol s : item.getValue().getRight()) {
-                System.out.print(s.getType() + " ");
+                System.out.print(s.getName() + " ");
             }
             System.out.println();
             System.out.println("-----------");
@@ -141,10 +140,10 @@ public class ParsersTest {
         symbolSet.add(s1);
         symbolSet.add(s2);
         symbolSet.add(s3);
-        CFG cfg = new CFG(cfgList);
+        CFG cfg = new CFG(cfgList, new ErrorList());
         cfg.cleanImmediateLeftRecursion(s1);
         for(Map.Entry<Symbol, List<Integer>> entry : cfg.getNonTerminalMap().entrySet()) {
-            System.out.print(entry.getKey().getType() + "----");
+            System.out.print(entry.getKey().getName() + "----");
             for (Integer i : entry.getValue()) {
                 System.out.print(i + " ");
             }
@@ -152,15 +151,15 @@ public class ParsersTest {
         }
         System.out.println("------------");
         for(Symbol s : cfg.getTerminalSet()) {
-            System.out.println(s.getType() + "----" + s.isTerminal());
+            System.out.println(s.getName() + "----" + s.isTerminal());
         }
         System.out.println("------------");
         for (Production p : cfg.getAllProductions()) {
             System.out.println("Id:" + p.getId());
-            System.out.println("Left:" + p.getLeft().getType());
+            System.out.println("Left:" + p.getLeft().getName());
             System.out.print("Right:");
             for (Symbol s : p.getRight()) {
-                System.out.print(s.getType() + " ");
+                System.out.print(s.getName() + " ");
             }
             System.out.println();
         }
@@ -185,10 +184,10 @@ public class ParsersTest {
         symbolSet.add(s4);
         symbolSet.add(s5);
         symbolSet.add(s6);
-        CFG cfg = new CFG(cfgList);
+        CFG cfg = new CFG(cfgList, new ErrorList());
         cfg.cleanLeftRecursion();
         for(Map.Entry<Symbol, List<Integer>> entry : cfg.getNonTerminalMap().entrySet()) {
-            System.out.print(entry.getKey().getType() + "----");
+            System.out.print(entry.getKey().getName() + "----");
             for (Integer i : entry.getValue()) {
                 System.out.print(i + " ");
             }
@@ -196,15 +195,15 @@ public class ParsersTest {
         }
         System.out.println("------------");
         for(Symbol s : cfg.getTerminalSet()) {
-            System.out.println(s.getType() + "----" + s.isTerminal());
+            System.out.println(s.getName() + "----" + s.isTerminal());
         }
         System.out.println("------------");
         for (Production p : cfg.getAllProductions()) {
             System.out.println("Id:" + p.getId());
-            System.out.println("Left:" + p.getLeft().getType());
+            System.out.println("Left:" + p.getLeft().getName());
             System.out.print("Right:");
             for (Symbol s : p.getRight()) {
-                System.out.print(s.getType() + " ");
+                System.out.print(s.getName() + " ");
             }
             System.out.println();
         }
@@ -226,10 +225,10 @@ public class ParsersTest {
         symbolSet.add(s3);
         symbolSet.add(s4);
         symbolSet.add(s5);
-        CFG cfg = new CFG(cfgList);
+        CFG cfg = new CFG(cfgList, new ErrorList());
         cfg.extractLeftCommonFactor();
         for(Map.Entry<Symbol, List<Integer>> entry : cfg.getNonTerminalMap().entrySet()) {
-            System.out.print(entry.getKey().getType() + "----");
+            System.out.print(entry.getKey().getName() + "----");
             for (Integer i : entry.getValue()) {
                 System.out.print(i + " ");
             }
@@ -237,15 +236,15 @@ public class ParsersTest {
         }
         System.out.println("------------");
         for(Symbol s : cfg.getTerminalSet()) {
-            System.out.println(s.getType() + "----" + s.isTerminal());
+            System.out.println(s.getName() + "----" + s.isTerminal());
         }
         System.out.println("------------");
         for (Production p : cfg.getAllProductions()) {
             System.out.println("Id:" + p.getId());
-            System.out.println("Left:" + p.getLeft().getType());
+            System.out.println("Left:" + p.getLeft().getName());
             System.out.print("Right:");
             for (Symbol s : p.getRight()) {
-                System.out.print(s.getType() + " ");
+                System.out.print(s.getName() + " ");
             }
             System.out.println();
         }

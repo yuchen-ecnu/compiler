@@ -10,8 +10,11 @@ import com.ecnu.compiler.component.parser.domain.PredictTable.TableEntry;
 import com.ecnu.compiler.component.parser.domain.Production;
 import com.ecnu.compiler.component.parser.domain.Symbol;
 import com.ecnu.compiler.component.parser.domain.TD;
+import com.ecnu.compiler.component.storage.ErrorList;
 import com.ecnu.compiler.component.storage.SymbolTable;
+import com.ecnu.compiler.component.storage.domain.ErrorMsg;
 import com.ecnu.compiler.component.storage.domain.Token;
+import com.ecnu.compiler.constant.StatusCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +31,8 @@ public class LLParser extends Parser {
 
 //    private static PredictTable predictTable;
 
-    public LLParser(CFG CFG, ParsingTable parsingTable) {
-        super(CFG, parsingTable);
+    public LLParser(CFG CFG, ParsingTable parsingTable, ErrorList errorList) {
+        super(CFG, parsingTable, errorList);
     }
 
     @Override
@@ -43,8 +46,8 @@ public class LLParser extends Parser {
         predictTable.setTableHead(tableHead);
         List<TableEntry> tableEntryList = new ArrayList<>();
         //语法树
-        TD.TNode<String> root = new TD.TNode<>();
-        root.setContent(cfg.getStartSymbol().getType());
+        TD.TNode root = new TD.TNode();
+        root.setContent(cfg.getStartSymbol().getName());
         TD syntaxTree = new TD(root);
 
         LLParsingTable llParsingTable = (LLParsingTable) parsingTable;
@@ -61,11 +64,13 @@ public class LLParser extends Parser {
 
         Set<Symbol> allSymbols = cfg.getTerminalSet();
         allSymbols.addAll(cfg.getNonTerminalSet());
-        for (Token t : symbolTable.getTokens()) {
+        List<Token> tokens = symbolTable.getTokens();
+        for (int i = tokens.size() - 1; i >= 0; i--) {
+            Token t = tokens.get(i);
             boolean found = false;
             String s = t.getType();
             for (Symbol sym : allSymbols) {
-                if (sym.getType().equals(s)) {
+                if (sym.getName().equals(s)) {
                     buffer.push(sym);
                     found = true;
                     break;
@@ -73,10 +78,11 @@ public class LLParser extends Parser {
             }
             if (!found) {
                 System.out.println("Error: Symbol not found.");
+                ErrorMsg errorMsg = new ErrorMsg(400, "语法分析错误，无法识别的符号" + s, StatusCode.ERROR_PARSER);
+                getErrorList().addError(errorMsg);
                 return null;
             }
         }
-//        Stack<Symbol> tempStack = stack.clone();
         TableEntry tableEntry = new TableEntry(null, stack, buffer, "");
         tableEntryList.add(tableEntry);
 
@@ -84,18 +90,18 @@ public class LLParser extends Parser {
         Symbol bufferTop = buffer.peek();
         while(!stackTop.equals(Symbol.TERMINAL_SYMBOL)) {
             if (stackTop.equals(bufferTop)) {
-                System.out.println("Match:" + stackTop.getType());
+                System.out.println("Match:" + stackTop.getName());
 
-                TD.TNode<String> r = syntaxTree.getRoot();
+                TD.TNode r = syntaxTree.getRoot();
                 List<TD.TNode> children = null;
-                Stack<TD.TNode<String>> matchStack = new Stack<>();
+                Stack<TD.TNode> matchStack = new Stack<>();
                 matchStack.push(r);
                 while (true) {
                     if (r.getChildren().isEmpty() && !r.isMatched()) {
                         break;
                     } else {
                         matchStack.pop();
-                        List<TD.TNode<String>> myChildren = r.getChildren();
+                        List<TD.TNode> myChildren = r.getChildren();
                         if (!(myChildren == null || myChildren.isEmpty())) {
                             for (int i = myChildren.size() - 1; i >= 0; i--) {
                                 matchStack.push(myChildren.get(i));
@@ -105,20 +111,25 @@ public class LLParser extends Parser {
                     }
                 }
 
-                if (r.getContent().equals(stackTop.getType())) {
+                if (r.getContent().equals(stackTop.getName())) {
                     r.setMatched(true);
                 } else {
                     System.out.println("Tree match error!");
+                    ErrorMsg errorMsg = new ErrorMsg(401, "语法分析错误，栈顶符号错误，应为" + stackTop.getName() + "，现为" + r.getContent(), StatusCode.ERROR_PARSER);
+                    getErrorList().addError(errorMsg);
+                    return null;
                 }
 
                 matched.add(stackTop);
                 stack.pop();
                 buffer.pop();
 
-                TableEntry entry = new TableEntry(matched, stack, buffer, "Match:" + stackTop.getType());
+                TableEntry entry = new TableEntry(matched, stack, buffer, "Match:" + stackTop.getName());
                 tableEntryList.add(entry);
             } else if (stackTop.isTerminal()) {
                 System.out.println("Error: Terminal.");
+                ErrorMsg errorMsg = new ErrorMsg(402, "语法分析错误，栈顶出现终结符" + stackTop.getName(), StatusCode.ERROR_PARSER);
+                getErrorList().addError(errorMsg);
                 return null;
             } else {
                 Production prod = null;
@@ -130,24 +141,26 @@ public class LLParser extends Parser {
                 }
                 if (prod == null) {
                     System.out.println("Error: LLTable item not found.");
+                    ErrorMsg errorMsg = new ErrorMsg(403, "语法分析错误，查表失败，找不到[" + stackTop.getName() + ", " + bufferTop.getName() + "]", StatusCode.ERROR_PARSER);
+                    getErrorList().addError(errorMsg);
                     return null;
                 } else {
-                    System.out.print("Output:" + prod.getLeft().getType() + "->");
+                    System.out.print("Output:" + prod.getLeft().getName() + "->");
                     for (Symbol sym : prod.getRight()) {
-                        System.out.print(sym.getType());
+                        System.out.print(sym.getName());
                     }
                     System.out.println();
 
-                    TD.TNode<String> r = syntaxTree.getRoot();
+                    TD.TNode r = syntaxTree.getRoot();
                     List<TD.TNode> children = null;
-                    Stack<TD.TNode<String>> outputStack = new Stack<>();
+                    Stack<TD.TNode> outputStack = new Stack<>();
                     outputStack.push(r);
                     while (true) {
                         if (r.getChildren().isEmpty() && !r.isMatched()) {
                             break;
                         } else {
                             outputStack.pop();
-                            List<TD.TNode<String>> myChildren = r.getChildren();
+                            List<TD.TNode> myChildren = r.getChildren();
                             if (!(myChildren == null || myChildren.isEmpty())) {
                                 for (int i = myChildren.size() - 1; i >= 0; i--) {
                                     outputStack.push(myChildren.get(i));
@@ -157,17 +170,22 @@ public class LLParser extends Parser {
                         }
                     }
 
-                    if (r.getContent().equals(prod.getLeft().getType())) {
+                    if (r.getContent().equals(prod.getLeft().getName())) {
                         for (Symbol s : prod.getRight()) {
-                            TD.TNode<String> child = new TD.TNode<>();
-                            child.setContent(s.getType());
+                            TD.TNode child = new TD.TNode();
+                            child.setContent(s.getName());
                             if (s.equals(Symbol.EMPTY_SYMBOL)) {
                                 child.setMatched(true);
                             }
                             r.addChild(child);
+                            if (r.getProductionId() <= 0) {
+                                r.setProductionId(prod.getId());
+                            }
                         }
                     } else {
                         System.out.println("Tree output error!");
+                        ErrorMsg errorMsg = new ErrorMsg(404, "语法分析错误，构造语法树时出错", StatusCode.ERROR_PARSER);
+                        getErrorList().addError(errorMsg);
                     }
 
                     stack.pop();
@@ -177,9 +195,9 @@ public class LLParser extends Parser {
                         }
                     }
 
-                    String output = "Output:" + prod.getLeft().getType() + "->";
+                    String output = "Output:" + prod.getLeft().getName() + "->";
                     for (Symbol sym : prod.getRight()) {
-                        output += sym.getType() + " ";
+                        output += sym.getName() + " ";
                     }
                     TableEntry entry = new TableEntry(matched, stack, buffer, output);
                     tableEntryList.add(entry);
@@ -187,6 +205,12 @@ public class LLParser extends Parser {
             }
             stackTop = stack.peek();
             bufferTop = buffer.peek();
+        }
+        if (!buffer.peek().equals(Symbol.TERMINAL_SYMBOL)) {
+            System.out.println("Stack Empty Error.");
+            ErrorMsg errorMsg = new ErrorMsg(405, "语法分析错误，栈已为空，输入还剩" + buffer.size() + "个符号未处理", StatusCode.ERROR_PARSER);
+            getErrorList().addError(errorMsg);
+            return null;
         }
         predictTable.setTableEntryList(tableEntryList);
         return syntaxTree;
@@ -198,7 +222,7 @@ public class LLParser extends Parser {
 //        List<TableEntry> tableEntryList = new ArrayList<>();
 //        //语法树
 //        TD.TNode<String> root = new TD.TNode<>();
-//        root.setContent(cfg.getStartSymbol().getType());
+//        root.setContent(cfg.getStartSymbol().getName());
 //        TD syntaxTree = new TD(root);
 //
 //        LLParsingTable llParsingTable = new LLParsingTable(cfg);
@@ -219,7 +243,7 @@ public class LLParser extends Parser {
 //            boolean found = false;
 //            String s = arr[a];
 //            for (Symbol sym : allSymbols) {
-//                if (sym.getType().equals(s)) {
+//                if (sym.getName().equals(s)) {
 //                    buffer.push(sym);
 //                    found = true;
 //                    break;
@@ -238,7 +262,7 @@ public class LLParser extends Parser {
 //        Symbol bufferTop = buffer.peek();
 //        while(!stackTop.equals(Symbol.TERMINAL_SYMBOL)) {
 //            if (stackTop.equals(bufferTop)) {
-//                System.out.println("Match:" + stackTop.getType());
+//                System.out.println("Match:" + stackTop.getName());
 //
 //                TD.TNode<String> r = syntaxTree.getRoot();
 //                List<TD.TNode> children = null;
@@ -259,7 +283,7 @@ public class LLParser extends Parser {
 //                    }
 //                }
 //
-//                if (r.getContent().equals(stackTop.getType())) {
+//                if (r.getContent().equals(stackTop.getName())) {
 //                    r.setMatched(true);
 //                } else {
 //                    System.out.println("Tree match error!");
@@ -269,7 +293,7 @@ public class LLParser extends Parser {
 //                stack.pop();
 //                buffer.pop();
 //
-//                TableEntry entry = new TableEntry(matched, stack, buffer, "Match:" + stackTop.getType());
+//                TableEntry entry = new TableEntry(matched, stack, buffer, "Match:" + stackTop.getName());
 //                tableEntryList.add(entry);
 //            } else if (stackTop.isTerminal()) {
 //                System.out.println("Error: Terminal.");
@@ -286,9 +310,9 @@ public class LLParser extends Parser {
 //                    System.out.println("Error: LLTable item not found.");
 //                    return null;
 //                } else {
-//                    System.out.print("Output:" + prod.getLeft().getType() + "->");
+//                    System.out.print("Output:" + prod.getLeft().getName() + "->");
 //                    for (Symbol sym : prod.getRight()) {
-//                        System.out.print(sym.getType());
+//                        System.out.print(sym.getName());
 //                    }
 //                    System.out.println();
 //
@@ -311,10 +335,10 @@ public class LLParser extends Parser {
 //                        }
 //                    }
 //
-//                    if (r.getContent().equals(prod.getLeft().getType())) {
+//                    if (r.getContent().equals(prod.getLeft().getName())) {
 //                        for (Symbol s : prod.getRight()) {
 //                            TD.TNode<String> child = new TD.TNode<>();
-//                            child.setContent(s.getType());
+//                            child.setContent(s.getName());
 //                            if (s.equals(Symbol.EMPTY_SYMBOL)) {
 //                                child.setMatched(true);
 //                            }
@@ -331,9 +355,9 @@ public class LLParser extends Parser {
 //                        }
 //                    }
 //
-//                    String output = "Output:" + prod.getLeft().getType() + "->";
+//                    String output = "Output:" + prod.getLeft().getName() + "->";
 //                    for (Symbol sym : prod.getRight()) {
-//                        output += sym.getType() + " ";
+//                        output += sym.getName() + " ";
 //                    }
 //                    TableEntry entry = new TableEntry(matched, stack, buffer, output);
 //                    tableEntryList.add(entry);

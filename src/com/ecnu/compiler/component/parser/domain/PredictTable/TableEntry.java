@@ -2,11 +2,10 @@ package com.ecnu.compiler.component.parser.domain.PredictTable;
 
 import com.ecnu.compiler.component.parser.domain.Symbol;
 import com.ecnu.compiler.component.parser.domain.TD;
-import com.ecnu.compiler.component.storage.SymbolTable;
 import com.ecnu.compiler.component.storage.domain.Token;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
@@ -18,48 +17,49 @@ public class TableEntry {
         StringBuilder stringBuilder = new StringBuilder();
         if (!(symbols == null || symbols.isEmpty())) {
             for (Symbol sym : symbols) {
-                stringBuilder.append(sym.getType()).append(" ");
+                stringBuilder.append(sym.getName()).append(" ");
             }
         }
         mItemList.add(stringBuilder.toString());
 
         stringBuilder = new StringBuilder();
         for (Symbol sym : stack) {
-            stringBuilder.append(sym.getType()).append(" ");
+            stringBuilder.append(sym.getName()).append(" ");
         }
         mItemList.add(stringBuilder.toString());
 
         stringBuilder = new StringBuilder();
         for (Symbol sym : input) {
-            stringBuilder.append(sym.getType()).append(" ");
+            stringBuilder.append(sym.getName()).append(" ");
         }
         mItemList.add(stringBuilder.toString());
 
         mItemList.add(action);
     }
 
-    public TableEntry(Stack<Integer> stateStack, Stack<TD.TNode<String>> treeNodeStack,
-                      List<Token> tokenList, int curIndex, String action) {
+    public TableEntry(Stack<Integer> stateStack, Stack<TD.TNode> treeNodeStack,
+                      String input, String action, String output) {
         mItemList = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
-        for (int state : stateStack){
-            stringBuilder.append(state);
+        Iterator<Integer> stateStackIterator = stateStack.iterator();
+        Iterator<TD.TNode> treeNodeStackIterator = treeNodeStack.iterator();
+        while (stateStackIterator.hasNext() && treeNodeStackIterator.hasNext()){
+            stringBuilder.append(stateStackIterator.next()).append(" ").append(treeNodeStackIterator.next()).append(" ");
         }
+        if (stateStackIterator.hasNext())
+            stringBuilder.append(stateStackIterator.next());
+
         mItemList.add(stringBuilder.toString());
 
-        stringBuilder = new StringBuilder();
-        for (TD.TNode<String> node : treeNodeStack){
-            stringBuilder.append(node.getContent());
-        }
-        mItemList.add(stringBuilder.toString());
-
-        stringBuilder = new StringBuilder();
-        for (int i = curIndex; i < tokenList.size(); i++) {
-            stringBuilder.append(tokenList.get(i).getType());
-        }
-        mItemList.add(stringBuilder.toString());
+        mItemList.add(input);
 
         mItemList.add(action);
+
+        mItemList.add(output);
+    }
+
+    public List<String> getItemList() {
+        return mItemList;
     }
 
     @Override
