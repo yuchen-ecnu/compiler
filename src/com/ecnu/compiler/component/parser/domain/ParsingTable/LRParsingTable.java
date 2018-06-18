@@ -97,4 +97,5 @@ public class LRParsingTable extends ParsingTable {
         }
         return null;
     }
+
 }
