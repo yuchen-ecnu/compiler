@@ -54,12 +54,12 @@ public class LRParser extends Parser {
         //当前分析的输入Token列表
         List<Token> tokenList = symbolTable.getTokens();
         //添加终结符
-        tokenList.add(new Token(Constants.TERMINAL_TOKEN));
+        tokenList.add(new Token(Constants.TERMINAL_TOKEN, Constants.TERMINAL_TOKEN));
 
         //获得SymbolTable所有token组成的String
         StringBuilder stringBuilder = new StringBuilder();
         for (Token token : tokenList){
-            stringBuilder.append(token).append(" ");
+            stringBuilder.append(token.getStr()).append(" ");
         }
         String allInputStr = stringBuilder.toString().trim();
 
