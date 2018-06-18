@@ -66,13 +66,14 @@ public class LRParser extends Parser {
 
         //当前输入符号的index以及其字符串内容
         int curIndex = 0;
+        int subInputStrIndex = 0;
         String curInputStr = tokenList.get(curIndex).getType();
         while (curIndex < tokenList.size()) {
             //获取表项
             LRParsingTable.TableItem tableItem = lrParsingTable.getItem(stateStack.peek(), curInputStr);
             if (tableItem == null){
                 predictTable.addTableEntry(new TableEntry(stateStack, syntaxTreeStack,
-                        allInputStr.substring(curIndex, allInputStr.length()), "Error: Cannot find item in action table",
+                        allInputStr.substring(subInputStrIndex, allInputStr.length()), "Error: Cannot find item in action table",
                         ""));
                 getErrorList().addErrorMsg("语法分析错误， Action表项("
                                 + stateStack.peek() + ", " + curInputStr + ")找不到", StatusCode.ERROR_PARSER);
@@ -82,8 +83,9 @@ public class LRParser extends Parser {
                 case LRParsingTable.SHIFT:
                     //记录预测表
                     predictTable.addTableEntry(new TableEntry(stateStack, syntaxTreeStack,
-                            allInputStr.substring(curIndex, allInputStr.length()), "Shift " + tableItem.getValue(),
+                            allInputStr.substring(subInputStrIndex, allInputStr.length()), "Shift " + tableItem.getValue(),
                             ""));
+                    subInputStrIndex += curInputStr.length() + 1;
                     //如果是Shift，则移入相应状态以及添加一个新的树节点
                     stateStack.push(tableItem.getValue());
                     syntaxTreeStack.push(new TD.TNode(curInputStr));
@@ -96,7 +98,7 @@ public class LRParser extends Parser {
                     Production production = productionList.get(tableItem.getValue());
                     //记录预测表
                     predictTable.addTableEntry(new TableEntry(stateStack, syntaxTreeStack,
-                            allInputStr.substring(curIndex, allInputStr.length()), "Reduce " + production,
+                            allInputStr.substring(subInputStrIndex, allInputStr.length()), "Reduce " + production,
                             production.toString()));
                     //构造新的树节点
                     TD.TNode parentNode = new TD.TNode(production.getLeft().getName());
@@ -117,7 +119,7 @@ public class LRParser extends Parser {
                     LRParsingTable.TableItem gotoTableItem = lrParsingTable.getItem(stateStack.peek(), parentNode.getContent());
                     if (gotoTableItem == null || gotoTableItem.getOperate() != LRParsingTable.GOTO){
                         predictTable.addTableEntry(new TableEntry(stateStack, syntaxTreeStack,
-                                allInputStr.substring(curIndex, allInputStr.length()), "Error: Cannot find item in goto table", ""));
+                                allInputStr.substring(subInputStrIndex, allInputStr.length()), "Error: Cannot find item in goto table", ""));
                         getErrorList().addErrorMsg("语法分析错误， Goto表项("
                                 + stateStack.peek() + ", " + curInputStr + ")找不到", StatusCode.ERROR_PARSER);
                         return null;
@@ -130,19 +132,19 @@ public class LRParser extends Parser {
                     //返回构造完成的树
                     //记录预测表
                     predictTable.addTableEntry(new TableEntry(stateStack, syntaxTreeStack,
-                            allInputStr.substring(curIndex, allInputStr.length()), "Accept ", ""));
+                            allInputStr.substring(subInputStrIndex, allInputStr.length()), "Accept ", ""));
                     return new TD(syntaxTreeStack.pop());
 
                 default:
                     predictTable.addTableEntry(new TableEntry(stateStack, syntaxTreeStack,
-                            allInputStr.substring(curIndex, allInputStr.length()), "System Error", ""));
+                            allInputStr.substring(subInputStrIndex, allInputStr.length()), "System Error", ""));
                     getErrorList().addErrorMsg("语法分析内部错误（未知的表项内容）", StatusCode.ERROR_PARSER);
                     return null;
             }
         }
         //如果输入都完了还没到达，那么匹配就失败了，语法有错误。
         predictTable.addTableEntry(new TableEntry(stateStack, syntaxTreeStack,
-                allInputStr.substring(curIndex, allInputStr.length()), "Error: Cannot find item in action table", ""));
+                allInputStr.substring(subInputStrIndex, allInputStr.length()), "Error: Cannot find item in action table", ""));
         getErrorList().addErrorMsg("语法分析错误， 无法抵达接受项，分析失败", StatusCode.ERROR_PARSER);
         return null;
     }
