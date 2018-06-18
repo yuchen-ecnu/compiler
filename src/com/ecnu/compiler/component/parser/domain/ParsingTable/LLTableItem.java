@@ -7,11 +7,13 @@ public class LLTableItem {
     private Symbol nonTerm;
     private Symbol term;
     private Production value;
+    private boolean isConflict;
 
     public LLTableItem(Symbol nonTerm, Symbol term, Production value) {
         this.nonTerm = nonTerm;
         this.term = term;
         this.value = value;
+        this.isConflict = false;
     }
 
     public Symbol getNonTerm() {
@@ -36,5 +38,13 @@ public class LLTableItem {
 
     public void setValue(Production value) {
         this.value = value;
+    }
+
+    public boolean isConflict() {
+        return isConflict;
+    }
+
+    public void setConflict(boolean conflict) {
+        isConflict = conflict;
     }
 }
