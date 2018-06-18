@@ -12,7 +12,9 @@ import com.ecnu.compiler.component.parser.domain.Symbol;
 import com.ecnu.compiler.component.parser.domain.TD;
 import com.ecnu.compiler.component.storage.ErrorList;
 import com.ecnu.compiler.component.storage.SymbolTable;
+import com.ecnu.compiler.component.storage.domain.ErrorMsg;
 import com.ecnu.compiler.component.storage.domain.Token;
+import com.ecnu.compiler.constant.StatusCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,10 +78,11 @@ public class LLParser extends Parser {
             }
             if (!found) {
                 System.out.println("Error: Symbol not found.");
+                ErrorMsg errorMsg = new ErrorMsg(400, "语法分析错误，无法识别的符号" + s, StatusCode.ERROR_PARSER);
+                getErrorList().addError(errorMsg);
                 return null;
             }
         }
-//        Stack<Symbol> tempStack = stack.clone();
         TableEntry tableEntry = new TableEntry(null, stack, buffer, "");
         tableEntryList.add(tableEntry);
 
@@ -112,6 +115,9 @@ public class LLParser extends Parser {
                     r.setMatched(true);
                 } else {
                     System.out.println("Tree match error!");
+                    ErrorMsg errorMsg = new ErrorMsg(401, "语法分析错误，栈顶符号错误，应为" + stackTop.getName() + "，现为" + r.getContent(), StatusCode.ERROR_PARSER);
+                    getErrorList().addError(errorMsg);
+                    return null;
                 }
 
                 matched.add(stackTop);
@@ -122,6 +128,8 @@ public class LLParser extends Parser {
                 tableEntryList.add(entry);
             } else if (stackTop.isTerminal()) {
                 System.out.println("Error: Terminal.");
+                ErrorMsg errorMsg = new ErrorMsg(402, "语法分析错误，栈顶出现终结符" + stackTop.getName(), StatusCode.ERROR_PARSER);
+                getErrorList().addError(errorMsg);
                 return null;
             } else {
                 Production prod = null;
@@ -133,6 +141,8 @@ public class LLParser extends Parser {
                 }
                 if (prod == null) {
                     System.out.println("Error: LLTable item not found.");
+                    ErrorMsg errorMsg = new ErrorMsg(403, "语法分析错误，查表失败，找不到[" + stackTop.getName() + ", " + bufferTop.getName() + "]", StatusCode.ERROR_PARSER);
+                    getErrorList().addError(errorMsg);
                     return null;
                 } else {
                     System.out.print("Output:" + prod.getLeft().getName() + "->");
@@ -174,6 +184,8 @@ public class LLParser extends Parser {
                         }
                     } else {
                         System.out.println("Tree output error!");
+                        ErrorMsg errorMsg = new ErrorMsg(404, "语法分析错误，构造语法树时出错", StatusCode.ERROR_PARSER);
+                        getErrorList().addError(errorMsg);
                     }
 
                     stack.pop();
@@ -196,7 +208,8 @@ public class LLParser extends Parser {
         }
         if (!buffer.peek().equals(Symbol.TERMINAL_SYMBOL)) {
             System.out.println("Stack Empty Error.");
-            getErrorList();
+            ErrorMsg errorMsg = new ErrorMsg(405, "语法分析错误，栈已为空，输入还剩" + buffer.size() + "个符号未处理", StatusCode.ERROR_PARSER);
+            getErrorList().addError(errorMsg);
             return null;
         }
         predictTable.setTableEntryList(tableEntryList);
