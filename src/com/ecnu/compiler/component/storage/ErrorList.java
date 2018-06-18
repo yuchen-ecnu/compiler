@@ -19,11 +19,16 @@ public class ErrorList {
         this.errorMsgList = new ArrayList<>();
     }
 
+    public List<ErrorMsg> getErrorMsgList() {
+        return errorMsgList;
+    }
+
     /**
      * 获取最新的一个Error
      * @return
      */
     public ErrorMsg getLastError(){
+        if(errorMsgList.size()==0){ return null; }
         return errorMsgList.get(errorMsgList.size()-1);
     }
 
