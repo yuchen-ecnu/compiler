@@ -21,12 +21,12 @@ public class LRParserBuilder {
         return mFirstFollowSet;
     }
 
-    public LRParsingTable buildParsingTable(CFG cfg){
+    public boolean buildParsingTable(CFG cfg, LRParsingTable lrParsingTable){
         //保存cfg，构建firstFollowSet
         mCfg = cfg;
         mFirstFollowSet = new FirstFollowSet(cfg);
         //创建空的ParsingTable
-        LRParsingTable lrParsingTable = new LRParsingTable(cfg.getTerminalSet(), cfg.getNonTerminalSet());
+        lrParsingTable.initLRParsingTable(cfg.getTerminalSet(), cfg.getNonTerminalSet());
         //创建ItemSet的列表保存每个状态
         List<LRItemSet> stateList = new ArrayList<>();
         //创建Map保存状态和编号的映射
@@ -47,6 +47,7 @@ public class LRParserBuilder {
         stateList.add(getClosure(itemSet));
         lrParsingTable.addState();
 
+        boolean isSuccessful = true;
         //循环构建解析表
         for (int i = 0; i < stateList.size(); i++) {
             itemSet = stateList.get(i);
@@ -57,12 +58,11 @@ public class LRParserBuilder {
                     //假如点后面没有别的符号了
                     if (item.getProduction().getId() >= 0) {
                         //添加reduce表项
-                        if (!addReduceTableItem(lrParsingTable, i, item))
-                            return null;
+                        isSuccessful = addReduceTableItem(lrParsingTable, i, item) && isSuccessful;
                     }
                     else {
                         //接受
-                        lrParsingTable.set(i, Symbol.TERMINAL_SYMBOL, LRParsingTable.ACCEPT, 0);
+                        isSuccessful = lrParsingTable.set(i, Symbol.TERMINAL_SYMBOL, LRParsingTable.ACCEPT, 0)&& isSuccessful;
                     }
                 } else {
                     //点后面有符号
@@ -89,23 +89,36 @@ public class LRParserBuilder {
                                 isTerminal ? LRParsingTable.SHIFT : LRParsingTable.GOTO, targetIndex);
                     } else if (tableItem.getOperate() == LRParsingTable.REDUCE){
                         //构造失败
-                        return null;
+                        //shift Reduce 冲突
+                        LRItemSet newItemSet = getGoto(itemSet, symbolAfterPoint);
+                        Integer targetIndex = stateMap.get(newItemSet); //跳转状态编号
+                        if (targetIndex == null) {
+                            //假如该状态还未添加
+                            stateList.add(newItemSet);
+                            targetIndex = stateList.size() - 1;
+                            stateMap.put(newItemSet, targetIndex);
+                            //在解析表中添加新状态
+                            lrParsingTable.addState();
+                        }
+                        //添加表项
+                        isSuccessful = lrParsingTable.set(i, symbolAfterPoint,
+                                isTerminal ? LRParsingTable.SHIFT : LRParsingTable.GOTO, targetIndex) && isSuccessful;
                     }
                 }
             }
         }
-        return lrParsingTable;
+        return isSuccessful;
     }
 
     protected boolean addReduceTableItem(LRParsingTable lrParsingTable, int row, LRItem item){
+        boolean result = true;
         for (Symbol lookAhead : item.getLookAhead()){
-            if (lrParsingTable.getItem(row, lookAhead) != null){
+            if (!lrParsingTable.set(row, lookAhead, LRParsingTable.REDUCE, item.getProduction().getId() - 1)){
                 //构造失败
-                return false;
+                result = false;
             }
-            lrParsingTable.set(row, lookAhead, LRParsingTable.REDUCE, item.getProduction().getId() - 1);
         }
-        return true;
+        return result;
     }
     
     protected LRItem getNewLRItem(Production production, Symbol lookahead){

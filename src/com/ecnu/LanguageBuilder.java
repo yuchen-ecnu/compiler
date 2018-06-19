@@ -11,6 +11,7 @@ import com.ecnu.compiler.component.parser.domain.ParsingTable.LLParsingTable;
 import com.ecnu.compiler.component.parser.domain.ParsingTable.LRParsingTable;
 import com.ecnu.compiler.component.parser.domain.Production;
 import com.ecnu.compiler.component.storage.ErrorList;
+import com.ecnu.compiler.constant.StatusCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +54,24 @@ public class LanguageBuilder {
         CFG cfg = new CFG(productionList, mErrorList);
         ParserHolder holder = new ParserHolder();
         holder.mLLParsingTable = new LLParsingTable(cfg);
-        holder.mLRParsingTable = new LRParserBuilder().buildParsingTable(cfg);
-        holder.mSLRParsingTable = new SLRParserBuilder().buildParsingTable(cfg);
-        holder.mLALRParsingTable = new LALRParserBuilder().buildParsingTable(cfg);
+        //LR
+        LRParsingTable lrParsingTable = new LRParsingTable();
+        if (!new LRParserBuilder().buildParsingTable(cfg, lrParsingTable)){
+            mErrorList.addErrorMsg("LR构造失败", StatusCode.ERROR_INIT);
+        }
+        holder.mLRParsingTable = lrParsingTable;
+        //SLR
+        lrParsingTable = new LRParsingTable();
+        if (!new SLRParserBuilder().buildParsingTable(cfg, lrParsingTable)){
+            mErrorList.addErrorMsg("SLR构造失败", StatusCode.ERROR_INIT);
+        }
+        holder.mSLRParsingTable = lrParsingTable;
+        //LALR
+        lrParsingTable = new LRParsingTable();
+        if (!new LALRParserBuilder().buildParsingTable(cfg, lrParsingTable)){
+            mErrorList.addErrorMsg("LALR构造失败", StatusCode.ERROR_INIT);
+        }
+        holder.mLALRParsingTable = lrParsingTable;
         return holder;
     }
 

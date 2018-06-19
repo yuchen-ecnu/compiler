@@ -12,20 +12,61 @@ public class LRParsingTable extends ParsingTable {
     public static final char GOTO = 'g';
     //表项
     static public class TableItem{
-        private char operate;
-        private int value;
+        protected char mOperate;
+        protected int mValue;
 
         public char getOperate() {
-            return operate;
+            return mOperate;
         }
 
         public int getValue() {
-            return value;
+            return mValue;
         }
 
         @Override
         public String toString() {
-            return String.valueOf(operate) + String.valueOf(value);
+            return String.valueOf(mOperate) + String.valueOf(mValue);
+        }
+
+        public String getStringItem(){
+            return toString();
+        }
+    }
+
+    static public class ErrorTableItem extends TableItem{
+        private List<TableItem> mErrorItemList;
+
+
+
+        public ErrorTableItem(TableItem oldTableItem) {
+            mOperate = oldTableItem.getOperate();
+            mValue = oldTableItem.getValue();
+            mErrorItemList = new ArrayList<>();
+        }
+
+        private void addErrorTableItem(TableItem tableItem){
+            mErrorItemList.add(tableItem);
+        }
+
+        private void addErrorTableItem(char operate, int value){
+            TableItem tableItem = new TableItem();
+            tableItem.mOperate = operate;
+            tableItem.mValue = value;
+            addErrorTableItem(tableItem);
+        }
+
+        @Override
+        public String getStringItem() {
+            return toString();
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder stringBuilder = new StringBuilder(super.toString());
+            for (TableItem tableItem : mErrorItemList){
+                stringBuilder.append(" | ").append(tableItem.toString());
+            }
+            return stringBuilder.toString();
         }
     }
     //表
@@ -35,8 +76,14 @@ public class LRParsingTable extends ParsingTable {
     //表的两部分划分
     private int mDivOfTowParts;
 
+    public LRParsingTable() { }
+
     //构造时需要传入纵坐标对应的符号集合
     public LRParsingTable(Set<Symbol> terminalSymbols, Set<Symbol> nonterminalSymbols){
+        initLRParsingTable(terminalSymbols, nonterminalSymbols);
+    }
+
+    public void initLRParsingTable(Set<Symbol> terminalSymbols, Set<Symbol> nonterminalSymbols){
         int i = 0;
         mColMap = new HashMap<>();
         mTable = new ArrayList<>();
@@ -70,15 +117,26 @@ public class LRParsingTable extends ParsingTable {
 
     //设置表项
     public boolean set(int state, Symbol colSymbol, char operate, int value){
+        boolean result = false;
         Integer col = mColMap.get(colSymbol.getName());
         if (state < mTable.size() && col != null){
-            TableItem tableItem = new TableItem();
-            tableItem.operate = operate;
-            tableItem.value = value;
-            mTable.get(state)[col] = tableItem;
-            return true;
-        } else
-            return false;
+            TableItem oldTableItem = mTable.get(state)[col];
+            if (oldTableItem == null){
+                TableItem tableItem = new TableItem();
+                tableItem.mOperate = operate;
+                tableItem.mValue = value;
+                mTable.get(state)[col] = tableItem;
+                result = true;
+            } else if (oldTableItem.getClass() == TableItem.class){
+                ErrorTableItem errorTableItem = new ErrorTableItem(oldTableItem);
+                errorTableItem.addErrorTableItem(operate, value);
+                mTable.get(state)[col] = errorTableItem;
+            } else if (oldTableItem.getClass() == ErrorTableItem.class){
+                ErrorTableItem errorTableItem = (ErrorTableItem) oldTableItem;
+                errorTableItem.addErrorTableItem(operate, value);
+            }
+        }
+        return result;
     }
 
     //获取表项

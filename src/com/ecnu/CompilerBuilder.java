@@ -82,32 +82,38 @@ public class CompilerBuilder {
             language.setCFG(cfg);
             //构造各解析表
             boolean canParser = false;
+            //LL
             LLParsingTable llParsingTable = new LLParsingTable(cfg);
             if (llParsingTable.isOk()){
-                language.setLLParsingTable(llParsingTable);
                 canParser = true;
             } else {
                 getErrorList().addErrorMsg("构造LL解析表失败", StatusCode.ERROR_INIT);
             }
-            LRParsingTable lrParsingTable;
-            if ((lrParsingTable = new LRParserBuilder().buildParsingTable(cfg)) != null){
-                language.setLRParsingTable(lrParsingTable);
+            language.setLLParsingTable(llParsingTable);
+            //LR
+            LRParsingTable lrParsingTable = new LRParsingTable();
+            if (new LRParserBuilder().buildParsingTable(cfg, lrParsingTable)){
                 canParser = true;
             } else {
                 getErrorList().addErrorMsg("构造LR解析表失败", StatusCode.ERROR_INIT);
             }
-            if ((lrParsingTable = new SLRParserBuilder().buildParsingTable(cfg)) != null){
-                language.setSLRParsingTable(lrParsingTable);
+            language.setLRParsingTable(lrParsingTable);
+            //SLR
+            lrParsingTable = new LRParsingTable();
+            if (new SLRParserBuilder().buildParsingTable(cfg, lrParsingTable)){
                 canParser = true;
             } else {
                 getErrorList().addErrorMsg("构造SLR解析表失败", StatusCode.ERROR_INIT);
             }
-            if ((lrParsingTable = new LALRParserBuilder().buildParsingTable(cfg)) != null){
-                language.setLALRParsingTable(lrParsingTable);
+            language.setSLRParsingTable(lrParsingTable);
+            //LALR
+            lrParsingTable = new LRParsingTable();
+            if (new LALRParserBuilder().buildParsingTable(cfg, lrParsingTable)){
                 canParser = true;
             } else {
                 getErrorList().addErrorMsg("构造LALR解析表失败", StatusCode.ERROR_INIT);
             }
+            language.setLALRParsingTable(lrParsingTable);
             if (!canParser){
                 getErrorList().addErrorMsg("该语言不可进行语法分析", StatusCode.ERROR_INIT);
                 return null;
