@@ -54,15 +54,21 @@ public class CompilerBuilderTest {
         reList.add(new RE("*", "\\*", RE.SPILT_SYMBOL));
         reList.add(new RE("if", "if", RE.NOMAL_SYMBOL));
         reList.add(new RE("id", "a|(a|b)*", RE.NOMAL_SYMBOL));
+        reList.add(new RE("a", "a", RE.NOMAL_SYMBOL));
+        reList.add(new RE("b", "b", RE.NOMAL_SYMBOL));
+        reList.add(new RE("c", "c", RE.NOMAL_SYMBOL));
+        reList.add(new RE("d", "d", RE.NOMAL_SYMBOL));
         List<String> productionStrList = new ArrayList<>();
 //        productionStrList.add("T -> ( id ) E id");
 //        productionStrList.add("E -> id | if T");
-        productionStrList.add("E -> E + T");
-        productionStrList.add("E -> T");
-        productionStrList.add("T -> T * F");
-        productionStrList.add("T -> F");
-        productionStrList.add("F -> ( E )");
-        productionStrList.add("F -> id");
+//        productionStrList.add("E -> E + T");
+//        productionStrList.add("E -> T");
+//        productionStrList.add("T -> T * F");
+//        productionStrList.add("T -> F");
+//        productionStrList.add("F -> ( E )");
+//        productionStrList.add("F -> id");
+        productionStrList.add("S->A a | b A c | d c | b d a");
+        productionStrList.add("A -> d");
         Map<String, String> agActionMap = new HashMap<>();
         agActionMap.put("P", "E.in = id0.digit");
         agActionMap.put("Q", "E.s = if.s");
@@ -78,6 +84,10 @@ public class CompilerBuilderTest {
         if (!compilerBuilder.checkLanguage(languageId)){
             Language language = compilerBuilder.prepareLanguage(languageId, reList, productionStrList,
                     agProductionStrList, agActionMap);
+            if (compilerBuilder.getErrorList().getErrorMsgList().size() > 0){
+                System.out.println("Errror");
+                compilerBuilder.getErrorList().printAllErrorAndClear();
+            }
         }
         Compiler compiler = compilerBuilder.getCompilerInstance(languageId, config);
         //使用compiler

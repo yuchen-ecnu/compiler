@@ -41,14 +41,14 @@ public class SLRParserBuilder extends LRParserBuilder {
 
     @Override
     protected boolean addReduceTableItem(LRParsingTable lrParsingTable, int row, LRItem item) {
+        boolean result = true;
         Set<Symbol> followSymbols = getFirstFollowSet().getFollow(item.getProduction().getLeft());
         for (Symbol symbol : followSymbols){
-            if (lrParsingTable.getItem(row, symbol) != null){
+            if (!lrParsingTable.set(row, symbol, LRParsingTable.REDUCE, item.getProduction().getId() - 1)){
                 //构造失败
-                return false;
+                result = false;
             }
-            lrParsingTable.set(row, symbol, LRParsingTable.REDUCE, item.getProduction().getId() - 1);
         }
-        return true;
+        return result;
     }
 }
